@@ -1,8 +1,8 @@
 ﻿using Bluedit.Entities;
 using Bluedit.Models.DataModels.UserDtos;
 using Bluedit.Models.ModelsValidators;
-using Bluedit.Services.UserAuthServices.Authentication;
-using Bluedit.Services.UserAuthServices.Repositories;
+using Bluedit.Services.Authentication;
+using Bluedit.Services.Repositories;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -103,6 +103,8 @@ internal static class AppConfigHelperExtensions
         builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
+
+        builder.Services.AddScoped<ITopicRepository, TopicRepository>();
 
         return builder;
     }

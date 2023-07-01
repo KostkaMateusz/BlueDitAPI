@@ -1,7 +1,7 @@
 ﻿using Bluedit.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Bluedit.Services.UserAuthServices.Repositories;
+namespace Bluedit.Services.Repositories;
 
 public class UserRepository : IUserRepository
 {

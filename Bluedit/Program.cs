@@ -18,6 +18,7 @@ builder.ConfigureAuthentication();
 
 builder.AddServices();
 
+builder.ConfigureSwaggerDoc();
 
 builder.ConfigureCors();
 

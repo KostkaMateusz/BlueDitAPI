@@ -15,4 +15,6 @@ public class Post
     public User User { get; set; }
     [AllowNull]
     public Guid? UserId { get; set; }
+    public Topic Topic { get; set; }
+    public string TopicName { get; set; }
 }

@@ -10,10 +10,9 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Http.HttpResults;
 using FluentValidation.AspNetCore;
-using Bluedit.Services.UserAuthServices.Repositories;
-using Bluedit.Services.UserAuthServices.Authentication;
-using Bluedit.Models.DataModels.UserDtos; 
-
+using Bluedit.Models.DataModels.UserDtos;
+using Bluedit.Services.Repositories;
+using Bluedit.Services.Authentication;
 
 namespace Bluedit.Controllers;
 

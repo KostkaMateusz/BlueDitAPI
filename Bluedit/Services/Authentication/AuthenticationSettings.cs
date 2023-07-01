@@ -1,4 +1,4 @@
-﻿namespace Bluedit.Services.UserAuthServices.Authentication;
+﻿namespace Bluedit.Services.Authentication;
 
 public class AuthenticationSettings
 {

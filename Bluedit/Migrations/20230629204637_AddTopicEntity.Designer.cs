@@ -4,6 +4,7 @@ using Bluedit.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bluedit.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230629204637_AddTopicEntity")]
+    partial class AddTopicEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,9 +47,8 @@ namespace Bluedit.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TopicName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("TopicId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdateDate")
                         .ValueGeneratedOnUpdate()
@@ -58,7 +60,7 @@ namespace Bluedit.Migrations
 
                     b.HasKey("PostId");
 
-                    b.HasIndex("TopicName");
+                    b.HasIndex("TopicId");
 
                     b.HasIndex("UserId");
 
@@ -67,14 +69,19 @@ namespace Bluedit.Migrations
 
             modelBuilder.Entity("Bluedit.Entities.Topic", b =>
                 {
-                    b.Property<string>("TopicName")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("TopicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("TopicDescription")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("TopicName");
+                    b.Property<string>("TopicName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TopicId");
 
                     b.ToTable("Topics");
                 });
@@ -110,7 +117,7 @@ namespace Bluedit.Migrations
                 {
                     b.HasOne("Bluedit.Entities.Topic", "Topic")
                         .WithMany("Posts")
-                        .HasForeignKey("TopicName")
+                        .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
