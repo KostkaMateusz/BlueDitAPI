@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Serialization;
 using System.Reflection;
 using System.Text;
 
@@ -95,6 +96,21 @@ internal static class AppConfigHelperExtensions
         return builder;
     }
 
+    public static WebApplicationBuilder AddControllersConfiguration(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddControllers(configure =>
+        {
+            configure.ReturnHttpNotAcceptable = true;
+        })
+            .AddNewtonsoftJson(setupAction =>
+        {
+            setupAction.SerializerSettings.ContractResolver =
+                new CamelCasePropertyNamesContractResolver();
+        });
+
+        return builder;
+    }
+
     public static WebApplicationBuilder AddServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddHttpContextAccessor();
@@ -105,7 +121,8 @@ internal static class AppConfigHelperExtensions
         builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 
         builder.Services.AddScoped<ITopicRepository, TopicRepository>();
-
+        builder.Services.AddScoped<IPostRepository, PostRepository>();
+        
         return builder;
     }
 }

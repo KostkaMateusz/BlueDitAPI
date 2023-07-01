@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Bluedit.Entities;
-using Bluedit.Helpers;
+using Bluedit.Helpers.Pagination;
 using Bluedit.Models.DataModels.TopicDtos;
 using Bluedit.ResourceParameters;
 using Bluedit.Services.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -25,6 +27,7 @@ public class TopicController : ControllerBase
 
 
     [HttpPost]
+    [Authorize(Roles ="Admin")]
     public async Task<ActionResult> CreateTopic([FromBody] TopicCreateDto topicCreateDto)
     {
         var topicExit=await _topicRepository.IsTopicExistAsync(topicCreateDto.TopicName);
@@ -58,14 +61,14 @@ public class TopicController : ControllerBase
     }
 
     [HttpDelete("{topicName}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> DeleteTopic([FromRoute] string topicName)
     {
         throw new NotImplementedException();
     }
 
-    //Get all with sorting pagination and searching
-
     [HttpGet(Name ="GetTopics")]
+    [HttpHead]
     public async Task<ActionResult<IEnumerable<TopicInfoDto>>> GetTopicAsync([FromQuery] TopicResourceParameters topicResourceParameters)
     {
         // get topic from repo
@@ -114,11 +117,38 @@ public class TopicController : ControllerBase
         return uri;
     }
 
+    [HttpOptions]
+    public async Task<IActionResult> GetAuthorsOptions()
+    {
+        Response.Headers.Add("Allow", "GET,HEAD,POST,DELETE,PATCH,OPTIONS");
+        return Ok();
+    }
 
+    [HttpPatch("{topicName}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> PartiallyUpdateTopicDescription([FromRoute] string topicName,[FromBody] JsonPatchDocument<TopicForUpdateDto> patchDocument)
+    {
+        var topicFromRepo= await _topicRepository.GetTopicWithNameAsync(topicName);
 
+        if (topicFromRepo is null)
+            return NotFound();
 
-    //Patch
-    //add role admin(claims) access
+        var topicToPatch = _mapper.Map<TopicForUpdateDto>(topicFromRepo);
+
+        patchDocument.ApplyTo(topicToPatch, ModelState);
+
+        if (!TryValidateModel(topicToPatch))
+            return ValidationProblem(ModelState);
+
+        _mapper.Map(topicToPatch, topicFromRepo);
+
+        await _topicRepository.UpdateTopicAync(topicFromRepo);
+
+        await _topicRepository.SaveChangesAsync();
+
+        return Ok();
+    }
+
 
 }
 

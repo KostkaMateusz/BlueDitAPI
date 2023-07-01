@@ -51,28 +51,33 @@ public class TopicRepository : ITopicRepository
         _applicationDbContext.Topics.Remove(topic);
     }
 
+    public async Task UpdateTopicAync (Topic topic)
+    {
+        _applicationDbContext.Update(topic);
+    }
     public async Task<PagedList<Topic>> GetAllTopicAsync(TopicResourceParameters topicResourceParameters)
     {
         if (topicResourceParameters is null)
             throw new ArgumentNullException(nameof(topicResourceParameters));
 
-        var topicCollection= _applicationDbContext.Topics as IQueryable<Topic>;
+        var topicCollectionQuery= _applicationDbContext.Topics as IQueryable<Topic>;
 
         //search by name
         if (string.IsNullOrWhiteSpace(topicResourceParameters.TopicName) is false)
         {
             var topicName=topicResourceParameters.TopicName.Trim().ToUpper();
-            topicCollection = topicCollection.Where(topic => topic.TopicName == topicName);    
+            topicCollectionQuery = topicCollectionQuery.Where(topic => topic.TopicName == topicName);    
         }
 
         if(string.IsNullOrWhiteSpace(topicResourceParameters.SearchQuery) is false)
         {
             var searchQuery= topicResourceParameters.SearchQuery.Trim();
-            topicCollection = topicCollection.Where(topic => topic.TopicName.Contains(searchQuery)
+            topicCollectionQuery = topicCollectionQuery.Where(topic => topic.TopicName.Contains(searchQuery)
                                                             || topic.TopicDescription.Contains(searchQuery));
         }
+        topicCollectionQuery.OrderByDescending(t => t.TopicName);
 
-        return await PagedList<Topic>.CreateAsync(topicCollection, topicResourceParameters.PageNumber, topicResourceParameters.PageSize);
+        return await PagedList<Topic>.CreateAsync(topicCollectionQuery, topicResourceParameters.PageNumber, topicResourceParameters.PageSize);
     }
 
 
