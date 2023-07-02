@@ -3,6 +3,7 @@ using Bluedit.Models.DataModels.UserDtos;
 using Bluedit.Models.ModelsValidators;
 using Bluedit.Services.Authentication;
 using Bluedit.Services.Repositories;
+using Bluedit.Services.StorageService;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -123,6 +124,8 @@ internal static class AppConfigHelperExtensions
         builder.Services.AddScoped<ITopicRepository, TopicRepository>();
         builder.Services.AddScoped<IPostRepository, PostRepository>();
         
+        builder.Services.AddSingleton<IAzureStorageService, AzureStorageService>();
+
         return builder;
     }
 }

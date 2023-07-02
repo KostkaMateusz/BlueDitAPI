@@ -16,5 +16,5 @@ public class Post
     [AllowNull]
     public Guid? UserId { get; set; }
     public Topic Topic { get; set; }
-    public string TopicName { get; set; }
+    public required string TopicName { get; set; }
 }

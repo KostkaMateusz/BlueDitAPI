@@ -28,7 +28,7 @@ public class TopicController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles ="Admin")]
-    public async Task<ActionResult> CreateTopic([FromBody] TopicCreateDto topicCreateDto)
+    public async Task<ActionResult<TopicCreateDto>> CreateTopic([FromBody] TopicCreateDto topicCreateDto)
     {
         var topicExit=await _topicRepository.IsTopicExistAsync(topicCreateDto.TopicName);
 
@@ -118,7 +118,7 @@ public class TopicController : ControllerBase
     }
 
     [HttpOptions]
-    public async Task<IActionResult> GetAuthorsOptions()
+    public ActionResult GetAuthorsOptions()
     {
         Response.Headers.Add("Allow", "GET,HEAD,POST,DELETE,PATCH,OPTIONS");
         return Ok();

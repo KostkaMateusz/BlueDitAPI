@@ -23,6 +23,7 @@ public class ApplicationDbContext : DbContext
         {
             entityBuilder.HasOne(post => post.User).WithMany(user => user.Posts);
             entityBuilder.HasOne(post => post.Topic).WithMany(topic => topic.Posts).HasForeignKey(post=>post.TopicName);
+            entityBuilder.Property(c => c.CreationDate).HasDefaultValueSql("getutcdate()");
             entityBuilder.Property(c => c.UpdateDate).ValueGeneratedOnUpdate();
         });
 

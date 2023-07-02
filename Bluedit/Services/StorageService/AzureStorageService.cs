@@ -55,7 +55,7 @@ public class AzureStorageService : IAzureStorageService
 
         //Save file Stream to blob
         using var stream = file.OpenReadStream();
-        await blobClient.UploadAsync(stream, true);
+        await blobClient.UploadAsync(stream, true);        
     }
 
     public async Task<byte[]> GetFileData(Guid imageGuid)
@@ -76,9 +76,9 @@ public class AzureStorageService : IAzureStorageService
 
         using var stream = new MemoryStream();
         await blobClient.DownloadToAsync(stream);
-        var filContent = stream.ToArray();
+        var fileContent = stream.ToArray();
 
-        return filContent;
+        return fileContent;
     }
 
     public async Task DeleteImage(Guid imageGuid)
