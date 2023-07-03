@@ -69,8 +69,9 @@ public class AzureStorageService : IAzureStorageService
         }
         var imageBlob = listofBlobs.FirstOrDefault();
 
-        //if (imageBlob is null)
-        //throw new NotFoundException($"Image with id:{imageGuid} was not found");
+        if (imageBlob is null)
+            throw new NullReferenceException(nameof(imageBlob));
+            //throw new NotFoundException($"Image with id:{imageGuid} was not found");
 
         var blobClient = containerClient.GetBlobClient(imageBlob.Name);
 

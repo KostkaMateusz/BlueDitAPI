@@ -13,4 +13,7 @@ public class PostInfoDto
     public Guid? UserId { get; set; }
     public  string TopicName { get; set; }
     public string ImageContentLink { get; set; }
+    public int UpVotes { get; set; } = 0;
+    public int DownVotes { get; set; } = 0;
+    public int NumberOfReplies { get; set; } = 0;
 }
