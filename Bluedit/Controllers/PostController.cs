@@ -33,7 +33,7 @@ public class PostController : ControllerBase
 
 
     [HttpPost]
-    public async Task<ActionResult> CreatePost([FromRoute] string topic, [FromForm] PostCreateDto postCreateDto)
+    public async Task<ActionResult<PostInfoDto>> CreatePost([FromRoute] string topic, [FromForm] PostCreateDto postCreateDto)
     {
         //Save file to storage
         var imageNameGuid = Guid.NewGuid();
