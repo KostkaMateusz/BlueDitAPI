@@ -1,5 +1,6 @@
 ﻿using Bluedit.Entities;
 using Bluedit.Helpers.DataShaping;
+using Bluedit.Helpers.Sorting;
 using Bluedit.Models.DataModels.UserDtos;
 using Bluedit.Models.ModelsValidators;
 using Bluedit.Services.Authentication;
@@ -127,7 +128,10 @@ internal static class AppConfigHelperExtensions
         
         builder.Services.AddSingleton<IAzureStorageService, AzureStorageService>();
 
-        builder.Services.AddTransient<IPropertyCheckerService, PropertyCheckerService>();   
+        //data shaping
+        builder.Services.AddTransient<IPropertyCheckerService, PropertyCheckerService>();
+        //sorting
+        builder.Services.AddTransient<IPropertyMappingService,PropertyMappingService>();
 
         return builder;
     }

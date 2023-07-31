@@ -1,18 +1,21 @@
 ﻿using Bluedit.Entities;
 using Bluedit.Helpers.Pagination;
+using Bluedit.Helpers.Sorting;
+using Bluedit.Models.DataModels.TopicDtos;
 using Bluedit.ResourceParameters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 
 namespace Bluedit.Services.Repositories;
 
 public class TopicRepository : ITopicRepository
 {
     private readonly ApplicationDbContext _applicationDbContext;
+    private readonly IPropertyMappingService _propertyMappingService;
 
-    public TopicRepository(ApplicationDbContext applicationDbContext)
+    public TopicRepository(ApplicationDbContext applicationDbContext, IPropertyMappingService propertyMappingService)
     {
         _applicationDbContext = applicationDbContext;
+        _propertyMappingService = propertyMappingService ?? throw new ArgumentNullException(nameof(propertyMappingService));
     }
 
     public async Task<bool> IsTopicExistAsync(string topicName)
@@ -79,11 +82,18 @@ public class TopicRepository : ITopicRepository
             topicCollectionQuery = topicCollectionQuery.Where(topic => topic.TopicName.Contains(searchQuery)
                                                             || topic.TopicDescription.Contains(searchQuery));
         }
-        topicCollectionQuery.OrderByDescending(t => t.PostCount);
+        
+        if(string.IsNullOrWhiteSpace(topicResourceParameters.OrderBy) is false)
+        {
+            // get property mapping dictionary
+            var topipcPropertyMappingDictionary = _propertyMappingService.GetPropertyMapping<TopicInfoDto, Topic>();
+
+            topicCollectionQuery = topicCollectionQuery.ApplySort(topicResourceParameters.OrderBy, topipcPropertyMappingDictionary);
+        }
+
 
         return await PagedList<Topic>.CreateAsync(topicCollectionQuery, topicResourceParameters.PageNumber, topicResourceParameters.PageSize);
     }
-
 
     public async Task IncrementPostCount(Topic topic)
     {
@@ -95,7 +105,6 @@ public class TopicRepository : ITopicRepository
        _applicationDbContext.Update(topic);
     }
 
-
     public async Task DecrementPostCount(Topic topic)
     {
         if (topic is null)
@@ -105,8 +114,6 @@ public class TopicRepository : ITopicRepository
 
         _applicationDbContext.Update(topic);
     }
-
-
 
     public async Task<bool> SaveChangesAsync()
     {

@@ -27,6 +27,7 @@
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.6.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.3" />
   </ItemGroup>
 
 </Project>

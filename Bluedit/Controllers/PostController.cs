@@ -14,7 +14,7 @@ namespace Bluedit.Controllers;
 
 
 [ApiController]
-[Route("api/{topic}/posts")]
+[Route("api/topics/{topicName}/posts")]
 [Authorize]
 public class PostController : ControllerBase
 {
@@ -33,7 +33,7 @@ public class PostController : ControllerBase
 
 
     [HttpPost]
-    public async Task<ActionResult<PostInfoDto>> CreatePost([FromRoute] string topic, [FromForm] PostCreateDto postCreateDto)
+    public async Task<ActionResult<PostInfoDto>> CreatePost([FromRoute] string topicName, [FromForm] PostCreateDto postCreateDto)
     {
         //Save file to storage
         var imageNameGuid = Guid.NewGuid();
@@ -45,23 +45,23 @@ public class PostController : ControllerBase
             Description = postCreateDto.Description,
             UserId = _userContextService.GetUserId,
             ImageGuid = imageNameGuid,
-            TopicName = topic
+            TopicName = topicName
         };
 
         await _postRepository.AddPost(post);
         await _postRepository.SaveChangesAsync();
         await _postRepository.LoadPostUser(post);
         var postDto = _mapper.Map<PostInfoDto>(post);
-        postDto.ImageContentLink = GetLinkToImage(topic, post.PostId);
+        postDto.ImageContentLink = GetLinkToImage(topicName, post.PostId);
 
-        return CreatedAtRoute("GetPostInfo", new { topic, post.PostId }, postDto);
+        return CreatedAtRoute("GetPostInfo", new { topicName, post.PostId }, postDto);
     }
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<ActionResult<IEnumerable<PostInfoDto>>> GetAllMainTopicPosts([FromRoute] string topic)
+    public async Task<ActionResult<IEnumerable<PostInfoDto>>> GetAllMainTopicPosts([FromRoute] string topicName)
     {
-        var postsByTopic = await _postRepository.GetAllPostsByTopicAsync(topic);
+        var postsByTopic = await _postRepository.GetAllPostsByTopicAsync(topicName);
 
         if (postsByTopic.IsNullOrEmpty() is true)
             return NotFound();
@@ -70,7 +70,7 @@ public class PostController : ControllerBase
 
         foreach (var postDto in postsDtos)
         {
-            postDto.ImageContentLink = GetLinkToImage(topic, postDto.PostId);
+            postDto.ImageContentLink = GetLinkToImage(topicName, postDto.PostId);
         }
 
         return Ok(postsDtos);
@@ -79,7 +79,7 @@ public class PostController : ControllerBase
 
     [HttpGet("{postId}", Name = "GetPostInfo")]
     [AllowAnonymous]
-    public async Task<ActionResult<PostInfoDto>> GetPostInfo([FromRoute] string topic, [FromRoute] Guid postId)
+    public async Task<ActionResult<PostInfoDto>> GetPostInfo([FromRoute] string topicName, [FromRoute] Guid postId)
     {
         var post = await _postRepository.GetPostByIdAsync(postId);
 
@@ -90,15 +90,15 @@ public class PostController : ControllerBase
 
         var postDto = _mapper.Map<PostInfoDto>(post);
 
-        postDto.ImageContentLink = GetLinkToImage(topic, postId);
+        postDto.ImageContentLink = GetLinkToImage(topicName, postId);
 
         return Ok(postDto);
     }
 
-    private string GetLinkToImage(string topic, Guid postId)
+    private string GetLinkToImage(string topicName, Guid postId)
     {
         const string imageFuncName = "GetImage";
-        var navigationParametersObject = new { topic, postId };
+        var navigationParametersObject = new { topicName, postId };
 
         return Url.Link(imageFuncName, navigationParametersObject);
     }
@@ -137,7 +137,7 @@ public class PostController : ControllerBase
     }
 
     [HttpPut("{postId}")]
-    public async Task<ActionResult<PostInfoDto>> UpdatePost([FromRoute] string topic, [FromRoute] Guid postId, [FromForm] PostUpdateDto postUpdateDto)
+    public async Task<ActionResult<PostInfoDto>> UpdatePost([FromRoute] string topicName, [FromRoute] Guid postId, [FromForm] PostUpdateDto postUpdateDto)
     {
         var postForUpdateFromRepo=await _postRepository.GetPostByIdAsync(postId);
         
@@ -168,7 +168,7 @@ public class PostController : ControllerBase
 
         // create external dto
         var postDto=_mapper.Map<PostInfoDto>(postForUpdateFromRepo);
-        postDto.ImageContentLink = GetLinkToImage(topic, postForUpdateFromRepo.PostId);
+        postDto.ImageContentLink = GetLinkToImage(topicName, postForUpdateFromRepo.PostId);
 
         return Ok(postDto);
     }

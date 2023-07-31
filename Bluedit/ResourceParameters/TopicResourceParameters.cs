@@ -15,4 +15,5 @@ public class TopicResourceParameters
         set => _pageSize = (value > maxPageSize) ? maxPageSize : value;
     }
     public string? Fields { get; set; }
+    public string OrderBy { get; set; } = "postCount";
 }
