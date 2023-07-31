@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Bluedit.Entities;
+using Bluedit.Helpers.DataShaping;
 using Bluedit.Helpers.Pagination;
 using Bluedit.Models.DataModels.TopicDtos;
 using Bluedit.ResourceParameters;
@@ -7,6 +8,7 @@ using Bluedit.Services.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Newtonsoft.Json;
 
 
@@ -18,11 +20,14 @@ public class TopicController : ControllerBase
 {
     private readonly ITopicRepository _topicRepository;
     private readonly IMapper _mapper;
-
-    public TopicController(ITopicRepository topicRepository, IMapper mapper)
+    private readonly IPropertyCheckerService _propertyCheckerService;
+    private readonly ProblemDetailsFactory _problemDetailsFactory;
+    public TopicController(ITopicRepository topicRepository, IMapper mapper, IPropertyCheckerService propertyCheckerService, ProblemDetailsFactory problemDetailsFactory)
     {
         _topicRepository = topicRepository ?? throw new ArgumentNullException(nameof(topicRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _propertyCheckerService = propertyCheckerService ?? throw new ArgumentNullException(nameof(propertyCheckerService));
+        _problemDetailsFactory = problemDetailsFactory ??    throw new ArgumentNullException(nameof(problemDetailsFactory));
     }
 
 
@@ -55,7 +60,8 @@ public class TopicController : ControllerBase
 
         var topicInfoDto = _mapper.Map<TopicInfoDto>(topic);
 
-        topicInfoDto.PostCount= await _topicRepository.GetTopicPostsCountAsync(topicName);
+        //obsolete
+        //topicInfoDto.PostCount= await _topicRepository.GetTopicPostsCountAsync(topicName);
 
         return Ok(topicInfoDto);
     }
@@ -64,35 +70,51 @@ public class TopicController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult> DeleteTopic([FromRoute] string topicName)
     {
-        throw new NotImplementedException();
+        var topicToDelete =await _topicRepository.GetTopicWithNameAsync(topicName);
+
+        if (topicToDelete is null) 
+            return NotFound();
+
+        _topicRepository.DeleteTopicAsync(topicToDelete);
+        await _topicRepository.SaveChangesAsync();
+
+        return NoContent();
     }
 
-    [HttpGet(Name ="GetTopics")]
     [HttpHead]
-    public async Task<ActionResult<IEnumerable<TopicInfoDto>>> GetTopicAsync([FromQuery] TopicResourceParameters topicResourceParameters)
+    [HttpGet(Name ="GetTopics")]
+    public async Task<ActionResult<IEnumerable<TopicInfoDto>>> GetTopicsAsync([FromQuery] TopicResourceParameters topicResourceParameters)
     {
+        if (_propertyCheckerService.TypeHasProperties<TopicInfoDto> (topicResourceParameters.Fields) is false)
+        {
+            var problemWithFields = _problemDetailsFactory.CreateProblemDetails
+                (HttpContext, 
+                statusCode: 400,
+                detail: $"Not all requested data shaping fields exist on the resource: {topicResourceParameters.Fields}");
+            
+            return BadRequest(problemWithFields);
+        }
+
         // get topic from repo
         var topicsFromRepo =await _topicRepository.GetAllTopicAsync(topicResourceParameters);
 
-        //calculate prev site
+        //calculate prev site if exist
         var previousPageLink = topicsFromRepo.HasPrevious ? 
             CreateTopicResourceUri(topicResourceParameters, ResourceUriType.PreviousPage) : null;
-
+        //calculate next site if exist
         var nextPageLink = topicsFromRepo.HasNext ?
             CreateTopicResourceUri(topicResourceParameters, ResourceUriType.NextPage) : null;
-
+        //include pagination metadata
         var paginationMetadata = new PaginationMetaData<Topic>(topicsFromRepo, previousPageLink, nextPageLink);
 
         Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(paginationMetadata));
-
+        //map topics to DTO
         var topicInfoDtos = _mapper.Map<IEnumerable<TopicInfoDto>>(topicsFromRepo);
 
-        foreach (var topicDto in topicInfoDtos) 
-        {
-            topicDto.PostCount = await _topicRepository.GetTopicPostsCountAsync(topicDto.TopicName);   
-        }
+        //shape data
+        var shapedTopicInfoDtos= topicInfoDtos.ShapeData(topicResourceParameters.Fields);
 
-        return Ok(topicInfoDtos);
+        return Ok(shapedTopicInfoDtos);
     }
 
 

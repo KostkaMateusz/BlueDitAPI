@@ -2,6 +2,7 @@
 using Bluedit.Helpers.Pagination;
 using Bluedit.ResourceParameters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace Bluedit.Services.Repositories;
 
@@ -48,6 +49,8 @@ public class TopicRepository : ITopicRepository
         if (topic is null)
             throw new ArgumentNullException(nameof(topic));
 
+        _applicationDbContext.Entry(topic).Collection(p => p.Posts).Load();
+
         _applicationDbContext.Topics.Remove(topic);
     }
 
@@ -62,23 +65,47 @@ public class TopicRepository : ITopicRepository
 
         var topicCollectionQuery= _applicationDbContext.Topics as IQueryable<Topic>;
 
-        //search by name
+        // filter by name
         if (string.IsNullOrWhiteSpace(topicResourceParameters.TopicName) is false)
         {
             var topicName=topicResourceParameters.TopicName.Trim().ToUpper();
             topicCollectionQuery = topicCollectionQuery.Where(topic => topic.TopicName == topicName);    
         }
 
+        //search by in name and description
         if(string.IsNullOrWhiteSpace(topicResourceParameters.SearchQuery) is false)
         {
             var searchQuery= topicResourceParameters.SearchQuery.Trim();
             topicCollectionQuery = topicCollectionQuery.Where(topic => topic.TopicName.Contains(searchQuery)
                                                             || topic.TopicDescription.Contains(searchQuery));
         }
-        topicCollectionQuery.OrderByDescending(t => t.TopicName);
+        topicCollectionQuery.OrderByDescending(t => t.PostCount);
 
         return await PagedList<Topic>.CreateAsync(topicCollectionQuery, topicResourceParameters.PageNumber, topicResourceParameters.PageSize);
     }
+
+
+    public async Task IncrementPostCount(Topic topic)
+    {
+        if (topic is null)
+            throw new ArgumentNullException(nameof(topic));
+
+        topic.PostCount++;
+
+       _applicationDbContext.Update(topic);
+    }
+
+
+    public async Task DecrementPostCount(Topic topic)
+    {
+        if (topic is null)
+            throw new ArgumentNullException(nameof(topic));
+
+        topic.PostCount--;
+
+        _applicationDbContext.Update(topic);
+    }
+
 
 
     public async Task<bool> SaveChangesAsync()

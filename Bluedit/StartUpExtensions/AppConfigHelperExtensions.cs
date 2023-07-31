@@ -1,4 +1,5 @@
 ﻿using Bluedit.Entities;
+using Bluedit.Helpers.DataShaping;
 using Bluedit.Models.DataModels.UserDtos;
 using Bluedit.Models.ModelsValidators;
 using Bluedit.Services.Authentication;
@@ -125,6 +126,8 @@ internal static class AppConfigHelperExtensions
         builder.Services.AddScoped<IPostRepository, PostRepository>();
         
         builder.Services.AddSingleton<IAzureStorageService, AzureStorageService>();
+
+        builder.Services.AddTransient<IPropertyCheckerService, PropertyCheckerService>();   
 
         return builder;
     }

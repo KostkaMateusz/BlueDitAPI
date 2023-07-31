@@ -15,5 +15,7 @@ namespace Bluedit.Services.Repositories
         Task<bool> IsTopicExistAsync(string topicName);
         Task<PagedList<Topic>> GetAllTopicAsync(TopicResourceParameters topicResourceParameters);
         Task UpdateTopicAync(Topic topic);
+        Task IncrementPostCount(Topic topic);
+        Task DecrementPostCount(Topic topic);
     }
 }

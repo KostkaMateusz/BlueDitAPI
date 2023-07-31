@@ -57,7 +57,6 @@ public class PostController : ControllerBase
         return CreatedAtRoute("GetPostInfo", new { topic, post.PostId }, postDto);
     }
 
-    // Get All with Search Query Fields 
     [HttpGet]
     [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<PostInfoDto>>> GetAllMainTopicPosts([FromRoute] string topic)
