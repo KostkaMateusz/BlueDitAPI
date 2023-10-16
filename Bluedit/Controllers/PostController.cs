@@ -125,17 +125,6 @@ public class PostController : ControllerBase
         return File(imageData, contentType);
     }
 
-    [HttpDelete("{postId}")]
-    public async Task<ActionResult> DeletePost([FromRoute] Guid postId)
-    {
-        var post = await _postRepository.GetPostByIdAsync(postId);
-
-        if (post is null)
-            return NotFound();
-
-        return NoContent();
-    }
-
     [HttpPut("{postId}")]
     public async Task<ActionResult<PostInfoDto>> UpdatePost([FromRoute] string topicName, [FromRoute] Guid postId, [FromForm] PostUpdateDto postUpdateDto)
     {
@@ -172,14 +161,28 @@ public class PostController : ControllerBase
 
         return Ok(postDto);
     }
-        
+
     //[HttpPatch]
     //public async Task<ActionResult> PartialyUpdatePost([FromForm] JsonPatchDocument)
     //{
-        
+
     //}
-    
+
     // Get Post Replies
     // Create Post Replay
+
+    [HttpDelete("{postId}")]
+    public async Task<ActionResult> DeletePost([FromRoute] Guid postId)
+    {
+
+        throw new NotImplementedException();
+        var post = await _postRepository.GetPostByIdAsync(postId);
+
+        if (post is null)
+            return NotFound();
+
+        return NoContent();
+    }
+
 
 }

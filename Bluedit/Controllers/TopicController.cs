@@ -3,7 +3,6 @@ using Bluedit.Entities;
 using Bluedit.Helpers.DataShaping;
 using Bluedit.Helpers.Pagination;
 using Bluedit.Models.DataModels.TopicDtos;
-using Bluedit.ResourceParameters;
 using Bluedit.Services.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;

@@ -1,7 +1,6 @@
 ﻿using Bluedit.Entities;
 using Bluedit.Helpers.Pagination;
 using Bluedit.Models.DataModels.TopicDtos;
-using Bluedit.ResourceParameters;
 
 namespace Bluedit.Services.Repositories
 {

@@ -2,7 +2,6 @@
 using Bluedit.Helpers.Pagination;
 using Bluedit.Helpers.Sorting;
 using Bluedit.Models.DataModels.TopicDtos;
-using Bluedit.ResourceParameters;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bluedit.Services.Repositories;
@@ -83,6 +82,7 @@ public class TopicRepository : ITopicRepository
                                                             || topic.TopicDescription.Contains(searchQuery));
         }
         
+        //apply sorting
         if(string.IsNullOrWhiteSpace(topicResourceParameters.OrderBy) is false)
         {
             // get property mapping dictionary

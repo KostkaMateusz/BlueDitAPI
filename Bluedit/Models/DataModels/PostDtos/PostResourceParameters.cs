@@ -1,6 +1,6 @@
-﻿namespace Bluedit.ResourceParameters;
+﻿namespace Bluedit.Models.DataModels.TopicDtos;
 
-public class TopicResourceParameters
+public class PostResourceParameters
 {
     public string? TopicName { get; set; }
     public string? SearchQuery { get; set; }
@@ -12,8 +12,8 @@ public class TopicResourceParameters
     public int PageSize
     {
         get => _pageSize;
-        set => _pageSize = (value > maxPageSize) ? maxPageSize : value;
+        set => _pageSize = value > maxPageSize ? maxPageSize : value;
     }
     public string? Fields { get; set; }
-    public string OrderBy { get; set; } = "postCount";
+    public string OrderBy { get; set; } = "upVotes";
 }

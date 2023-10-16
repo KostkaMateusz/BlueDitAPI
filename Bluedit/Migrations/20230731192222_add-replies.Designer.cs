@@ -4,6 +4,7 @@ using Bluedit.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bluedit.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230731192222_add-replies")]
+    partial class addreplies
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,20 +72,17 @@ namespace Bluedit.Migrations
 
             modelBuilder.Entity("Bluedit.Entities.ReplayBase", b =>
                 {
-                    b.Property<Guid>("ReplayBaseId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsPostReplay")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("ReplyId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("ReplayBaseId");
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasIndex("UserId");
 

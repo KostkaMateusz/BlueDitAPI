@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
 
 namespace Bluedit.Entities;
 
@@ -8,6 +9,8 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<Post> Posts { get; set; }
+
+    public DbSet<ReplayBase> Replies { get; set; }
     public DbSet<Topic> Topics { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -32,5 +35,12 @@ public class ApplicationDbContext : DbContext
             entityBuilder.HasKey(topic => topic.TopicName);
             entityBuilder.HasMany(topic => topic.Posts).WithOne(post => post.Topic);            
         });
+
+        modelBuilder.Entity<ReplayBase>(entityBuilder =>
+        {            
+            entityBuilder.HasDiscriminator<bool>(r => r.IsPostReplay).HasValue<Reply>(true).HasValue<ReplyToReply>(false);
+            //entityBuilder.HasNoKey();
+        });
+
     }
 }
