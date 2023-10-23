@@ -24,6 +24,8 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
+app.MapGet("/checkEnviroment", () => app.Environment.EnvironmentName);
+
 app.UseSwagger();
 app.UseSwaggerUI();
 

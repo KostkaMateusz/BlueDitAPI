@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bluedit.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230629212749_ChangeTopicKey")]
-    partial class ChangeTopicKey
+    [Migration("20231023171207_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,7 +32,9 @@ namespace Bluedit.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -68,10 +70,39 @@ namespace Bluedit.Migrations
                     b.ToTable("Posts");
                 });
 
+            modelBuilder.Entity("Bluedit.Entities.ReplayBase", b =>
+                {
+                    b.Property<Guid>("ReplayBaseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsPostReplay")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ReplayBaseId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Replies");
+
+                    b.HasDiscriminator<bool>("IsPostReplay");
+
+                    b.UseTphMappingStrategy();
+                });
+
             modelBuilder.Entity("Bluedit.Entities.Topic", b =>
                 {
                     b.Property<string>("TopicName")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("PostCount")
+                        .HasColumnType("int");
 
                     b.Property<string>("TopicDescription")
                         .IsRequired()
@@ -104,9 +135,37 @@ namespace Bluedit.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("role")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("StandartUser");
+
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Bluedit.Entities.Reply", b =>
+                {
+                    b.HasBaseType("Bluedit.Entities.ReplayBase");
+
+                    b.Property<Guid>("ParentPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasIndex("ParentPostId");
+
+                    b.HasDiscriminator().HasValue(true);
+                });
+
+            modelBuilder.Entity("Bluedit.Entities.ReplyToReply", b =>
+                {
+                    b.HasBaseType("Bluedit.Entities.ReplayBase");
+
+                    b.Property<Guid>("ParentReplyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasDiscriminator().HasValue(false);
                 });
 
             modelBuilder.Entity("Bluedit.Entities.Post", b =>
@@ -126,6 +185,31 @@ namespace Bluedit.Migrations
                     b.Navigation("Topic");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Bluedit.Entities.ReplayBase", b =>
+                {
+                    b.HasOne("Bluedit.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Bluedit.Entities.Reply", b =>
+                {
+                    b.HasOne("Bluedit.Entities.Post", "ParentPost")
+                        .WithMany("Reply")
+                        .HasForeignKey("ParentPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentPost");
+                });
+
+            modelBuilder.Entity("Bluedit.Entities.Post", b =>
+                {
+                    b.Navigation("Reply");
                 });
 
             modelBuilder.Entity("Bluedit.Entities.Topic", b =>

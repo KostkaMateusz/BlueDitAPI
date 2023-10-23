@@ -17,6 +17,11 @@ public class PostRepository : IPostRepository
         return await _dbContext.Posts.Include(p => p.User).Where(p => p.TopicName == topic).ToListAsync();
     }
 
+    public async Task<bool> PostWithGivenIdExist(Guid postId)
+    {
+        return await _dbContext.Posts.AnyAsync(post=>post.PostId== postId);
+    }
+
 
     public async Task<Post?> GetPostByIdAsync(Guid postId)
     {

@@ -22,9 +22,9 @@ public class RepliesRepository : IRepliesRepository
         _dbContext.Replies.Add(replay);
     }
 
-    public async Task<ReplayBase?> GetReplayByParentPostId(Guid ParentId)
+    public async Task<IEnumerable<Reply?>> GetRepliesByParentPostId(Guid ParentId)
     {
-        var postReplay = await _dbContext.Replies.OfType<Reply>().FirstOrDefaultAsync(r => r.ParentPostId == ParentId);
+        var postReplay = await _dbContext.Replies.OfType<Reply>().Where(r => r.ParentPostId == ParentId).ToListAsync();
 
         return postReplay;
     }

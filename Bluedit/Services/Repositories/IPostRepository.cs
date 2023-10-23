@@ -10,5 +10,6 @@ namespace Bluedit.Services.Repositories
         Task LoadPostUser(Post post);
         Task<bool> SaveChangesAsync();
         void UpdatePost(Post post);
+        Task<bool> PostWithGivenIdExist(Guid postId);
     }
 }
