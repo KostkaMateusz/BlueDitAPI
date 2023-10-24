@@ -1,3 +1,3 @@
 ﻿namespace Bluedit.Models.DataModels.PostDtos;
 
-public class PostUpdateDto : PostCreateDto {}
+public record PostUpdateDto : PostCreateDto {}

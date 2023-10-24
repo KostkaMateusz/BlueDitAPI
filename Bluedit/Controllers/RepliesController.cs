@@ -1,13 +1,11 @@
-﻿using Bluedit.Services.Repositories;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Bluedit.Services.Repositories;
 using Bluedit.Entities;
-using Bluedit.Services.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Bluedit.Models.DataModels.ReplayDtos;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Bluedit.Services.Authentication;
 using AutoMapper;
-using Bluedit.Models.DataModels.PostDtos;
-
+    
 namespace Bluedit.Controllers;
 
 
@@ -62,13 +60,14 @@ public class RepliesController : ControllerBase
         await _repliesRepository.SaveChangesAsync();
 
         return Ok();
-    }
+    }    
 
     [AllowAnonymous]
     [HttpGet("replies/{replayID}")]
     public async Task<ActionResult> getReplay([FromRoute] Guid replayID)
     {
         var replay=await _repliesRepository.GetReplayById(replayID);
+
         if(replay is null)
         {
             return NotFound();
@@ -80,24 +79,24 @@ public class RepliesController : ControllerBase
     }
 
 
-    [HttpPost("replies/{replayID}/{**repliesString}")]
-    [AllowAnonymous]
-    public async Task<IActionResult> createReplytoReplay(Guid parentId,string repliesString)
+    [HttpPost("replies/{replayID}")]
+    public async Task<IActionResult> createReplytoReplay([FromRoute] Guid replayID, [FromBody] CreateReplayDto createReplayDto)
     {
+        var replay = await _repliesRepository.GetReplayById(replayID);
 
+        if (replay is null)
+        {
+            return NotFound();
+        }
 
-        //var newReplie = new ReplyToReply { Description = "sdfsdf", UserId = Guid.Parse("d7f3db2c-f20d-47e6-9240-08dbd3eca8a2"), ParentReplyId = Guid.Parse("70AADFBA-1259-404E-FD38-08DBD3EE6FC1") };
+        var newSubReplay = _mapper.Map<SubReplay>(createReplayDto);
 
-        //await _repliesRepository.Addreplay(newReplie);
-        //await _repliesRepository.SaveChangesAsync();
+        newSubReplay.UserId = _userContextService.GetUserId;
+        newSubReplay.ParentReplyId = replayID;
 
-        return Ok(repliesString);
-    }
-    
-    private void ReplayPathMethodResolver(string replayPath)
-    {
+        await _repliesRepository.Addreplay(newSubReplay);
+        await _repliesRepository.SaveChangesAsync();
 
-    }
-   
-
+        return Created("",newSubReplay);
+    }      
 }

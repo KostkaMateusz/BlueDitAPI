@@ -31,7 +31,7 @@ public class RepliesRepository : IRepliesRepository
 
     public async Task<ReplayBase?> GetReplayByParentReplayId(Guid ParentId)
     {
-        var replayReplay = await _dbContext.Replies.OfType<ReplyToReply>().FirstOrDefaultAsync(r => r.ParentReplyId == ParentId);
+        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().FirstOrDefaultAsync(r => r.ParentReplyId == ParentId);
 
         return replayReplay;
     }
@@ -42,7 +42,7 @@ public class RepliesRepository : IRepliesRepository
         if (postReplay is not null)
             return postReplay;
 
-        var replayReplay = await _dbContext.Replies.OfType<ReplyToReply>().FirstOrDefaultAsync(r => r.ParentReplyId == ParentId);
+        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().FirstOrDefaultAsync(r => r.ParentReplyId == ParentId);
         if (replayReplay is not null)
             return replayReplay;
 

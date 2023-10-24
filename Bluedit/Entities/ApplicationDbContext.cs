@@ -38,7 +38,7 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<ReplayBase>(entityBuilder =>
         {            
-            entityBuilder.HasDiscriminator<bool>(r => r.IsPostReplay).HasValue<Reply>(true).HasValue<ReplyToReply>(false);
+            entityBuilder.HasDiscriminator<bool>(r => r.IsPostReplay).HasValue<Reply>(true).HasValue<SubReplay>(false);
             //entityBuilder.HasNoKey();
         });
 

@@ -1,6 +1,6 @@
 ﻿namespace Bluedit.Services.Authentication;
 
-public class AuthenticationSettings
+public record AuthenticationSettings
 {
     public string JwtKey { get; set; }
     public int JwtExpireDays { get; set; }

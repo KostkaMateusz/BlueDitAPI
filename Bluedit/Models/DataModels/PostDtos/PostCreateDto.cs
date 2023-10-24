@@ -1,11 +1,10 @@
-﻿using Bluedit.Entities;
-using Bluedit.Models.ModelsValidators;
+﻿using Bluedit.Models.ModelsValidators;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Bluedit.Models.DataModels.PostDtos;
 
-public class PostCreateDto
+public record PostCreateDto
 {
     [MinLength(3)]
     public required string Title { get; set; }
