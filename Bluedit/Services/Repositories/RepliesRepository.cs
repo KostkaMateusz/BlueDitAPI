@@ -29,9 +29,17 @@ public class RepliesRepository : IRepliesRepository
         return postReplay;
     }
 
-    public async Task<ReplayBase?> GetReplayByParentReplayId(Guid ParentId)
+    public async Task<IEnumerable<SubReplay>?> GetSubRepliesByParentReplayId(Guid ParentId)
     {
-        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().FirstOrDefaultAsync(r => r.ParentReplyId == ParentId);
+        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().Where(r => r.ParentReplyId == ParentId).ToListAsync();
+
+        return replayReplay;
+    }
+
+
+    public async Task<SubReplay?> GetSubReplyById(Guid SubreplayId)
+    {
+        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().FirstOrDefaultAsync(r => r.ReplayBaseId == SubreplayId);
 
         return replayReplay;
     }

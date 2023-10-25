@@ -8,7 +8,8 @@ namespace Bluedit.Services.Repositories
         Task<ReplayBase?> GetReplayById(Guid ReplayId);
         Task<ReplayBase?> GetReplayByParentId(Guid ParentId);
         Task<IEnumerable<Reply?>> GetRepliesByParentPostId(Guid ParentId);
-        Task<ReplayBase?> GetReplayByParentReplayId(Guid ParentId);
+        Task<IEnumerable<SubReplay>> GetSubRepliesByParentReplayId(Guid ParentId);
+        Task<SubReplay?> GetSubReplyById(Guid SubreplayId);
         Task<bool> SaveChangesAsync();
     }
 }
