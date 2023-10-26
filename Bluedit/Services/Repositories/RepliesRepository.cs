@@ -19,7 +19,7 @@ public class RepliesRepository : IRepliesRepository
 
     public async Task Addreplay(ReplayBase replay)
     {
-        _dbContext.Replies.Add(replay);
+        await _dbContext.Replies.AddAsync(replay);
     }
 
     public async Task<IEnumerable<Reply?>> GetRepliesByParentPostId(Guid ParentId)
@@ -29,13 +29,12 @@ public class RepliesRepository : IRepliesRepository
         return postReplay;
     }
 
-    public async Task<IEnumerable<SubReplay>?> GetSubRepliesByParentReplayId(Guid ParentId)
+    public async Task<IEnumerable<SubReplay>> GetSubRepliesByParentReplayId(Guid ParentId)
     {
         var replayReplay = await _dbContext.Replies.OfType<SubReplay>().Where(r => r.ParentReplyId == ParentId).ToListAsync();
 
         return replayReplay;
     }
-
 
     public async Task<SubReplay?> GetSubReplyById(Guid SubreplayId)
     {

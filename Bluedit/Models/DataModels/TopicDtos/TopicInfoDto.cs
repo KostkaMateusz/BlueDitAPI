@@ -1,9 +1,9 @@
 ﻿
 namespace Bluedit.Models.DataModels.TopicDtos;
 
-public class TopicInfoDto
+public record TopicInfoDto
 {
-    public string TopicName { get; set; }
-    public string TopicDescription { get; set; }
+    public required string TopicName { get; set; }
+    public required string TopicDescription { get; set; }
     public int PostCount { get; set; }
 }

@@ -56,7 +56,7 @@ public class TopicRepository : ITopicRepository
         _applicationDbContext.Topics.Remove(topic);
     }
 
-    public async Task UpdateTopicAync (Topic topic)
+    public void UpdateTopicAync (Topic topic)
     {
         _applicationDbContext.Update(topic);
     }
@@ -95,7 +95,7 @@ public class TopicRepository : ITopicRepository
         return await PagedList<Topic>.CreateAsync(topicCollectionQuery, topicResourceParameters.PageNumber, topicResourceParameters.PageSize);
     }
 
-    public async Task IncrementPostCount(Topic topic)
+    public void IncrementPostCount(Topic topic)
     {
         if (topic is null)
             throw new ArgumentNullException(nameof(topic));
@@ -105,7 +105,7 @@ public class TopicRepository : ITopicRepository
        _applicationDbContext.Update(topic);
     }
 
-    public async Task DecrementPostCount(Topic topic)
+    public void DecrementPostCount(Topic topic)
     {
         if (topic is null)
             throw new ArgumentNullException(nameof(topic));

@@ -82,7 +82,7 @@ public class UserController : ControllerBase
             new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
             new Claim(ClaimTypes.Name, user.Name),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.role),
+            new Claim(ClaimTypes.Role, user.Role),
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey));
@@ -226,7 +226,7 @@ public class UserController : ControllerBase
     [HttpDelete()]
     public async Task<ActionResult> DeleteUser()
     {
-        var user = await _userRepository.GetUserAndAllRelatedEntities((Guid) _userContextService.GetUserId);
+        var user = await _userRepository.GetUserAndAllRelatedEntities(_userContextService.GetUserId);
 
         //foreach (var post in user.Posts)
         //    _fileService.DeleteImage(post.ImageGuid);

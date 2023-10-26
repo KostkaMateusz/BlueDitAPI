@@ -13,8 +13,8 @@ namespace Bluedit.Services.Repositories
         Task<bool> SaveChangesAsync();
         Task<bool> IsTopicExistAsync(string topicName);
         Task<PagedList<Topic>> GetAllTopicAsync(TopicResourceParameters topicResourceParameters);
-        Task UpdateTopicAync(Topic topic);
-        Task IncrementPostCount(Topic topic);
-        Task DecrementPostCount(Topic topic);
+        void UpdateTopicAync(Topic topic);
+        void IncrementPostCount(Topic topic);
+        void DecrementPostCount(Topic topic);
     }
 }

@@ -2,12 +2,10 @@
 
 namespace Bluedit.Models.DataModels.UserDtos;
 
-public class LoginUserDto
-{
-    [Required]
+public record LoginUserDto
+{    
     [EmailAddress]
-    public string Email { get; set; }
-
-    [Required]
-    public string Password { get; set; }
+    public required string Email { get; set; }
+     
+    public required string Password { get; set; }
 }

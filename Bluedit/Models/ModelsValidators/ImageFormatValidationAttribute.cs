@@ -4,9 +4,14 @@ namespace Bluedit.Models.ModelsValidators;
 
 public class ImageFormatValidationAttribute : ValidationAttribute
 {
-    public override bool IsValid(object value)
+    public override bool IsValid(object? value)
     {
-       var image= (IFormFile)value;
+        if (value is null)
+        {
+            return false;
+        }
+
+        var image= (IFormFile)value;
 
         if(image is null) 
             return false;

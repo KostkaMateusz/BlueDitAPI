@@ -14,5 +14,4 @@ public record PostCreateDto
     [Required]
     [ImageFormatValidation(ErrorMessage = "Invalid File Type, Allowed file types:jpg,jpeg,png")]
     public required IFormFile image { get; set; }
-
 }

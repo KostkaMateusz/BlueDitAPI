@@ -2,15 +2,14 @@
 
 namespace Bluedit.Models.DataModels.TopicDtos;
 
-public class TopicCreateDto
+public record TopicCreateDto
 {
     [MaxLength(20)]
     [MinLength(6)]
     public string TopicName { get=> _TopicName; set => _TopicName = value.ToUpper(); }
     [MaxLength(60)]
     [MinLength(6)]
-    public string TopicDescription { get; set; }
+    public required string TopicDescription { get; set; }
 
-    private string _TopicName;
-
+    private string _TopicName=string.Empty;
 }

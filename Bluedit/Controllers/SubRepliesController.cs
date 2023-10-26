@@ -11,7 +11,7 @@ namespace Bluedit.Controllers;
 
 
 [ApiController]
-[Route("api/posts/{PostId}/replies/{replayID}/subreplies")]
+[Route("api/posts/{PostId}/replies")]
 [Authorize]
 public class SubRepliesController : ControllerBase
 {
@@ -33,10 +33,10 @@ public class SubRepliesController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpGet("{**repliesPath}")]
-    public async Task<ActionResult<IEnumerable<ReplayDto>>> getReplies([FromRoute] string repliesPath)
+    [HttpGet("{**repliesChain}")]
+    public async Task<ActionResult<IEnumerable<ReplayDto>>> getReplies([FromRoute] string repliesChain)
     {
-        var parentGuidstring = lastRegexMatch(repliesPath, _guidRegex);
+        var parentGuidstring = lastRegexMatch(repliesChain, _guidRegex);
 
         Guid lastGuid;
 
@@ -51,13 +51,11 @@ public class SubRepliesController : ControllerBase
         
         return Ok(repliesDto);
     }
-
-
-    [AllowAnonymous]
-    [HttpPost("{**repliesPath}")]
-    public async Task<ActionResult> get2Replies([FromRoute] string repliesPath, [FromBody] CreateReplayDto createReplayDto)
+            
+    [HttpPost("{**repliesChain}")]
+    public async Task<ActionResult> get2Replies([FromRoute] string repliesChain, [FromBody] CreateReplayDto createReplayDto)
     {
-        var parentGuidstring = lastRegexMatch(repliesPath, _guidRegex);
+        var parentGuidstring = lastRegexMatch(repliesChain, _guidRegex);
 
         Guid subReplayGUID;
 
@@ -84,9 +82,6 @@ public class SubRepliesController : ControllerBase
         return Ok(_mapper.Map<ReplayDto>(newSubreply));
     }
 
-
-
-
     private string? lastRegexMatch(string subRepliesPath, Regex regex)
     {
         MatchCollection guidMatch = regex.Matches(subRepliesPath);
@@ -95,8 +90,6 @@ public class SubRepliesController : ControllerBase
         var lastMatchValue = lastMatch.Value;
 
         return lastMatchValue;
-
     }
-
 
 }

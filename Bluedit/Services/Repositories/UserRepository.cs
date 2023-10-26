@@ -24,7 +24,7 @@ public class UserRepository : IUserRepository
     {
         await _dbContext.Users.AddAsync(newUser);
     }
-    public async Task<User?> GetUserAndAllRelatedEntities(Guid userId)
+    public async Task<User> GetUserAndAllRelatedEntities(Guid userId)
     {
         return await _dbContext.Users.FirstAsync(user => user.UserId == userId);
     }

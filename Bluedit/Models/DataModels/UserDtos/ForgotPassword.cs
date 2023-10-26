@@ -2,12 +2,10 @@
 
 namespace Bluedit.Models.DataModels.UserDtos;
 
-public class ForgotPasswordDto
-{
-
-    [Required]
+public record ForgotPasswordDto
+{ 
     [MaxLength(255)]
     [MinLength(3)]
     [EmailAddress]
-    public string Email { get; set; }
+    public required string Email { get; set; }
 }

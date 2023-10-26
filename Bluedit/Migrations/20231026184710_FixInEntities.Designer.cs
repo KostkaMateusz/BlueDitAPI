@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bluedit.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231023171207_Init")]
-    partial class Init
+    [Migration("20231026184710_FixInEntities")]
+    partial class FixInEntities
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,9 +42,6 @@ namespace Bluedit.Migrations
                     b.Property<Guid>("ImageGuid")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ParentPostId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -58,7 +55,6 @@ namespace Bluedit.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("UserId")
-                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("PostId");
@@ -135,7 +131,7 @@ namespace Bluedit.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("role")
+                    b.Property<string>("Role")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(max)")
@@ -158,7 +154,7 @@ namespace Bluedit.Migrations
                     b.HasDiscriminator().HasValue(true);
                 });
 
-            modelBuilder.Entity("Bluedit.Entities.ReplyToReply", b =>
+            modelBuilder.Entity("Bluedit.Entities.SubReplay", b =>
                 {
                     b.HasBaseType("Bluedit.Entities.ReplayBase");
 
@@ -178,9 +174,7 @@ namespace Bluedit.Migrations
 
                     b.HasOne("Bluedit.Entities.User", "User")
                         .WithMany("Posts")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Topic");
 

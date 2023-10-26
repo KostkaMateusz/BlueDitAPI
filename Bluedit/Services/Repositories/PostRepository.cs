@@ -49,7 +49,7 @@ public class PostRepository : IPostRepository
         await _dbContext.Posts.AddAsync(post);
     }
 
-    public async Task DeletePost(Post post)
+    public void DeletePost(Post post)
     {
         if(post is null)
             throw new ArgumentNullException(nameof(post));

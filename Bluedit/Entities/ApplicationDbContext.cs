@@ -19,7 +19,7 @@ public class ApplicationDbContext : DbContext
         {
             entityBuilder.Property(user => user.CreationTime).HasDefaultValueSql("getutcdate()");
             entityBuilder.HasMany(user => user.Posts).WithOne(post => post.User);
-            entityBuilder.Property(user => user.role).HasDefaultValue("StandartUser");
+            entityBuilder.Property(user => user.Role).HasDefaultValue("StandartUser");
         });
 
         modelBuilder.Entity<Post>(entityBuilder =>

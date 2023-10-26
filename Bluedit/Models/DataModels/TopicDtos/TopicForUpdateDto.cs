@@ -1,6 +1,6 @@
 ﻿namespace Bluedit.Models.DataModels.TopicDtos;
 
-public class TopicForUpdateDto
+public record TopicForUpdateDto
 {
-    public string TopicDescription { get; set; }
+    public required string TopicDescription { get; set; }
 }

@@ -207,7 +207,7 @@ public class TopicController : ControllerBase
 
         _mapper.Map(topicToPatch, topicFromRepo);
 
-        await _topicRepository.UpdateTopicAync(topicFromRepo);
+        _topicRepository.UpdateTopicAync(topicFromRepo);
 
         await _topicRepository.SaveChangesAsync();
 

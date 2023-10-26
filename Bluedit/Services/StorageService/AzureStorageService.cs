@@ -7,7 +7,7 @@ namespace Bluedit.Services.StorageService;
 
 public class AzureStorageService : IAzureStorageService
 {
-    //private string? connectionString;
+    private string? connectionString;
     private readonly string containerName = string.Empty;
     private readonly string blobAddres = string.Empty;
     private BlobContainerClient containerClient;
@@ -17,29 +17,29 @@ public class AzureStorageService : IAzureStorageService
     {
         // create a container client object
 
-        blobAddres = configuration["BlobStorage:AzureBlobContainerLink"];
-        containerName= configuration["BlobStorage:ContainerName"];
+        containerName= configuration["BlobStorage:ContainerName"] ?? throw new ArgumentNullException(nameof(configuration));
 
-        //if (env.IsDevelopment())
-        //{
-        //    connectionString = configuration.GetSection("BlobStorage").GetValue<string>("AzureStorageConnectionString");
+        if (env.IsDevelopment())
+        {
+            connectionString = configuration.GetSection("BlobStorage").GetValue<string>("AzureStorageConnectionString");
 
-        //    if (connectionString.IsNullOrEmpty())
-        //        throw new ArgumentNullException(nameof(connectionString));
+            if (connectionString.IsNullOrEmpty())
+                throw new ArgumentNullException(nameof(connectionString));
 
-        //    containerClient = new BlobContainerClient(connectionString, containerName);
+            containerClient = new BlobContainerClient(connectionString, containerName);
 
-        //    blobServiceClient = new BlobServiceClient(connectionString);
-        //}
-        //else
-        //{
+            blobServiceClient = new BlobServiceClient(connectionString);
+        }
+        else
+        {
+            blobAddres = configuration["BlobStorage:AzureBlobContainerLink"] ?? throw new ArgumentNullException(nameof(configuration));
             if (string.IsNullOrEmpty(blobAddres))
                 throw new ArgumentNullException(nameof(blobAddres));
 
             blobServiceClient = new BlobServiceClient(new Uri(blobAddres), new DefaultAzureCredential());
 
             containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-        //}
+        }
     }
 
     public void CreateStorage()
