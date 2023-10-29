@@ -4,5 +4,5 @@ public class SubReplay : ReplayBase
 {
     public Guid ParentReplyId { get; set; }
 
-    public IEnumerable<SubReplay> ParentReplay = new List<SubReplay>();
+    public List<SubReplay> ParentReplay = new List<SubReplay>();
 }

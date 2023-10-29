@@ -1,5 +1,7 @@
 ﻿using Bluedit.Entities;
+using Bluedit.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Bluedit.Services.Repositories;
 
@@ -56,10 +58,46 @@ public class RepliesRepository : IRepliesRepository
         return null;
     }
 
+    public async Task DeleteReplayTree(ReplayBase replayRoot)
+    {
+        _dbContext.Replies.Remove(replayRoot);
+
+        var childrenReposnes = await GetAllChildReply(replayRoot.ReplayBaseId);
+        
+        _dbContext.RemoveRange(childrenReposnes);
+    }
+
 
     public async Task<bool> SaveChangesAsync()
     {
         return await _dbContext.SaveChangesAsync() >= 0;
+    }
+
+    private async Task<IEnumerable<ReplayBase>> GetAllChildReply(Guid parentReplyId)
+    {        
+        var firstChildrens = await _dbContext.Replies.OfType<SubReplay>().Where(reply => reply.ParentReplyId == parentReplyId).ToListAsync();
+
+        // init output list
+        List<ReplayBase> childrenResponses = new(firstChildrens);
+        // init stack with first level children
+        Stack<ReplayBase> reponses = new(firstChildrens);
+
+        // until all reply sub tree is found
+        while (reponses.IsNullOrEmpty() is false)
+        {
+            // Return one element from Stack
+            var currentResponse = reponses.Pop();
+            // Query DB for imediate Children of this Node
+            var nodeReponses = await _dbContext.Replies.OfType<SubReplay>().Where(reply => reply.ParentReplyId == currentResponse.ReplayBaseId).ToListAsync();
+            // save children to list, push new children to be queried to stack
+            foreach (var nodeReponse in nodeReponses)
+            {
+                reponses.Append(nodeReponse);
+                childrenResponses.Add(nodeReponse);
+            }
+        }
+
+        return childrenResponses;
     }
 
 }

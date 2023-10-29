@@ -164,7 +164,7 @@ public class TopicController : ControllerBase
         //include pagination metadata
         var paginationMetadata = new PaginationMetaData<Topic>(topicsFromRepo, previousPageLink, nextPageLink);
 
-        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(paginationMetadata));
+        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(paginationMetadata));
         //map topics to DTO
         var topicInfoDtos = _mapper.Map<IEnumerable<TopicInfoDto>>(topicsFromRepo);
 
@@ -177,7 +177,7 @@ public class TopicController : ControllerBase
     [HttpOptions]
     public ActionResult GetAuthorsOptions()
     {
-        Response.Headers.Add("Allow", "GET,HEAD,POST,DELETE,PATCH,OPTIONS");
+        Response.Headers.Append("Allow", "GET,HEAD,POST,DELETE,PATCH,OPTIONS");
         return Ok();
     }
 

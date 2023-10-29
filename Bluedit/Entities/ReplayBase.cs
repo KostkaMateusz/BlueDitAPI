@@ -10,5 +10,4 @@ public abstract class ReplayBase
     [AllowNull]
     public Guid? UserId { get; set; }
     public bool IsPostReplay { get; set; }
-
 }

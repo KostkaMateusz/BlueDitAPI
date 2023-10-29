@@ -64,8 +64,8 @@ public class RepliesController : ControllerBase
     }    
 
     [AllowAnonymous]
-    [HttpGet("reply")]
-    public async Task<ActionResult> getReplay([FromQuery][Required] Guid replayID)
+    [HttpGet("reply/{replayID}")]
+    public async Task<ActionResult> getReplay([FromRoute] Guid replayID)
     {
         var replay=await _repliesRepository.GetReplayById(replayID);
 
@@ -80,8 +80,8 @@ public class RepliesController : ControllerBase
     }
 
 
-    [HttpPost("reply")]
-    public async Task<IActionResult> createReplytoReplay([FromQuery][Required] Guid replayID, [FromBody] CreateReplayDto createReplayDto)
+    [HttpPost("reply/{replayID}")]
+    public async Task<IActionResult> createReplytoReplay([FromRoute] Guid replayID, [FromBody] CreateReplayDto createReplayDto)
     {
         var replay = await _repliesRepository.GetReplayById(replayID);
 
@@ -98,6 +98,32 @@ public class RepliesController : ControllerBase
         await _repliesRepository.Addreplay(newSubReplay);
         await _repliesRepository.SaveChangesAsync();
 
-        return Created("", newSubReplay);
+        var replayDto=_mapper.Map<ReplayDto>(newSubReplay);
+
+        return Created("", replayDto);
     }
+
+    [HttpDelete("reply/{replayID}")]
+    public async Task<IActionResult> deleteReplyTree([FromRoute] Guid replayID)
+    {
+        var replay = await _repliesRepository.GetReplayById(replayID);
+        if (replay is null)
+        {
+            return NotFound();
+        }
+
+        //Check root replay ownerhip
+        var userId = _userContextService.GetUserId;
+        if(replay.UserId != userId)
+        {
+            return Unauthorized($"User: {userId} is not authorized to delete replay:{replayID}");
+        }
+
+        await _repliesRepository.DeleteReplayTree(replay);
+        await _repliesRepository.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+
 }

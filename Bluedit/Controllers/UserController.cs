@@ -201,7 +201,10 @@ public class UserController : ControllerBase
             return ValidationProblem();
         }
 
-        var user = await _userRepository.GetUserById((Guid)_userContextService.GetUserId);
+        var user = await _userRepository.GetUserById(_userContextService.GetUserId);
+
+        if(user is null)        
+            return Unauthorized();        
 
         user.Name = updateUserDto.Name;
         user.Email = updateUserDto.Email;

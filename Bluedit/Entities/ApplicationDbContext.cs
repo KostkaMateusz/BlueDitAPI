@@ -33,14 +33,15 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Topic>(entityBuilder =>
         {
             entityBuilder.HasKey(topic => topic.TopicName);
-            entityBuilder.HasMany(topic => topic.Posts).WithOne(post => post.Topic);            
+            entityBuilder.HasMany(topic => topic.Posts).WithOne(post => post.Topic); 
+            
         });
 
         modelBuilder.Entity<ReplayBase>(entityBuilder =>
         {            
             entityBuilder.HasDiscriminator<bool>(r => r.IsPostReplay).HasValue<Reply>(true).HasValue<SubReplay>(false);
-            //entityBuilder.HasNoKey();
-        });
+
+        });            
 
     }
 }

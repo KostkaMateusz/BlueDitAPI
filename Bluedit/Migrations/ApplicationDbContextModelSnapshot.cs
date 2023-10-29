@@ -60,7 +60,7 @@ namespace Bluedit.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("Bluedit.Entities.ReplayBase", b =>
@@ -82,7 +82,7 @@ namespace Bluedit.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Replies");
+                    b.ToTable("Replies", (string)null);
 
                     b.HasDiscriminator<bool>("IsPostReplay");
 
@@ -103,7 +103,7 @@ namespace Bluedit.Migrations
 
                     b.HasKey("TopicName");
 
-                    b.ToTable("Topics");
+                    b.ToTable("Topics", (string)null);
                 });
 
             modelBuilder.Entity("Bluedit.Entities.User", b =>
@@ -136,7 +136,7 @@ namespace Bluedit.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Bluedit.Entities.Reply", b =>
