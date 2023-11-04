@@ -13,7 +13,7 @@ namespace Bluedit.Controllers;
 [ApiController]
 [Route("api/posts/{PostId}/replies")]
 [Authorize]
-public class RepliesCollection : ControllerBase
+public partial class RepliesCollection : ControllerBase
 {
     private readonly IRepliesRepository _repliesRepository;
     private readonly IUserContextService _userContextService;
@@ -21,24 +21,33 @@ public class RepliesCollection : ControllerBase
     private readonly IMapper _mapper;
     private readonly Regex _guidRegex;
 
+    [GeneratedRegex("(?<=\\S*)(?:\\{{0,1}(?:[0-9a-fA-F]){8}-(?:[0-9a-fA-F]){4}-(?:[0-9a-fA-F]){4}-(?:[0-9a-fA-F]){4}-(?:[0-9a-fA-F]){12}\\}{0,1})(?=\\S*)")]
+    private static partial Regex GuidRegex();
+
     public RepliesCollection(IRepliesRepository repliesRepository, IUserContextService userContextService, IPostRepository postRepository, IMapper mapper)
     {
         _repliesRepository = repliesRepository ?? throw new ArgumentNullException(nameof(repliesRepository));
         _userContextService = userContextService ?? throw new ArgumentNullException(nameof(userContextService));
         _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _guidRegex = new Regex("(?<=\\S*)(?:\\{{0,1}(?:[0-9a-fA-F]){8}-(?:[0-9a-fA-F]){4}-(?:[0-9a-fA-F]){4}-(?:[0-9a-fA-F]){4}-(?:[0-9a-fA-F]){12}\\}{0,1})(?=\\S*)");
+        _guidRegex = GuidRegex();
+    }
+    private string? LastRegexMatch(string subRepliesPath, Regex regex)
+    {
+        MatchCollection guidMatch = regex.Matches(subRepliesPath);
+
+        var lastMatchValue = guidMatch.Last().Value;
+
+        return lastMatchValue;
     }
 
-    [HttpGet("replies", Name = "GetPostreplies")]
+    [HttpGet(Name = "GetPostreplies")]
     [AllowAnonymous]
     public async Task<ActionResult<ReplayDto>> GetPostreplies(Guid PostId)
     {
         var postExist = await _postRepository.PostWithGivenIdExist(PostId);
-        if (postExist is false)
-        {
-            return NotFound();
-        }
+        if (postExist is false)        
+            return NotFound();        
 
         var replies = await _repliesRepository.GetRepliesByParentPostId(PostId);
 
@@ -47,15 +56,13 @@ public class RepliesCollection : ControllerBase
         return Ok(repliesDto);
     }
 
-    [HttpPost("replies")]
-    public async Task<ActionResult<CreateReplayDto>> createPostReply([FromRoute] Guid PostId, [FromBody] CreateReplayDto createPostReplayDto)
+    [HttpPost]
+    public async Task<ActionResult<CreateReplayDto>> CreatePostReply([FromRoute] Guid PostId, [FromBody] CreateReplayDto createPostReplayDto)
     {
         var userId = _userContextService.GetUserId;
 
-        if (await _postRepository.PostWithGivenIdExist(PostId) is not true)
-        {
-            return NotFound();
-        }
+        if (await _postRepository.PostWithGivenIdExist(PostId) is not true)       
+            return NotFound();        
 
         var newReplie = new Reply { Description = createPostReplayDto.Description, UserId = userId, ParentPostId = PostId };
 
@@ -67,17 +74,16 @@ public class RepliesCollection : ControllerBase
 
 
     [AllowAnonymous]
-    [HttpGet("{**repliesChain}")]
-    public async Task<ActionResult<IEnumerable<ReplayDto>>> getReplies([FromRoute] string repliesChain)
+    [HttpGet("{**repliesPath}", Name = "GetRepliesCollection")]
+    public async Task<ActionResult<IEnumerable<ReplayDto>>> GetRepliesCollection([FromRoute] string repliesPath)
     {
-        var parentGuidstring = lastRegexMatch(repliesChain, _guidRegex);
+        var parentGuidstring = LastRegexMatch(repliesPath, _guidRegex);
 
         Guid lastGuid;
 
-        if (Guid.TryParse(parentGuidstring, out lastGuid) is false)
-        {
+        if (Guid.TryParse(parentGuidstring, out lastGuid) is false)        
             return BadRequest();
-        }
+        
         //add exist check
         var replies= await _repliesRepository.GetSubRepliesByParentReplayId(lastGuid);
 
@@ -86,24 +92,20 @@ public class RepliesCollection : ControllerBase
         return Ok(repliesDto);
     }
             
-    [HttpPost("{**repliesChain}")]
-    public async Task<ActionResult> get2Replies([FromRoute] string repliesChain, [FromBody] CreateReplayDto createReplayDto)
+    [HttpPost("{**repliesPath}")]
+    public async Task<ActionResult<ReplayDto>> Get2Replies([FromRoute] string repliesPath, [FromBody] CreateReplayDto createReplayDto, [FromRoute] Guid PostId )
     {
-        var parentGuidstring = lastRegexMatch(repliesChain, _guidRegex);
+        var parentGuidstring = LastRegexMatch(repliesPath, _guidRegex);
 
         Guid subReplayGUID;
 
-        if (Guid.TryParse(parentGuidstring, out subReplayGUID) is false)
-        {
-            return BadRequest();
-        }
+        if (Guid.TryParse(parentGuidstring, out subReplayGUID) is false)        
+            return BadRequest();        
 
         var subReplay = await _repliesRepository.GetSubReplyById(subReplayGUID);
 
-        if(subReplay is null)
-        {
-            return NotFound();
-        }
+        if(subReplay is null)        
+            return NotFound();        
         
         var newSubreply = _mapper.Map<SubReplay>(createReplayDto);
 
@@ -113,17 +115,8 @@ public class RepliesCollection : ControllerBase
         await _repliesRepository.Addreplay(newSubreply);
         await _repliesRepository.SaveChangesAsync();
 
-        return Ok(_mapper.Map<ReplayDto>(newSubreply));
+        var replyDto = _mapper.Map<ReplayDto>(newSubreply);
+
+        return CreatedAtRoute("GetRepliesCollection",new { PostId, repliesPath }, replyDto);
     }
-
-    private string? lastRegexMatch(string subRepliesPath, Regex regex)
-    {
-        MatchCollection guidMatch = regex.Matches(subRepliesPath);
-
-        var lastMatch = guidMatch.Last();
-        var lastMatchValue = lastMatch.Value;
-
-        return lastMatchValue;
-    }
-
 }

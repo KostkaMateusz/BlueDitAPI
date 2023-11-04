@@ -11,7 +11,7 @@ namespace Bluedit.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/posts/{PostId}/reply/{replayID}")]
+[Route("api/posts/{PostId}/reply")]
 public class RepliesController : ControllerBase
 {
     private readonly IRepliesRepository _repliesRepository;
@@ -28,8 +28,8 @@ public class RepliesController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpGet(Name = "GetReplayDetails")]
-    public async Task<ActionResult<ReplayDto>> getReplay([FromRoute] Guid replayID)
+    [HttpGet("{replayID}", Name = "GetReplayDetails")]
+    public async Task<ActionResult<ReplayDto>> GetReplay([FromRoute] Guid replayID)
     {
         var replay=await _repliesRepository.GetReplayById(replayID);
 
@@ -43,7 +43,7 @@ public class RepliesController : ControllerBase
 
 
     [HttpPost]
-    public async Task<ActionResult<ReplayDto>> createReplytoReplay([FromRoute] Guid replayID, [FromBody] CreateReplayDto createReplayDto, [FromRoute] Guid PostId)
+    public async Task<ActionResult<ReplayDto>> CreateReplytoReplay([FromRoute] Guid replayID, [FromBody] CreateReplayDto createReplayDto, [FromRoute] Guid PostId)
     {
         var replay = await _repliesRepository.GetReplayById(replayID);
 
@@ -58,13 +58,15 @@ public class RepliesController : ControllerBase
         await _repliesRepository.Addreplay(newSubReplay);
         await _repliesRepository.SaveChangesAsync();
 
+        //refresh entity for an id
+
         var replayDto=_mapper.Map<ReplayDto>(newSubReplay);
 
         return CreatedAtRoute("GetReplayDetails", new { PostId, replayID }, replayDto);        
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> deleteReplyTree([FromRoute] Guid replayID)
+    [HttpDelete("{replayID}")]
+    public async Task<IActionResult> DeleteReplyTree([FromRoute] Guid replayID)
     {
         var replay = await _repliesRepository.GetReplayById(replayID);
         if (replay is null)        
@@ -81,7 +83,7 @@ public class RepliesController : ControllerBase
         return NoContent();
     }
 
-    [HttpPut]
+    [HttpPut("{replayID}")]
     public async Task<ActionResult<ReplayDto>> updateReply([FromRoute] Guid replayID, [FromBody] UpdateReplyDto updateReply)
     {
         var replay = await _repliesRepository.GetReplayById(replayID);
@@ -103,7 +105,7 @@ public class RepliesController : ControllerBase
         return Ok(replyDto);
     }
 
-    [HttpPatch]
+    [HttpPatch("{replayID}")]
     public async Task<ActionResult<UpdateReplyDto>> PartialyUpdateReply([FromRoute] Guid replayID, [FromBody] JsonPatchDocument<UpdateReplyDto> patchDocument)
     {
         var replayFromRepo = await _repliesRepository.GetReplayById(replayID);

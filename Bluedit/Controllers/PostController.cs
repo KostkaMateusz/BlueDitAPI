@@ -50,6 +50,7 @@ public class PostController : ControllerBase
         await _postRepository.AddPost(post);
         await _postRepository.SaveChangesAsync();
         await _postRepository.LoadPostUser(post);
+
         var postDto = _mapper.Map<PostInfoDto>(post);
         postDto.ImageContentLink = GetLinkToImage(topicName, post.PostId);
 
