@@ -10,7 +10,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Post> Posts { get; set; }
 
-    public DbSet<ReplayBase> Replies { get; set; }
+    public DbSet<ReplyBase> Replies { get; set; }
     public DbSet<Topic> Topics { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,7 +37,7 @@ public class ApplicationDbContext : DbContext
             
         });
 
-        modelBuilder.Entity<ReplayBase>(entityBuilder =>
+        modelBuilder.Entity<ReplyBase>(entityBuilder =>
         {            
             entityBuilder.HasDiscriminator<bool>(r => r.IsPostReplay).HasValue<Reply>(true).HasValue<SubReplay>(false);
 

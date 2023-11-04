@@ -1,6 +1,6 @@
 ﻿namespace Bluedit.Entities;
 
-public class SubReplay : ReplayBase
+public class SubReplay : ReplyBase
 {
     public Guid ParentReplyId { get; set; }
 

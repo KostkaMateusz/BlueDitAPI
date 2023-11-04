@@ -11,7 +11,7 @@ namespace Bluedit.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/posts/{PostId}/reply")]
+[Route("api/topics/{topicName}/posts/{PostId}/reply")]
 public class RepliesController : ControllerBase
 {
     private readonly IRepliesRepository _repliesRepository;
@@ -43,9 +43,9 @@ public class RepliesController : ControllerBase
 
 
     [HttpPost]
-    public async Task<ActionResult<ReplayDto>> CreateReplytoReplay([FromBody] CreateSingleReplyDto createReplayDto, [FromRoute] Guid PostId)
+    public async Task<ActionResult<ReplayDto>> CreateReplytoReplay([FromBody] CreateSingleReplyDto createReplayDto, [FromRoute] Guid PostId, [FromRoute] string topicName)
     {
-        ReplayBase? parentReply=null;
+        ReplyBase? parentReply=null;
         Post? parentPost=null;
 
         parentReply = await _repliesRepository.GetReplayById(createReplayDto.ParentId);
@@ -65,21 +65,21 @@ public class RepliesController : ControllerBase
         if (parentReply is not null)
         {
             var newReply = new SubReplay() { UserId = _userContextService.GetUserId, Description = createReplayDto.Description };
-            newReply.ParentReplyId = parentReply.ReplayBaseId;
+            newReply.ParentReplyId = parentReply.ReplyId;
             await _repliesRepository.Addreplay(newReply);
-            replyId = newReply.ReplayBaseId;
+            replyId = newReply.ReplyId;
         }
         else if (parentPost is not null)
         {
             var newReply = new Reply() { UserId = _userContextService.GetUserId, Description = createReplayDto.Description };
             newReply.ParentPostId = parentPost.PostId;
             await _repliesRepository.Addreplay(newReply);
-            replyId = newReply.ReplayBaseId;
+            replyId = newReply.ReplyId;
         }         
 
         await _repliesRepository.SaveChangesAsync();
 
-        return CreatedAtRoute("GetReplayDetails", new { PostId=PostId, replayID=replyId }, createReplayDto);        
+        return CreatedAtRoute("GetReplayDetails", new { PostId=PostId, replayID=replyId, topicName= topicName }, createReplayDto);        
     }
 
     [HttpDelete("{replayID}")]

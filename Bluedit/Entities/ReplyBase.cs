@@ -1,10 +1,12 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Bluedit.Entities;
 
-public abstract class ReplayBase
+public abstract class ReplyBase
 {
-    public Guid ReplayBaseId { get; set; }
+    [Key]
+    public Guid ReplyId { get; set; }
     public string? Description { get; set; }
     public User? User { get; set; }
     [AllowNull]

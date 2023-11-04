@@ -11,7 +11,7 @@ namespace Bluedit.Controllers;
 
 
 [ApiController]
-[Route("api/posts/{PostId}/replies")]
+[Route("api/topics/{topicName}/posts/{PostId}/replies")]
 [Authorize]
 public partial class RepliesCollection : ControllerBase
 {
@@ -57,19 +57,19 @@ public partial class RepliesCollection : ControllerBase
     }
 
     [HttpPost(Name = "CreatePostReply")]
-    public async Task<ActionResult<CreateReplayDto>> CreatePostReply([FromRoute] Guid PostId, [FromBody] CreateReplayDto createPostReplayDto)
+    public async Task<ActionResult<CreateReplayDto>> CreatePostReply([FromRoute] Guid PostId, [FromBody] CreateReplayDto createPostReplayDto, [FromRoute] string topicName)
     {
         var userId = _userContextService.GetUserId;
 
-        if (await _postRepository.PostWithGivenIdExist(PostId) is not true)       
-            return NotFound();        
+        if (await _postRepository.PostWithGivenIdExist(PostId) is not true)
+            return NotFound();
 
         var newReplie = new Reply { Description = createPostReplayDto.Description, UserId = userId, ParentPostId = PostId };
 
         await _repliesRepository.Addreplay(newReplie);
         await _repliesRepository.SaveChangesAsync();
 
-        return CreatedAtRoute("GetPostreplies", routeValues: new { PostId }, createPostReplayDto);
+        return CreatedAtRoute("GetPostreplies", routeValues: new { PostId, topicName }, createPostReplayDto);
     }
 
 
