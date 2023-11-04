@@ -43,26 +43,43 @@ public class RepliesController : ControllerBase
 
 
     [HttpPost]
-    public async Task<ActionResult<ReplayDto>> CreateReplytoReplay([FromRoute] Guid replayID, [FromBody] CreateReplayDto createReplayDto, [FromRoute] Guid PostId)
+    public async Task<ActionResult<ReplayDto>> CreateReplytoReplay([FromBody] CreateSingleReplyDto createReplayDto, [FromRoute] Guid PostId)
     {
-        var replay = await _repliesRepository.GetReplayById(replayID);
+        ReplayBase? parentReply=null;
+        Post? parentPost=null;
 
-        if (replay is null)        
-            return NotFound();        
+        parentReply = await _repliesRepository.GetReplayById(createReplayDto.ParentId);
 
-        var newSubReplay = _mapper.Map<SubReplay>(createReplayDto);
+        if (parentReply is null)
+        {
+            parentPost = await _postRepository.GetPostByIdAsync(createReplayDto.ParentId);
+        }
 
-        newSubReplay.UserId = _userContextService.GetUserId;
-        newSubReplay.ParentReplyId = replayID;
+        if (parentReply is null && parentPost is null)
+        {
+            return NotFound();
+        }
 
-        await _repliesRepository.Addreplay(newSubReplay);
+        Guid? replyId = null;
+
+        if (parentReply is not null)
+        {
+            var newReply = new SubReplay() { UserId = _userContextService.GetUserId, Description = createReplayDto.Description };
+            newReply.ParentReplyId = parentReply.ReplayBaseId;
+            await _repliesRepository.Addreplay(newReply);
+            replyId = newReply.ReplayBaseId;
+        }
+        else if (parentPost is not null)
+        {
+            var newReply = new Reply() { UserId = _userContextService.GetUserId, Description = createReplayDto.Description };
+            newReply.ParentPostId = parentPost.PostId;
+            await _repliesRepository.Addreplay(newReply);
+            replyId = newReply.ReplayBaseId;
+        }         
+
         await _repliesRepository.SaveChangesAsync();
 
-        //refresh entity for an id
-
-        var replayDto=_mapper.Map<ReplayDto>(newSubReplay);
-
-        return CreatedAtRoute("GetReplayDetails", new { PostId, replayID }, replayDto);        
+        return CreatedAtRoute("GetReplayDetails", new { PostId=PostId, replayID=replyId }, createReplayDto);        
     }
 
     [HttpDelete("{replayID}")]
@@ -84,7 +101,7 @@ public class RepliesController : ControllerBase
     }
 
     [HttpPut("{replayID}")]
-    public async Task<ActionResult<ReplayDto>> updateReply([FromRoute] Guid replayID, [FromBody] UpdateReplyDto updateReply)
+    public async Task<ActionResult<ReplayDto>> UpdateReply([FromRoute] Guid replayID, [FromBody] UpdateReplyDto updateReply)
     {
         var replay = await _repliesRepository.GetReplayById(replayID);
         if (replay is null)        

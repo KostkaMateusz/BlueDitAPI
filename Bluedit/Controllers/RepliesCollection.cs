@@ -56,7 +56,7 @@ public partial class RepliesCollection : ControllerBase
         return Ok(repliesDto);
     }
 
-    [HttpPost]
+    [HttpPost(Name = "CreatePostReply")]
     public async Task<ActionResult<CreateReplayDto>> CreatePostReply([FromRoute] Guid PostId, [FromBody] CreateReplayDto createPostReplayDto)
     {
         var userId = _userContextService.GetUserId;

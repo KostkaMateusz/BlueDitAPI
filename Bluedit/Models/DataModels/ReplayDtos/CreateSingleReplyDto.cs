@@ -2,7 +2,7 @@
 
 namespace Bluedit.Models.DataModels.ReplayDtos;
 
-public sealed record CreateSingleReply : CreateReplayDto
+public sealed record CreateSingleReplyDto : CreateReplayDto
 {
     [Required]
     public Guid ParentId { get; set; }
