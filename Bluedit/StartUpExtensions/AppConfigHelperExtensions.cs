@@ -127,6 +127,9 @@ internal static class AppConfigHelperExtensions
         builder.Services.AddScoped<IPostRepository, PostRepository>();
         builder.Services.AddScoped<IRepliesRepository, RepliesRepository>();
 
+        builder.Services.AddScoped<ILikesRepository<PostLike>, LikesRepository<PostLike>>();
+        builder.Services.AddScoped<ILikesRepository<ReplyLike>, LikesRepository<ReplyLike>>();
+
         builder.Services.AddSingleton<IAzureStorageService, AzureStorageService>();
 
         //data shaping

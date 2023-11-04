@@ -16,4 +16,6 @@ public class Post
     public Topic? Topic { get; set; }
     public required string TopicName { get; set; }
     public IEnumerable<Reply> Reply { get; set; }=new List<Reply>();
+
+    public IEnumerable<PostLike> PostLikes { get; set; }  = new List<PostLike>();
 }
