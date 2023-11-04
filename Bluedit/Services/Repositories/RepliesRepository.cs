@@ -58,6 +58,11 @@ public class RepliesRepository : IRepliesRepository
         return null;
     }
 
+    public void UpdateReply(ReplayBase reply)
+    {
+        _dbContext.Update(reply);
+    }
+
     public async Task DeleteReplayTree(ReplayBase replayRoot)
     {
         _dbContext.Replies.Remove(replayRoot);

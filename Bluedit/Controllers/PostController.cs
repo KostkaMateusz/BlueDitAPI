@@ -5,7 +5,6 @@ using Bluedit.Services.Authentication;
 using Bluedit.Services.Repositories;
 using Bluedit.Services.StorageService;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.IdentityModel.Tokens;

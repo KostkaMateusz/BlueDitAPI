@@ -1,7 +1,6 @@
-﻿namespace Bluedit.Helpers.DataShaping
+﻿namespace Bluedit.Helpers.DataShaping;
+
+public interface IPropertyCheckerService
 {
-    public interface IPropertyCheckerService
-    {
-        bool TypeHasProperties<T>(string? fields);
-    }
+    bool TypeHasProperties<T>(string? fields);
 }

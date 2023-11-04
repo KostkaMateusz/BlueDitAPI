@@ -13,24 +13,58 @@ namespace Bluedit.Controllers;
 [ApiController]
 [Route("api/posts/{PostId}/replies")]
 [Authorize]
-public class SubRepliesController : ControllerBase
+public class RepliesCollection : ControllerBase
 {
     private readonly IRepliesRepository _repliesRepository;
     private readonly IUserContextService _userContextService;
     private readonly IPostRepository _postRepository;
     private readonly IMapper _mapper;
     private readonly Regex _guidRegex;
-    //private readonly Regex _subRepliesRegex;
 
-    public SubRepliesController(IRepliesRepository repliesRepository, IUserContextService userContextService, IPostRepository postRepository, IMapper mapper)
+    public RepliesCollection(IRepliesRepository repliesRepository, IUserContextService userContextService, IPostRepository postRepository, IMapper mapper)
     {
-        _repliesRepository = repliesRepository;
-        _userContextService = userContextService;
-        _postRepository = postRepository;
-        _mapper = mapper;
+        _repliesRepository = repliesRepository ?? throw new ArgumentNullException(nameof(repliesRepository));
+        _userContextService = userContextService ?? throw new ArgumentNullException(nameof(userContextService));
+        _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _guidRegex = new Regex("(?<=\\S*)(?:\\{{0,1}(?:[0-9a-fA-F]){8}-(?:[0-9a-fA-F]){4}-(?:[0-9a-fA-F]){4}-(?:[0-9a-fA-F]){4}-(?:[0-9a-fA-F]){12}\\}{0,1})(?=\\S*)");
-        //_subRepliesRegex = new Regex("(?<=)subreplies");
     }
+
+    [HttpGet("replies", Name = "GetPostreplies")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ReplayDto>> GetPostreplies(Guid PostId)
+    {
+        var postExist = await _postRepository.PostWithGivenIdExist(PostId);
+        if (postExist is false)
+        {
+            return NotFound();
+        }
+
+        var replies = await _repliesRepository.GetRepliesByParentPostId(PostId);
+
+        var repliesDto = _mapper.Map<IEnumerable<ReplayDto>>(replies);
+
+        return Ok(repliesDto);
+    }
+
+    [HttpPost("replies")]
+    public async Task<ActionResult<CreateReplayDto>> createPostReply([FromRoute] Guid PostId, [FromBody] CreateReplayDto createPostReplayDto)
+    {
+        var userId = _userContextService.GetUserId;
+
+        if (await _postRepository.PostWithGivenIdExist(PostId) is not true)
+        {
+            return NotFound();
+        }
+
+        var newReplie = new Reply { Description = createPostReplayDto.Description, UserId = userId, ParentPostId = PostId };
+
+        await _repliesRepository.Addreplay(newReplie);
+        await _repliesRepository.SaveChangesAsync();
+
+        return CreatedAtRoute("GetPostreplies", routeValues: new { PostId }, createPostReplayDto);
+    }
+
 
     [AllowAnonymous]
     [HttpGet("{**repliesChain}")]

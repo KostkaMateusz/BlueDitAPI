@@ -12,5 +12,6 @@ namespace Bluedit.Services.Repositories
         Task<IEnumerable<SubReplay>> GetSubRepliesByParentReplayId(Guid ParentId);
         Task<SubReplay?> GetSubReplyById(Guid SubreplayId);
         Task<bool> SaveChangesAsync();
+        void UpdateReply(ReplayBase reply);
     }
 }

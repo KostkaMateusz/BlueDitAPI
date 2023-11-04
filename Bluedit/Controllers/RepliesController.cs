@@ -5,14 +5,13 @@ using Bluedit.Entities;
 using Bluedit.Models.DataModels.ReplayDtos;
 using Bluedit.Services.Authentication;
 using AutoMapper;
-using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace Bluedit.Controllers;
 
-
 [Authorize]
 [ApiController]
-[Route("api/posts/{PostId}")]
+[Route("api/posts/{PostId}/reply/{replayID}")]
 public class RepliesController : ControllerBase
 {
     private readonly IRepliesRepository _repliesRepository;
@@ -22,50 +21,15 @@ public class RepliesController : ControllerBase
 
     public RepliesController(IRepliesRepository repliesRepository, IUserContextService userContextService, IPostRepository postRepository, IMapper mapper)
     {
-        _repliesRepository = repliesRepository;
-        _userContextService = userContextService;
-        _postRepository = postRepository;
-        _mapper = mapper;
+        _repliesRepository = repliesRepository ?? throw new ArgumentNullException(nameof(repliesRepository));
+        _userContextService = userContextService ?? throw new ArgumentNullException(nameof(userContextService));
+        _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    [HttpGet("replies")]
     [AllowAnonymous]
-    public async Task<ActionResult> GetPostreplies(Guid PostId)
-    {
-        var postExist=await _postRepository.PostWithGivenIdExist(PostId);
-        if(postExist is false)
-        {
-            return NotFound();
-        }
-
-        var replies =await _repliesRepository.GetRepliesByParentPostId(PostId);
-
-        var repliesDto = _mapper.Map<IEnumerable<ReplayDto>>(replies);
-
-        return Ok(repliesDto);
-    }
-
-    [HttpPost("replies")]
-    public async Task<ActionResult> createPostReply([FromRoute] Guid PostId, [FromBody] CreateReplayDto createPostReplayDto) 
-    {
-        var userId = _userContextService.GetUserId;
-
-        if (await _postRepository.PostWithGivenIdExist(PostId) is not true)
-        {
-            return NotFound();
-        }
-
-        var newReplie = new Reply { Description= createPostReplayDto.Description, UserId= userId, ParentPostId = PostId };
-
-        await _repliesRepository.Addreplay(newReplie);
-        await _repliesRepository.SaveChangesAsync();
-
-        return Ok();
-    }    
-
-    [AllowAnonymous]
-    [HttpGet("reply/{replayID}")]
-    public async Task<ActionResult> getReplay([FromRoute] Guid replayID)
+    [HttpGet(Name = "GetReplayDetails")]
+    public async Task<ActionResult<ReplayDto>> getReplay([FromRoute] Guid replayID)
     {
         var replay=await _repliesRepository.GetReplayById(replayID);
 
@@ -80,8 +44,8 @@ public class RepliesController : ControllerBase
     }
 
 
-    [HttpPost("reply/{replayID}")]
-    public async Task<IActionResult> createReplytoReplay([FromRoute] Guid replayID, [FromBody] CreateReplayDto createReplayDto)
+    [HttpPost()]
+    public async Task<ActionResult<ReplayDto>> createReplytoReplay([FromRoute] Guid replayID, [FromBody] CreateReplayDto createReplayDto, [FromRoute] Guid PostId)
     {
         var replay = await _repliesRepository.GetReplayById(replayID);
 
@@ -100,10 +64,10 @@ public class RepliesController : ControllerBase
 
         var replayDto=_mapper.Map<ReplayDto>(newSubReplay);
 
-        return Created("", replayDto);
+        return CreatedAtRoute("GetReplayDetails", new { PostId, replayID }, replayDto);        
     }
 
-    [HttpDelete("reply/{replayID}")]
+    [HttpDelete()]
     public async Task<IActionResult> deleteReplyTree([FromRoute] Guid replayID)
     {
         var replay = await _repliesRepository.GetReplayById(replayID);
@@ -125,5 +89,57 @@ public class RepliesController : ControllerBase
         return NoContent();
     }
 
+    [HttpPut()]
+    public async Task<ActionResult<ReplayDto>> updateReply([FromRoute] Guid replayID, [FromBody] UpdateReplyDto updateReply)
+    {
+        var replay = await _repliesRepository.GetReplayById(replayID);
+        if (replay is null)
+        {
+            return NotFound();
+        }
 
+        //Check replay ownerhip
+        var userId = _userContextService.GetUserId;
+        if (replay.UserId != userId)
+        {
+            return Unauthorized($"User: {userId} is not authorized to modify replay:{replayID}");
+        }
+        
+        replay.Description = updateReply.Description;
+        
+        _repliesRepository.UpdateReply(replay);
+        await _repliesRepository.SaveChangesAsync();
+
+        var replyDto=_mapper.Map<ReplayDto>(replay);
+
+        return Ok(replyDto);
+    }
+
+
+    [HttpPatch()]
+    public async Task<ActionResult<UpdateReplyDto>> PartialyUpdateReply([FromRoute] Guid replayID, [FromBody] JsonPatchDocument<UpdateReplyDto> patchDocument)
+    {
+        var replayFromRepo = await _repliesRepository.GetReplayById(replayID);
+        
+        if (replayFromRepo is null)        
+            return NotFound();
+        
+        //Check replay ownerhip
+        var userId = _userContextService.GetUserId;
+        if (replayFromRepo.UserId != userId)        
+            return Unauthorized($"User: {userId} is not authorized to modify replay:{replayID}");
+
+        var replyToPatch = _mapper.Map<UpdateReplyDto>(replayFromRepo);
+        patchDocument.ApplyTo(replyToPatch, ModelState);
+
+        if (!TryValidateModel(replyToPatch))
+            return ValidationProblem(ModelState);
+
+        _mapper.Map(replyToPatch, replayFromRepo);
+
+        _repliesRepository.UpdateReply(replayFromRepo);
+        await _repliesRepository.SaveChangesAsync();
+
+        return Ok(replyToPatch);
+    }
 }
