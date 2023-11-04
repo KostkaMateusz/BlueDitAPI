@@ -42,7 +42,7 @@ public class RepliesController : ControllerBase
     }
 
 
-    [HttpPost()]
+    [HttpPost]
     public async Task<ActionResult<ReplayDto>> createReplytoReplay([FromRoute] Guid replayID, [FromBody] CreateReplayDto createReplayDto, [FromRoute] Guid PostId)
     {
         var replay = await _repliesRepository.GetReplayById(replayID);
@@ -63,7 +63,7 @@ public class RepliesController : ControllerBase
         return CreatedAtRoute("GetReplayDetails", new { PostId, replayID }, replayDto);        
     }
 
-    [HttpDelete()]
+    [HttpDelete]
     public async Task<IActionResult> deleteReplyTree([FromRoute] Guid replayID)
     {
         var replay = await _repliesRepository.GetReplayById(replayID);
@@ -81,7 +81,7 @@ public class RepliesController : ControllerBase
         return NoContent();
     }
 
-    [HttpPut()]
+    [HttpPut]
     public async Task<ActionResult<ReplayDto>> updateReply([FromRoute] Guid replayID, [FromBody] UpdateReplyDto updateReply)
     {
         var replay = await _repliesRepository.GetReplayById(replayID);
@@ -103,7 +103,7 @@ public class RepliesController : ControllerBase
         return Ok(replyDto);
     }
 
-    [HttpPatch()]
+    [HttpPatch]
     public async Task<ActionResult<UpdateReplyDto>> PartialyUpdateReply([FromRoute] Guid replayID, [FromBody] JsonPatchDocument<UpdateReplyDto> patchDocument)
     {
         var replayFromRepo = await _repliesRepository.GetReplayById(replayID);
