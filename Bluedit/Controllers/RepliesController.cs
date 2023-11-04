@@ -33,10 +33,8 @@ public class RepliesController : ControllerBase
     {
         var replay=await _repliesRepository.GetReplayById(replayID);
 
-        if(replay is null)
-        {
-            return NotFound();
-        }
+        if(replay is null)        
+            return NotFound();        
 
         var replayDto = _mapper.Map<ReplayDto>(replay);
 
@@ -49,10 +47,8 @@ public class RepliesController : ControllerBase
     {
         var replay = await _repliesRepository.GetReplayById(replayID);
 
-        if (replay is null)
-        {
-            return NotFound();
-        }
+        if (replay is null)        
+            return NotFound();        
 
         var newSubReplay = _mapper.Map<SubReplay>(createReplayDto);
 
@@ -71,18 +67,14 @@ public class RepliesController : ControllerBase
     public async Task<IActionResult> deleteReplyTree([FromRoute] Guid replayID)
     {
         var replay = await _repliesRepository.GetReplayById(replayID);
-        if (replay is null)
-        {
-            return NotFound();
-        }
+        if (replay is null)        
+            return NotFound();        
 
         //Check root replay ownerhip
         var userId = _userContextService.GetUserId;
-        if(replay.UserId != userId)
-        {
+        if(replay.UserId != userId)        
             return Unauthorized($"User: {userId} is not authorized to delete replay:{replayID}");
-        }
-
+        
         await _repliesRepository.DeleteReplayTree(replay);
         await _repliesRepository.SaveChangesAsync();
 
@@ -93,17 +85,13 @@ public class RepliesController : ControllerBase
     public async Task<ActionResult<ReplayDto>> updateReply([FromRoute] Guid replayID, [FromBody] UpdateReplyDto updateReply)
     {
         var replay = await _repliesRepository.GetReplayById(replayID);
-        if (replay is null)
-        {
-            return NotFound();
-        }
+        if (replay is null)        
+            return NotFound();        
 
         //Check replay ownerhip
         var userId = _userContextService.GetUserId;
-        if (replay.UserId != userId)
-        {
+        if (replay.UserId != userId)        
             return Unauthorized($"User: {userId} is not authorized to modify replay:{replayID}");
-        }
         
         replay.Description = updateReply.Description;
         
@@ -114,7 +102,6 @@ public class RepliesController : ControllerBase
 
         return Ok(replyDto);
     }
-
 
     [HttpPatch()]
     public async Task<ActionResult<UpdateReplyDto>> PartialyUpdateReply([FromRoute] Guid replayID, [FromBody] JsonPatchDocument<UpdateReplyDto> patchDocument)
