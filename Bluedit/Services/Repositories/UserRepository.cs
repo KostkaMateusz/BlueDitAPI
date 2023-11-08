@@ -1,5 +1,6 @@
 ﻿using Bluedit.Entities;
 using Microsoft.EntityFrameworkCore;
+using Bluedit.Domain.Entities;
 
 namespace Bluedit.Services.Repositories;
 

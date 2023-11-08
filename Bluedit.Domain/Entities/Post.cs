@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Bluedit.Entities;
+namespace Bluedit.Domain.Entities;
 
 public class Post
 {

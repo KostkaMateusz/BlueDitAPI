@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Newtonsoft.Json;
-
+using Bluedit.Domain.Entities;
 
 namespace Bluedit.Controllers;
 

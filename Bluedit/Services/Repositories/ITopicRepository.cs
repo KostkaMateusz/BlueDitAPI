@@ -1,4 +1,4 @@
-﻿using Bluedit.Entities;
+﻿using Bluedit.Domain.Entities;
 using Bluedit.Helpers.Pagination;
 using Bluedit.Models.DataModels.TopicDtos;
 

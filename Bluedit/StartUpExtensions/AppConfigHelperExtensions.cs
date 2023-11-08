@@ -14,6 +14,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
 using System.Text;
+using Bluedit.Domain.Entities;
 
 namespace Bluedit.StartUpExtensions;
 

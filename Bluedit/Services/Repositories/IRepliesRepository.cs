@@ -1,4 +1,4 @@
-﻿using Bluedit.Entities;
+﻿using Bluedit.Domain.Entities;
 
 namespace Bluedit.Services.Repositories
 {

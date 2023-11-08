@@ -1,5 +1,4 @@
-﻿
-namespace Bluedit.Entities;
+﻿namespace Bluedit.Domain.Entities;
 
 public class User
 {    

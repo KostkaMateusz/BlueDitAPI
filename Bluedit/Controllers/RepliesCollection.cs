@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Bluedit.Entities;
+using Bluedit.Domain.Entities;
 using Bluedit.Models.DataModels.ReplayDtos;
 using Bluedit.Services.Authentication;
 using Bluedit.Services.Repositories;

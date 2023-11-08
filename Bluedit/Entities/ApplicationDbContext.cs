@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Bluedit.Domain.Entities;
 
 namespace Bluedit.Entities;
 
@@ -38,7 +39,8 @@ public class ApplicationDbContext : DbContext
         });
 
         modelBuilder.Entity<ReplyBase>(entityBuilder =>
-        {            
+        {
+            entityBuilder.HasKey(r => r.ReplyId);
             entityBuilder.HasDiscriminator<bool>(r => r.IsPostReplay).HasValue<Reply>(true).HasValue<SubReplay>(false);
 
         });

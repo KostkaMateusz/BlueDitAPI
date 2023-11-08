@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Bluedit.Services.Repositories;
-using Bluedit.Entities;
+using Bluedit.Domain.Entities;
 using Bluedit.Models.DataModels.ReplayDtos;
 using Bluedit.Services.Authentication;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
+using Bluedit.Domain.Entities.Replies;
 
 namespace Bluedit.Controllers;
 

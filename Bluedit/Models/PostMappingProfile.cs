@@ -6,7 +6,7 @@ public class PostMappingProfile : Profile
 {
     public PostMappingProfile()
     {
-        CreateMap<Entities.Post, DataModels.PostDtos.PostInfoDto>();
-        CreateMap<Entities.Post, DataModels.PostDtos.PostUpdateDto>().ReverseMap();
+        CreateMap<Bluedit.Domain.Entities.Post, DataModels.PostDtos.PostInfoDto>();
+        CreateMap<Bluedit.Domain.Entities.Post, DataModels.PostDtos.PostUpdateDto>().ReverseMap();
     }
 }

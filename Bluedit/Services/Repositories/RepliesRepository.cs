@@ -1,7 +1,7 @@
 ﻿using Bluedit.Entities;
-using Bluedit.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Bluedit.Domain.Entities;
 
 namespace Bluedit.Services.Repositories;
 

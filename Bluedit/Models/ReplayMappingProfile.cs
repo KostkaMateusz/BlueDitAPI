@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-
+using Bluedit.Domain.Entities;
 
 namespace Bluedit.Models;
 
@@ -7,8 +7,8 @@ public class ReplayMappingProfile : Profile
 {
     public ReplayMappingProfile()
     {
-        CreateMap<Entities.ReplyBase, DataModels.ReplayDtos.ReplayDto>().ReverseMap();
-        CreateMap<Entities.Reply, DataModels.ReplayDtos.ReplayDto>().ReverseMap();
-        CreateMap<Entities.SubReplay, DataModels.ReplayDtos.CreateReplayDto>().ReverseMap();        
+        CreateMap<ReplyBase, DataModels.ReplayDtos.ReplayDto>().ReverseMap();
+        CreateMap<Reply, DataModels.ReplayDtos.ReplayDto>().ReverseMap();
+        CreateMap<SubReplay, DataModels.ReplayDtos.CreateReplayDto>().ReverseMap();        
     }
 }

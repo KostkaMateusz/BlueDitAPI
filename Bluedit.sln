@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bluedit", "Bluedit\Bluedit.csproj", "{38C26176-AA21-414E-A609-81014CAADF4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bluedit", "Bluedit\Bluedit.csproj", "{38C26176-AA21-414E-A609-81014CAADF4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bluedit.Domain", "Bluedit.Domain\Bluedit.Domain.csproj", "{D3ECA3A2-3BA4-4440-896A-EFEC01C37B07}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{38C26176-AA21-414E-A609-81014CAADF4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38C26176-AA21-414E-A609-81014CAADF4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38C26176-AA21-414E-A609-81014CAADF4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3ECA3A2-3BA4-4440-896A-EFEC01C37B07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3ECA3A2-3BA4-4440-896A-EFEC01C37B07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3ECA3A2-3BA4-4440-896A-EFEC01C37B07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3ECA3A2-3BA4-4440-896A-EFEC01C37B07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -13,6 +13,7 @@ using FluentValidation.AspNetCore;
 using Bluedit.Models.DataModels.UserDtos;
 using Bluedit.Services.Repositories;
 using Bluedit.Services.Authentication;
+using Bluedit.Domain.Entities;
 
 namespace Bluedit.Controllers;
 
