@@ -1,3 +1,3 @@
 ﻿namespace Bluedit.Models.DataModels.ReplayDtos;
 
-public record UpdateReplyDto : CreateReplayDto{ }
+public record UpdateReplyDto : CreateReplyDto{ }

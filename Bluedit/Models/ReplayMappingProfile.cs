@@ -9,6 +9,6 @@ public class ReplayMappingProfile : Profile
     {
         CreateMap<ReplyBase, DataModels.ReplayDtos.ReplyDto>().ReverseMap();
         CreateMap<Reply, DataModels.ReplayDtos.ReplyDto>().ReverseMap();
-        CreateMap<SubReplay, DataModels.ReplayDtos.CreateReplayDto>().ReverseMap();        
+        CreateMap<SubReplay, DataModels.ReplayDtos.CreateReplyDto>().ReverseMap();        
     }
 }

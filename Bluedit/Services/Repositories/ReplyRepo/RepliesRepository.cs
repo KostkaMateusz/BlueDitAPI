@@ -13,7 +13,7 @@ public class RepliesRepository : IRepliesRepository
         _dbContext = dbContext;
     }
 
-    public async Task<ReplyBase?> GetReplayById(Guid ReplayId)
+    public async Task<ReplyBase?> GetReplyById(Guid ReplayId)
     {
         return await _dbContext.Replies.FirstOrDefaultAsync(r => r.ReplyId == ReplayId); ;
     }

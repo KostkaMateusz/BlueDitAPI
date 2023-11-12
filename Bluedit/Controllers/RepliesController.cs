@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Bluedit.Domain.Entities;
 using Bluedit.Models.DataModels.ReplayDtos;
 using Bluedit.Services.Authentication;
 using AutoMapper;
@@ -33,7 +32,7 @@ public class RepliesController : ControllerBase
     [HttpGet("{replyId}", Name = "GetReplayDetails")]
     public async Task<ActionResult<ReplyDto>> GetReplay([FromRoute] Guid replyId)
     {
-        var replay=await _repliesRepository.GetReplayById(replyId);
+        var replay=await _repliesRepository.GetReplyById(replyId);
 
         if(replay is null)        
             return NotFound();        
@@ -45,49 +44,27 @@ public class RepliesController : ControllerBase
 
 
     [HttpPost("{replyId}")]
-    public async Task<ActionResult<ReplyDto>> CreateReplytoReplay([FromBody] CreateSingleReplyDto createReplayDto, [FromRoute] Guid PostId, [FromRoute] string topicName)
-    {
-        ReplyBase? parentReply=null;
-        Post? parentPost=null;
-
-        parentReply = await _repliesRepository.GetReplayById(createReplayDto.ParentId);
+    public async Task<ActionResult<ReplyDto>> CreateReplytoReplay([FromRoute] Guid replyId, [FromBody] CreateReplyDto createReplayDto, [FromRoute] Guid PostId, [FromRoute] string topicName)
+    {        
+        var parentReply = await _repliesRepository.GetReplyById(replyId);
 
         if (parentReply is null)
-        {
-            parentPost = await _postRepository.GetPostByIdAsync(createReplayDto.ParentId);
-        }
-
-        if (parentReply is null && parentPost is null)
-        {
             return NotFound();
-        }
-
-        Guid? replyId = null;
-
-        if (parentReply is not null)
-        {
-            var newReply = new SubReplay() { UserId = _userContextService.GetUserId, Description = createReplayDto.Description };
-            newReply.ParentReplyId = parentReply.ReplyId;
-            await _repliesRepository.Addreplay(newReply);
-            replyId = newReply.ReplyId;
-        }
-        else if (parentPost is not null)
-        {
-            var newReply = new Reply() { UserId = _userContextService.GetUserId, Description = createReplayDto.Description };
-            newReply.ParentPostId = parentPost.PostId;
-            await _repliesRepository.Addreplay(newReply);
-            replyId = newReply.ReplyId;
-        }         
+                
+        var newReply = new SubReplay() { UserId = _userContextService.GetUserId, Description = createReplayDto.Description , ParentReplyId= parentReply.ReplyId };
+        
+        await _repliesRepository.Addreplay(newReply);
+        replyId = newReply.ReplyId;      
 
         await _repliesRepository.SaveChangesAsync();
 
-        return CreatedAtRoute("GetReplayDetails", new { PostId=PostId, replyId=replyId, topicName= topicName }, createReplayDto);        
+        return CreatedAtRoute("GetReplayDetails", new { PostId, replyId,  topicName }, createReplayDto);        
     }
 
     [HttpDelete("{replyId}")]
     public async Task<IActionResult> DeleteReplyTree([FromRoute] Guid replyId)
     {
-        var replay = await _repliesRepository.GetReplayById(replyId);
+        var replay = await _repliesRepository.GetReplyById(replyId);
         if (replay is null)        
             return NotFound();        
 
@@ -105,7 +82,7 @@ public class RepliesController : ControllerBase
     [HttpPut("{replyId}")]
     public async Task<ActionResult<ReplyDto>> UpdateReply([FromRoute] Guid replyId, [FromBody] UpdateReplyDto updateReply)
     {
-        var replay = await _repliesRepository.GetReplayById(replyId);
+        var replay = await _repliesRepository.GetReplyById(replyId);
         if (replay is null)        
             return NotFound();        
 
@@ -127,7 +104,7 @@ public class RepliesController : ControllerBase
     [HttpPatch("{replyId}")]
     public async Task<ActionResult<UpdateReplyDto>> PartialyUpdateReply([FromRoute] Guid replyId, [FromBody] JsonPatchDocument<UpdateReplyDto> patchDocument)
     {
-        var replayFromRepo = await _repliesRepository.GetReplayById(replyId);
+        var replayFromRepo = await _repliesRepository.GetReplyById(replyId);
         
         if (replayFromRepo is null)        
             return NotFound();

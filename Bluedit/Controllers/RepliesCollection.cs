@@ -58,7 +58,7 @@ public partial class RepliesCollection : ControllerBase
     }
 
     [HttpPost(Name = "CreatePostReply")]
-    public async Task<ActionResult<CreateReplayDto>> CreatePostReply([FromRoute] Guid PostId, [FromBody] CreateReplayDto createPostReplayDto, [FromRoute] string topicName)
+    public async Task<ActionResult<CreateReplyDto>> CreatePostReply([FromRoute] Guid PostId, [FromBody] CreateReplyDto createPostReplayDto, [FromRoute] string topicName)
     {
         var userId = _userContextService.GetUserId;
 
@@ -94,7 +94,7 @@ public partial class RepliesCollection : ControllerBase
     }
             
     [HttpPost("{**repliesPath}")]
-    public async Task<ActionResult<ReplyDto>> Get2Replies([FromRoute] string repliesPath, [FromBody] CreateReplayDto createReplayDto, [FromRoute] Guid PostId, [FromRoute] string topicName)
+    public async Task<ActionResult<ReplyDto>> Get2Replies([FromRoute] string repliesPath, [FromBody] CreateReplyDto createReplayDto, [FromRoute] Guid PostId, [FromRoute] string topicName)
     {
         var parentGuidstring = LastRegexMatch(repliesPath, _guidRegex);
 
@@ -103,7 +103,7 @@ public partial class RepliesCollection : ControllerBase
         if (Guid.TryParse(parentGuidstring, out subReplayGUID) is false)        
             return BadRequest();        
 
-        var subReplay = await _repliesRepository.GetReplayById(subReplayGUID);
+        var subReplay = await _repliesRepository.GetReplyById(subReplayGUID);
 
         if(subReplay is null)        
             return NotFound();        

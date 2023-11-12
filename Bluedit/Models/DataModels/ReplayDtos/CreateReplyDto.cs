@@ -2,7 +2,7 @@
 
 namespace Bluedit.Models.DataModels.ReplayDtos;
 
-public record CreateReplayDto
+public record CreateReplyDto
 {
     [Required]
     [MaxLength(100)]
