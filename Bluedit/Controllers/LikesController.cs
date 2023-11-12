@@ -1,4 +1,4 @@
-﻿using Bluedit.Entities;
+﻿using Bluedit.Domain.Entities;
 using Bluedit.Services.Repositories;
 using Microsoft.AspNetCore.Mvc;
 

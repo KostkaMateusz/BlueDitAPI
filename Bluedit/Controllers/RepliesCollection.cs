@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
-using Bluedit.Domain.Entities;
+using Bluedit.Domain.Entities.ReplyEntities;
 using Bluedit.Models.DataModels.ReplayDtos;
 using Bluedit.Services.Authentication;
-using Bluedit.Services.Repositories;
+using Bluedit.Services.Repositories.PostRepo;
+using Bluedit.Services.Repositories.ReplyRepo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
@@ -43,7 +44,7 @@ public partial class RepliesCollection : ControllerBase
 
     [HttpGet(Name = "GetPostreplies")]
     [AllowAnonymous]
-    public async Task<ActionResult<ReplayDto>> GetPostreplies(Guid PostId)
+    public async Task<ActionResult<ReplyDto>> GetPostreplies(Guid PostId)
     {
         var postExist = await _postRepository.PostWithGivenIdExist(PostId);
         if (postExist is false)        
@@ -51,7 +52,7 @@ public partial class RepliesCollection : ControllerBase
 
         var replies = await _repliesRepository.GetRepliesByParentPostId(PostId);
 
-        var repliesDto = _mapper.Map<IEnumerable<ReplayDto>>(replies);
+        var repliesDto = _mapper.Map<IEnumerable<ReplyDto>>(replies);
 
         return Ok(repliesDto);
     }
@@ -75,7 +76,7 @@ public partial class RepliesCollection : ControllerBase
 
     [AllowAnonymous]
     [HttpGet("{**repliesPath}", Name = "GetRepliesCollection")]
-    public async Task<ActionResult<IEnumerable<ReplayDto>>> GetRepliesCollection([FromRoute] string repliesPath)
+    public async Task<ActionResult<IEnumerable<ReplyDto>>> GetRepliesCollection([FromRoute] string repliesPath)
     {
         var parentGuidstring = LastRegexMatch(repliesPath, _guidRegex);
 
@@ -87,13 +88,13 @@ public partial class RepliesCollection : ControllerBase
         //add exist check
         var replies= await _repliesRepository.GetSubRepliesByParentReplayId(lastGuid);
 
-        var repliesDto = _mapper.Map<IEnumerable<ReplayDto>>(replies);
+        var repliesDto = _mapper.Map<IEnumerable<ReplyDto>>(replies);
         
         return Ok(repliesDto);
     }
             
     [HttpPost("{**repliesPath}")]
-    public async Task<ActionResult<ReplayDto>> Get2Replies([FromRoute] string repliesPath, [FromBody] CreateReplayDto createReplayDto, [FromRoute] Guid PostId )
+    public async Task<ActionResult<ReplyDto>> Get2Replies([FromRoute] string repliesPath, [FromBody] CreateReplayDto createReplayDto, [FromRoute] Guid PostId, [FromRoute] string topicName)
     {
         var parentGuidstring = LastRegexMatch(repliesPath, _guidRegex);
 
@@ -102,7 +103,7 @@ public partial class RepliesCollection : ControllerBase
         if (Guid.TryParse(parentGuidstring, out subReplayGUID) is false)        
             return BadRequest();        
 
-        var subReplay = await _repliesRepository.GetSubReplyById(subReplayGUID);
+        var subReplay = await _repliesRepository.GetReplayById(subReplayGUID);
 
         if(subReplay is null)        
             return NotFound();        
@@ -115,8 +116,8 @@ public partial class RepliesCollection : ControllerBase
         await _repliesRepository.Addreplay(newSubreply);
         await _repliesRepository.SaveChangesAsync();
 
-        var replyDto = _mapper.Map<ReplayDto>(newSubreply);
+        var replyDto = _mapper.Map<ReplyDto>(newSubreply);
 
-        return CreatedAtRoute("GetRepliesCollection",new { PostId, repliesPath }, replyDto);
+        return CreatedAtRoute("GetRepliesCollection",new { topicName, PostId, repliesPath }, replyDto);
     }
 }

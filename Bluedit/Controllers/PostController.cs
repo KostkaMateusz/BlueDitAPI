@@ -2,7 +2,8 @@
 using Bluedit.Domain.Entities;
 using Bluedit.Models.DataModels.PostDtos;
 using Bluedit.Services.Authentication;
-using Bluedit.Services.Repositories;
+using Bluedit.Services.Repositories.PostRepo;
+using Bluedit.Services.Repositories.TopicRepo;
 using Bluedit.Services.StorageService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,19 +22,25 @@ public class PostController : ControllerBase
     private readonly IAzureStorageService _azureStorageService;
     private readonly IUserContextService _userContextService;
     private readonly IMapper _mapper;
+    private readonly ITopicRepository _topicRepository;
 
-    public PostController(IPostRepository postRepository, IAzureStorageService azureStorageService, IUserContextService userContextService, IMapper mapper)
+    public PostController(IPostRepository postRepository, ITopicRepository topicRepository, IAzureStorageService azureStorageService, IUserContextService userContextService, IMapper mapper)
     {
         _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
         _azureStorageService = azureStorageService ?? throw new ArgumentNullException(nameof(azureStorageService));
         _userContextService = userContextService ?? throw new ArgumentNullException(nameof(userContextService));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _topicRepository= topicRepository ?? throw new ArgumentNullException( nameof(topicRepository));
     }
 
 
     [HttpPost]
     public async Task<ActionResult<PostInfoDto>> CreatePost([FromRoute] string topicName, [FromForm] PostCreateDto postCreateDto)
     {
+        var topicExist =await _topicRepository.GetTopicWithNameAsync(topicName);
+        if (topicExist is null)
+            return NotFound($"Topic with name {topicName} not found");
+
         //Save file to storage
         var imageNameGuid = Guid.NewGuid();
         await _azureStorageService.SaveFile(imageNameGuid, postCreateDto.image);

@@ -1,15 +1,14 @@
 ﻿using AutoMapper;
-using Bluedit.Entities;
 using Bluedit.Helpers.DataShaping;
 using Bluedit.Helpers.Pagination;
 using Bluedit.Models.DataModels.TopicDtos;
-using Bluedit.Services.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Newtonsoft.Json;
 using Bluedit.Domain.Entities;
+using Bluedit.Services.Repositories.TopicRepo;
 
 namespace Bluedit.Controllers;
 
@@ -59,6 +58,8 @@ public class TopicController : ControllerBase
     /// <returns>Action Result of type TopicCreateDto</returns>        
     /// <response code="409">When Topic with given name Already Exist</response>
     /// <response code="201">When Topic was created</response>
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     [HttpPost]
     [Authorize(Roles ="Admin")]
     public async Task<ActionResult<TopicCreateDto>> CreateTopic([FromBody] TopicCreateDto topicCreateDto)
@@ -84,6 +85,8 @@ public class TopicController : ControllerBase
     /// <returns>Action Result of type TopicInfoDto</returns>
     /// <response code="200">When Topic is present</response>
     /// <response code="404">When Topic does not exist</response>
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet("{topicName}",Name ="GetTopic")]
     public async Task<ActionResult<TopicInfoDto>> GetTopic([FromRoute] string topicName) 
     {
@@ -108,6 +111,8 @@ public class TopicController : ControllerBase
     /// <response code="404">When Topic does not exist</response>
     /// <response code="204">When Topic was deleted</response>
     /// <response code="403">When User is not authorized</response>
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpDelete("{topicName}")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult> DeleteTopic([FromRoute] string topicName)
@@ -130,6 +135,8 @@ public class TopicController : ControllerBase
     /// <response code="400">When Sorting or DataShaping fields are not valid</response>
     /// <response code="200">When list of topics is returned</response>
     /// <returns>Action Results</returns>
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpHead]
     [HttpGet(Name ="GetTopics")]
     public async Task<ActionResult<IEnumerable<TopicInfoDto>>> GetTopicsAsync([FromQuery] TopicResourceParameters topicResourceParameters)
@@ -185,10 +192,14 @@ public class TopicController : ControllerBase
     /// Allows to delete given topic with all its posts
     /// </summary>
     /// <param name="topicName">String with topic unique name</param>
+    /// <param name="patchDocument">Json PATCH Document</param>
     /// <returns>No content</returns>
     /// <response code="404">When Topic does not exist</response>
     /// <response code="400">When There is data validation problem</response>
     /// <response code="200">When Topic was edited</response>
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPatch("{topicName}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> PartiallyUpdateTopicDescription([FromRoute] string topicName,[FromBody] JsonPatchDocument<TopicForUpdateDto> patchDocument)

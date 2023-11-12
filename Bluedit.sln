@@ -5,7 +5,9 @@ VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bluedit", "Bluedit\Bluedit.csproj", "{38C26176-AA21-414E-A609-81014CAADF4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bluedit.Domain", "Bluedit.Domain\Bluedit.Domain.csproj", "{D3ECA3A2-3BA4-4440-896A-EFEC01C37B07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bluedit.Domain", "Bluedit.Domain\Bluedit.Domain.csproj", "{D3ECA3A2-3BA4-4440-896A-EFEC01C37B07}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bluedit.Infrastructure", "Bluedit.Infrastructure\Bluedit.Infrastructure.csproj", "{987F185D-BA8D-41C3-8925-6A540C2984E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{D3ECA3A2-3BA4-4440-896A-EFEC01C37B07}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3ECA3A2-3BA4-4440-896A-EFEC01C37B07}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3ECA3A2-3BA4-4440-896A-EFEC01C37B07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{987F185D-BA8D-41C3-8925-6A540C2984E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{987F185D-BA8D-41C3-8925-6A540C2984E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{987F185D-BA8D-41C3-8925-6A540C2984E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{987F185D-BA8D-41C3-8925-6A540C2984E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

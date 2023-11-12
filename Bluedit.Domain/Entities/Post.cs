@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Bluedit.Domain.Entities.LikeEntities;
+using Bluedit.Domain.Entities.ReplyEntities;
 
 namespace Bluedit.Domain.Entities;
 

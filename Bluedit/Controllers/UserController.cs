@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
-using Bluedit.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,9 +10,9 @@ using System.Text;
 using Microsoft.AspNetCore.Http.HttpResults;
 using FluentValidation.AspNetCore;
 using Bluedit.Models.DataModels.UserDtos;
-using Bluedit.Services.Repositories;
 using Bluedit.Services.Authentication;
 using Bluedit.Domain.Entities;
+using Bluedit.Services.Repositories.UserRepo;
 
 namespace Bluedit.Controllers;
 
@@ -72,11 +71,13 @@ public class UserController : ControllerBase
         if (user is null)
             return BadRequest("Invalid User Name or Password");
 
+        if(user.PasswordHash is null)
+            return BadRequest("Invalid User Name or Password");
+
         var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, loginUserDto.Password);
 
         if (result == PasswordVerificationResult.Failed)
             return BadRequest("Invalid User Name or Password");
-
 
         var claims = new List<Claim>()
         {
@@ -240,5 +241,4 @@ public class UserController : ControllerBase
 
         return StatusCode(StatusCodes.Status204NoContent);
     }
-
 }

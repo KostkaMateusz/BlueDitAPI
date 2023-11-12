@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Bluedit.Services.Repositories;
 using Bluedit.Domain.Entities;
 using Bluedit.Models.DataModels.ReplayDtos;
 using Bluedit.Services.Authentication;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
-using Bluedit.Domain.Entities.Replies;
+using Bluedit.Services.Repositories.PostRepo;
+using Bluedit.Services.Repositories.ReplyRepo;
+using Bluedit.Domain.Entities.ReplyEntities;
 
 namespace Bluedit.Controllers;
 
@@ -29,22 +30,22 @@ public class RepliesController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpGet("{replayID}", Name = "GetReplayDetails")]
-    public async Task<ActionResult<ReplayDto>> GetReplay([FromRoute] Guid replayID)
+    [HttpGet("{replyId}", Name = "GetReplayDetails")]
+    public async Task<ActionResult<ReplyDto>> GetReplay([FromRoute] Guid replyId)
     {
-        var replay=await _repliesRepository.GetReplayById(replayID);
+        var replay=await _repliesRepository.GetReplayById(replyId);
 
         if(replay is null)        
             return NotFound();        
 
-        var replayDto = _mapper.Map<ReplayDto>(replay);
+        var replayDto = _mapper.Map<ReplyDto>(replay);
 
         return Ok(replayDto);
     }
 
 
-    [HttpPost]
-    public async Task<ActionResult<ReplayDto>> CreateReplytoReplay([FromBody] CreateSingleReplyDto createReplayDto, [FromRoute] Guid PostId, [FromRoute] string topicName)
+    [HttpPost("{replyId}")]
+    public async Task<ActionResult<ReplyDto>> CreateReplytoReplay([FromBody] CreateSingleReplyDto createReplayDto, [FromRoute] Guid PostId, [FromRoute] string topicName)
     {
         ReplyBase? parentReply=null;
         Post? parentPost=null;
@@ -80,20 +81,20 @@ public class RepliesController : ControllerBase
 
         await _repliesRepository.SaveChangesAsync();
 
-        return CreatedAtRoute("GetReplayDetails", new { PostId=PostId, replayID=replyId, topicName= topicName }, createReplayDto);        
+        return CreatedAtRoute("GetReplayDetails", new { PostId=PostId, replyId=replyId, topicName= topicName }, createReplayDto);        
     }
 
-    [HttpDelete("{replayID}")]
-    public async Task<IActionResult> DeleteReplyTree([FromRoute] Guid replayID)
+    [HttpDelete("{replyId}")]
+    public async Task<IActionResult> DeleteReplyTree([FromRoute] Guid replyId)
     {
-        var replay = await _repliesRepository.GetReplayById(replayID);
+        var replay = await _repliesRepository.GetReplayById(replyId);
         if (replay is null)        
             return NotFound();        
 
         //Check root replay ownerhip
         var userId = _userContextService.GetUserId;
         if(replay.UserId != userId)        
-            return Unauthorized($"User: {userId} is not authorized to delete replay:{replayID}");
+            return Unauthorized($"User: {userId} is not authorized to delete replay:{replyId}");
         
         await _repliesRepository.DeleteReplayTree(replay);
         await _repliesRepository.SaveChangesAsync();
@@ -101,32 +102,32 @@ public class RepliesController : ControllerBase
         return NoContent();
     }
 
-    [HttpPut("{replayID}")]
-    public async Task<ActionResult<ReplayDto>> UpdateReply([FromRoute] Guid replayID, [FromBody] UpdateReplyDto updateReply)
+    [HttpPut("{replyId}")]
+    public async Task<ActionResult<ReplyDto>> UpdateReply([FromRoute] Guid replyId, [FromBody] UpdateReplyDto updateReply)
     {
-        var replay = await _repliesRepository.GetReplayById(replayID);
+        var replay = await _repliesRepository.GetReplayById(replyId);
         if (replay is null)        
             return NotFound();        
 
         //Check replay ownerhip
         var userId = _userContextService.GetUserId;
         if (replay.UserId != userId)        
-            return Unauthorized($"User: {userId} is not authorized to modify replay:{replayID}");
+            return Unauthorized($"User: {userId} is not authorized to modify replay:{replyId}");
         
         replay.Description = updateReply.Description;
         
         _repliesRepository.UpdateReply(replay);
         await _repliesRepository.SaveChangesAsync();
 
-        var replyDto=_mapper.Map<ReplayDto>(replay);
+        var replyDto=_mapper.Map<ReplyDto>(replay);
 
         return Ok(replyDto);
     }
 
-    [HttpPatch("{replayID}")]
-    public async Task<ActionResult<UpdateReplyDto>> PartialyUpdateReply([FromRoute] Guid replayID, [FromBody] JsonPatchDocument<UpdateReplyDto> patchDocument)
+    [HttpPatch("{replyId}")]
+    public async Task<ActionResult<UpdateReplyDto>> PartialyUpdateReply([FromRoute] Guid replyId, [FromBody] JsonPatchDocument<UpdateReplyDto> patchDocument)
     {
-        var replayFromRepo = await _repliesRepository.GetReplayById(replayID);
+        var replayFromRepo = await _repliesRepository.GetReplayById(replyId);
         
         if (replayFromRepo is null)        
             return NotFound();
@@ -134,7 +135,7 @@ public class RepliesController : ControllerBase
         //Check replay ownerhip
         var userId = _userContextService.GetUserId;
         if (replayFromRepo.UserId != userId)        
-            return Unauthorized($"User: {userId} is not authorized to modify replay:{replayID}");
+            return Unauthorized($"User: {userId} is not authorized to modify replay:{replyId}");
 
         var replyToPatch = _mapper.Map<UpdateReplyDto>(replayFromRepo);
         patchDocument.ApplyTo(replyToPatch, ModelState);

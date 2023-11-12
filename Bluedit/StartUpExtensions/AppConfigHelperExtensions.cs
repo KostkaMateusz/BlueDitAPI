@@ -1,11 +1,8 @@
-﻿using Bluedit.Entities;
-using Bluedit.Helpers.DataShaping;
+﻿using Bluedit.Helpers.DataShaping;
 using Bluedit.Helpers.Sorting;
 using Bluedit.Models.DataModels.UserDtos;
 using Bluedit.Models.ModelsValidators;
 using Bluedit.Services.Authentication;
-using Bluedit.Services.Repositories;
-using Bluedit.Services.StorageService;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +12,13 @@ using Newtonsoft.Json.Serialization;
 using System.Reflection;
 using System.Text;
 using Bluedit.Domain.Entities;
+using Bluedit.Services.Repositories.PostRepo;
+using Bluedit.Services.Repositories.LikeRepo;
+using Bluedit.Services.Repositories.ReplyRepo;
+using Bluedit.Services.Repositories.TopicRepo;
+using Bluedit.Services.Repositories.UserRepo;
+using Bluedit.Infrastructure;
+using Bluedit.Domain.Entities.LikeEntities;
 
 namespace Bluedit.StartUpExtensions;
 
@@ -22,7 +26,7 @@ internal static class AppConfigHelperExtensions
 {
     public static WebApplicationBuilder AddDataBaseContext(this WebApplicationBuilder builder)
     {
-        builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnectionString")));
+        builder.Services.AddDbContext<BlueditDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnectionString")));
 
         return builder;
     }
@@ -131,7 +135,8 @@ internal static class AppConfigHelperExtensions
         builder.Services.AddScoped<ILikesRepository<PostLike>, LikesRepository<PostLike>>();
         builder.Services.AddScoped<ILikesRepository<ReplyLike>, LikesRepository<ReplyLike>>();
 
-        builder.Services.AddSingleton<IAzureStorageService, AzureStorageService>();
+        //Add Azure Blob Service
+        builder.Services.AddInfrastructureServices();
 
         //data shaping
         builder.Services.AddTransient<IPropertyCheckerService, PropertyCheckerService>();
