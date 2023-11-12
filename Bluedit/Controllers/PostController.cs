@@ -226,17 +226,19 @@ public class PostController : ControllerBase
 
 
     /// <summary>
-    /// Partually Update Given Topic
+    /// Partialy Update Given Topic
     /// </summary>
-    /// <param name="topicName">String with topic unique name</param>
+    /// <param name="postId">Post Id</param>
     /// <param name="patchDocument">Json PATCH Document</param>
-    /// <returns>No content</returns>
+    /// <returns>Action Result</returns>
     /// <response code="404">When Topic does not exist</response>
     /// <response code="400">When There is data validation problem</response>
+    /// <response code="403">When access is not authorised</response>
     /// <response code="200">When Topic was edited</response>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [HttpPatch("{postId}")]
     public async Task<IActionResult> PartialyUpdatePost([FromRoute] Guid postId, [FromBody] JsonPatchDocument<PartialyUpdatePostDto> patchDocument)
     {
