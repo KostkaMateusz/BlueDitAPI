@@ -17,18 +17,24 @@ public class PostRepository : IPostRepository
         return await _dbContext.Posts.Include(p => p.User).Where(p => p.TopicName == topic).ToListAsync();
     }
 
-    public async Task<bool> PostWithGivenIdExist(Guid postId)
+    public async Task<bool> PostWithGivenIdExistAsync(Guid postId)
     {
         return await _dbContext.Posts.AnyAsync(post => post.PostId == postId);
     }
 
+    public async Task<Post> LoadPostRepliesAsync(Post post)
+    {
+        await _dbContext.Entry(post).Collection(p=>p.Reply).LoadAsync();
+
+        return post;
+    }
 
     public async Task<Post?> GetPostByIdAsync(Guid postId)
     {
         return await _dbContext.Posts.FirstOrDefaultAsync(post => post.PostId == postId);
     }
 
-    public async Task LoadPostUser(Post post)
+    public async Task LoadPostUserAsync(Post post)
     {
         if (post is null)
             throw new ArgumentNullException(nameof(post));
@@ -44,13 +50,13 @@ public class PostRepository : IPostRepository
         _dbContext.Posts.Update(post);
     }
 
-    public async Task AddPost(Post post)
+    public async Task AddPostAsync(Post post)
     {
         await _dbContext.Posts.AddAsync(post);
     }
 
     public void DeletePost(Post post)
-    {
+    {        
         if (post is null)
             throw new ArgumentNullException(nameof(post));
 

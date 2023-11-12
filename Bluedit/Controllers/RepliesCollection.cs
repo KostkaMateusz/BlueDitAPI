@@ -46,7 +46,7 @@ public partial class RepliesCollection : ControllerBase
     [AllowAnonymous]
     public async Task<ActionResult<ReplyDto>> GetPostreplies(Guid PostId)
     {
-        var postExist = await _postRepository.PostWithGivenIdExist(PostId);
+        var postExist = await _postRepository.PostWithGivenIdExistAsync(PostId);
         if (postExist is false)
             return NotFound();
 
@@ -62,7 +62,7 @@ public partial class RepliesCollection : ControllerBase
     {
         var userId = _userContextService.GetUserId;
 
-        if (await _postRepository.PostWithGivenIdExist(PostId) is not true)
+        if (await _postRepository.PostWithGivenIdExistAsync(PostId) is not true)
             return NotFound();
 
         var newReplie = new Reply { Description = createPostReplayDto.Description, UserId = userId, ParentPostId = PostId };

@@ -2,7 +2,6 @@
 using Bluedit.Domain.Entities.ReplyEntities;
 using Bluedit.Models.DataModels.ReplayDtos;
 using Bluedit.Services.Authentication;
-using Bluedit.Services.Repositories.PostRepo;
 using Bluedit.Services.Repositories.ReplyRepo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -17,14 +16,12 @@ public class RepliesController : ControllerBase
 {
     private readonly IRepliesRepository _repliesRepository;
     private readonly IUserContextService _userContextService;
-    private readonly IPostRepository _postRepository;
     private readonly IMapper _mapper;
 
-    public RepliesController(IRepliesRepository repliesRepository, IUserContextService userContextService, IPostRepository postRepository, IMapper mapper)
+    public RepliesController(IRepliesRepository repliesRepository, IUserContextService userContextService, IMapper mapper)
     {
         _repliesRepository = repliesRepository ?? throw new ArgumentNullException(nameof(repliesRepository));
         _userContextService = userContextService ?? throw new ArgumentNullException(nameof(userContextService));
-        _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 

@@ -4,6 +4,7 @@ using Bluedit.Infrastructure.StorageService;
 using Bluedit.Models.DataModels.PostDtos;
 using Bluedit.Services.Authentication;
 using Bluedit.Services.Repositories.PostRepo;
+using Bluedit.Services.Repositories.ReplyRepo;
 using Bluedit.Services.Repositories.TopicRepo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,17 +24,36 @@ public class PostController : ControllerBase
     private readonly IUserContextService _userContextService;
     private readonly IMapper _mapper;
     private readonly ITopicRepository _topicRepository;
+    private readonly IRepliesRepository _repliesRepository;
 
-    public PostController(IPostRepository postRepository, ITopicRepository topicRepository, IAzureStorageService azureStorageService, IUserContextService userContextService, IMapper mapper)
+    public PostController(IPostRepository postRepository, ITopicRepository topicRepository,IRepliesRepository repliesRepository ,IAzureStorageService azureStorageService, IUserContextService userContextService, IMapper mapper)
     {
         _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
         _azureStorageService = azureStorageService ?? throw new ArgumentNullException(nameof(azureStorageService));
         _userContextService = userContextService ?? throw new ArgumentNullException(nameof(userContextService));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _topicRepository = topicRepository ?? throw new ArgumentNullException(nameof(topicRepository));
+        _repliesRepository = repliesRepository ?? throw new ArgumentNullException(nameof(repliesRepository));
     }
 
+    private string? GetLinkToImage(string topicName, Guid postId)
+    {
+        const string imageFuncName = "GetImage";
+        var navigationParametersObject = new { topicName, postId };
 
+        return Url.Link(imageFuncName, navigationParametersObject);
+    }
+
+    /// <summary>
+    /// Create New Post
+    /// </summary>
+    /// <param name="topicName">Topic where new post will be creted</param>
+    /// <param name="postCreateDto">Post data</param>
+    /// <response code="404">When parent topic is not found</response>
+    /// <response code="201">When resource is created</response>
+    /// <returns>Action Results</returns>
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpPost]
     public async Task<ActionResult<PostInfoDto>> CreatePost([FromRoute] string topicName, [FromForm] PostCreateDto postCreateDto)
     {
@@ -54,9 +74,9 @@ public class PostController : ControllerBase
             TopicName = topicName
         };
 
-        await _postRepository.AddPost(post);
+        await _postRepository.AddPostAsync(post);
         await _postRepository.SaveChangesAsync();
-        await _postRepository.LoadPostUser(post);
+        await _postRepository.LoadPostUserAsync(post);
 
         var postDto = _mapper.Map<PostInfoDto>(post);
         postDto.ImageContentLink = GetLinkToImage(topicName, post.PostId);
@@ -64,6 +84,15 @@ public class PostController : ControllerBase
         return CreatedAtRoute("GetPostInfo", new { topicName, post.PostId }, postDto);
     }
 
+    /// <summary>
+    /// Get Posts by Topic Name
+    /// </summary>
+    /// <param name="topicName">Topic where new post will be creted</param>
+    /// <response code="404">When topic is not found</response>
+    /// <response code="200">When resource present</response>
+    /// <returns>Action Results</returns>
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet]
     [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<PostInfoDto>>> GetAllMainTopicPosts([FromRoute] string topicName)
@@ -83,7 +112,16 @@ public class PostController : ControllerBase
         return Ok(postsDtos);
     }
 
-
+    /// <summary>
+    /// Get Post Details
+    /// </summary>
+    /// <param name="topicName">Topic where new post will be creted</param>
+    /// <param name="postId">Post Id</param>
+    /// <response code="404">When topic is not found</response>
+    /// <response code="200">When resource present</response>
+    /// <returns>Action Results</returns>
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet("{postId}", Name = "GetPostInfo")]
     [AllowAnonymous]
     public async Task<ActionResult<PostInfoDto>> GetPostInfo([FromRoute] string topicName, [FromRoute] Guid postId)
@@ -93,7 +131,7 @@ public class PostController : ControllerBase
         if (post is null)
             return NotFound();
 
-        await _postRepository.LoadPostUser(post);
+        await _postRepository.LoadPostUserAsync(post);
 
         var postDto = _mapper.Map<PostInfoDto>(post);
 
@@ -102,15 +140,15 @@ public class PostController : ControllerBase
         return Ok(postDto);
     }
 
-    private string GetLinkToImage(string topicName, Guid postId)
-    {
-        const string imageFuncName = "GetImage";
-        var navigationParametersObject = new { topicName, postId };
-
-        return Url.Link(imageFuncName, navigationParametersObject);
-    }
-
-
+    /// <summary>
+    /// Get Post Image
+    /// </summary>
+    /// <param name="postId">Post Id</param>
+    /// <response code="404">When Image is not found</response>
+    /// <response code="200">When resource present</response>
+    /// <returns>Action Results</returns>
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet("{postId}/image", Name = "GetImage")]
     [AllowAnonymous]
     public async Task<IActionResult> GetImage([FromRoute] Guid postId)
@@ -132,6 +170,19 @@ public class PostController : ControllerBase
         return File(imageData, contentType);
     }
 
+    /// <summary>
+    /// Update Post
+    /// </summary>
+    /// <param name="postId">Post Id</param>
+    /// <param name="topicName">Topic Name</param>
+    /// <param name="postUpdateDto">Data for post update</param>
+    /// <response code="404">When Image is not found</response>
+    /// <response code="403">When access is not authorised</response>
+    /// <response code="200">When resource present</response>
+    /// <returns>Action Results</returns>
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [HttpPut("{postId}")]
     public async Task<ActionResult<PostInfoDto>> UpdatePost([FromRoute] string topicName, [FromRoute] Guid postId, [FromForm] PostUpdateDto postUpdateDto)
     {
@@ -169,27 +220,47 @@ public class PostController : ControllerBase
         return Ok(postDto);
     }
 
-    //[HttpPatch]
-    //public async Task<ActionResult> PartialyUpdatePost([FromForm] JsonPatchDocument)
-    //{
+    [HttpPatch]
+    public async Task<ActionResult> PartialyUpdatePost()
+    {
+        throw new NotImplementedException();
+    }
 
-    //}
 
-    // Get Post Replies
-    // Create Post Replay
-
+    /// <summary>
+    /// Delete Post
+    /// </summary>
+    /// <param name="postId">Post Id</param>
+    /// <response code="404">When Post is not found</response>
+    /// <response code="403">When access is not authorised</response>
+    /// <response code="204">When resource were sucesfully deleted</response>
+    /// <returns>Action Results</returns>
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [HttpDelete("{postId}")]
     public async Task<ActionResult> DeletePost([FromRoute] Guid postId)
     {
-
-        throw new NotImplementedException();
         var post = await _postRepository.GetPostByIdAsync(postId);
 
         if (post is null)
             return NotFound();
 
+        var postReplies = (await _postRepository.LoadPostRepliesAsync(post)).Reply;
+
+        if (_userContextService.GetUserId != post.UserId)
+            return Forbid("You are not an owner of this resource");
+                
+        foreach (var postReply in postReplies)
+        {
+             await _repliesRepository.DeleteReplayTree(postReply);
+        }
+
+        _postRepository.DeletePost(post);
+
+        await _postRepository.SaveChangesAsync();
+
         return NoContent();
     }
-
 
 }

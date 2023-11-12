@@ -4,11 +4,13 @@ namespace Bluedit.Services.Repositories.PostRepo;
 
 public interface IPostRepository
 {
-    Task AddPost(Post post);
+    Task AddPostAsync(Post post);
     Task<IEnumerable<Post?>?> GetAllPostsByTopicAsync(string topic);
     Task<Post?> GetPostByIdAsync(Guid postId);
-    Task LoadPostUser(Post post);
+    Task LoadPostUserAsync(Post post);
     Task<bool> SaveChangesAsync();
     void UpdatePost(Post post);
-    Task<bool> PostWithGivenIdExist(Guid postId);
+    Task<bool> PostWithGivenIdExistAsync(Guid postId);
+    void DeletePost(Post post);
+    Task<Post> LoadPostRepliesAsync(Post post);
 }
