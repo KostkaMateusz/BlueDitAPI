@@ -7,7 +7,7 @@ public static class ObjectExtensions
 {
     public static ExpandoObject ShapeData<TSource>(this TSource source, string? fields)
     {
-        if(source is null)
+        if (source is null)
             throw new ArgumentNullException(nameof(source));
 
         var dataShapedObject = new ExpandoObject();
@@ -18,7 +18,7 @@ public static class ObjectExtensions
             var propertyInfos = typeof(TSource).GetProperties(
                 BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 
-            foreach( var propertyInfo in propertyInfos)
+            foreach (var propertyInfo in propertyInfos)
             {
                 // get the value of the property on the source object
                 var propertyValue = propertyInfo.GetValue(source);
@@ -46,9 +46,9 @@ public static class ObjectExtensions
             var propertyInfo = typeof(TSource).GetProperty(propertyName,
                 BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 
-            if (propertyInfo is null)            
+            if (propertyInfo is null)
                 throw new Exception($"Property {propertyName} wasn't found on {typeof(TSource)}");
-            
+
             // get the value of the property on the source object
             var propertyValue = propertyInfo.GetValue(source);
 

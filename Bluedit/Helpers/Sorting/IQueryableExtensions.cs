@@ -6,7 +6,7 @@ namespace Bluedit.Helpers.Sorting;
 public static class IQueryableExtensions
 {
     public static IQueryable<T> ApplySort<T>(
-        this IQueryable<T> source, 
+        this IQueryable<T> source,
         string orderBy,
         Dictionary<string, PropertyMappingValue> mappingDictionary)
     {

@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
+using Bluedit.Domain.Entities;
 using Bluedit.Helpers.DataShaping;
 using Bluedit.Helpers.Pagination;
 using Bluedit.Models.DataModels.TopicDtos;
+using Bluedit.Services.Repositories.TopicRepo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Newtonsoft.Json;
-using Bluedit.Domain.Entities;
-using Bluedit.Services.Repositories.TopicRepo;
 
 namespace Bluedit.Controllers;
 
@@ -20,13 +20,13 @@ public class TopicController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IPropertyCheckerService _propertyCheckerService;
     private readonly ProblemDetailsFactory _problemDetailsFactory;
-    
+
     public TopicController(ITopicRepository topicRepository, IMapper mapper, IPropertyCheckerService propertyCheckerService, ProblemDetailsFactory problemDetailsFactory)
     {
         _topicRepository = topicRepository ?? throw new ArgumentNullException(nameof(topicRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _propertyCheckerService = propertyCheckerService ?? throw new ArgumentNullException(nameof(propertyCheckerService));
-        _problemDetailsFactory = problemDetailsFactory ??    throw new ArgumentNullException(nameof(problemDetailsFactory));
+        _problemDetailsFactory = problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
     }
 
     private string? CreateTopicResourceUri(TopicResourceParameters topicResourceParameters, ResourceUriType type)
@@ -61,13 +61,13 @@ public class TopicController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [HttpPost]
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<TopicCreateDto>> CreateTopic([FromBody] TopicCreateDto topicCreateDto)
     {
-        var topicExit=await _topicRepository.IsTopicExistAsync(topicCreateDto.TopicName);
+        var topicExit = await _topicRepository.IsTopicExistAsync(topicCreateDto.TopicName);
 
-        if(topicExit is true)                    
-            return Conflict("Topic with given name Already Exist");        
+        if (topicExit is true)
+            return Conflict("Topic with given name Already Exist");
 
         var topicEntity = new Topic { TopicName = topicCreateDto.TopicName, TopicDescription = topicCreateDto.TopicDescription };
 
@@ -75,7 +75,7 @@ public class TopicController : ControllerBase
         await _topicRepository.CreateTopicAync(topicEntity);
         await _topicRepository.SaveChangesAsync();
 
-        return CreatedAtRoute("GetTopic", new {topicName= topicCreateDto.TopicName },topicCreateDto);
+        return CreatedAtRoute("GetTopic", new { topicName = topicCreateDto.TopicName }, topicCreateDto);
     }
 
     /// <summary>
@@ -87,8 +87,8 @@ public class TopicController : ControllerBase
     /// <response code="404">When Topic does not exist</response>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [HttpGet("{topicName}",Name ="GetTopic")]
-    public async Task<ActionResult<TopicInfoDto>> GetTopic([FromRoute] string topicName) 
+    [HttpGet("{topicName}", Name = "GetTopic")]
+    public async Task<ActionResult<TopicInfoDto>> GetTopic([FromRoute] string topicName)
     {
         var topic = await _topicRepository.GetTopicWithNameAsync(topicName);
 
@@ -97,7 +97,7 @@ public class TopicController : ControllerBase
 
         var topicInfoDto = _mapper.Map<TopicInfoDto>(topic);
 
-        topicInfoDto.PostCount= await _topicRepository.GetTopicPostsCountAsync(topicName);
+        topicInfoDto.PostCount = await _topicRepository.GetTopicPostsCountAsync(topicName);
 
         return Ok(topicInfoDto);
     }
@@ -117,9 +117,9 @@ public class TopicController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult> DeleteTopic([FromRoute] string topicName)
     {
-        var topicToDelete =await _topicRepository.GetTopicWithNameAsync(topicName);
+        var topicToDelete = await _topicRepository.GetTopicWithNameAsync(topicName);
 
-        if (topicToDelete is null) 
+        if (topicToDelete is null)
             return NotFound();
 
         _topicRepository.DeleteTopicAsync(topicToDelete);
@@ -138,15 +138,15 @@ public class TopicController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpHead]
-    [HttpGet(Name ="GetTopics")]
+    [HttpGet(Name = "GetTopics")]
     public async Task<ActionResult<IEnumerable<TopicInfoDto>>> GetTopicsAsync([FromQuery] TopicResourceParameters topicResourceParameters)
     {
         // check if requested fields for data shape are valid
-        if (_propertyCheckerService.TypeHasProperties<TopicInfoDto> (topicResourceParameters.Fields) is false)
+        if (_propertyCheckerService.TypeHasProperties<TopicInfoDto>(topicResourceParameters.Fields) is false)
         {
             var problemWithFields = _problemDetailsFactory.CreateProblemDetails(HttpContext, statusCode: 400,
                 detail: $"Not all requested data shaping fields exist on the resource: {topicResourceParameters.Fields}");
-            
+
             return BadRequest(problemWithFields);
         }
 
@@ -160,10 +160,10 @@ public class TopicController : ControllerBase
         }
 
         // get topic from repo
-        var topicsFromRepo =await _topicRepository.GetAllTopicAsync(topicResourceParameters);
+        var topicsFromRepo = await _topicRepository.GetAllTopicAsync(topicResourceParameters);
 
         //calculate prev site if exist
-        var previousPageLink = topicsFromRepo.HasPrevious ? 
+        var previousPageLink = topicsFromRepo.HasPrevious ?
             CreateTopicResourceUri(topicResourceParameters, ResourceUriType.PreviousPage) : null;
         //calculate next site if exist
         var nextPageLink = topicsFromRepo.HasNext ?
@@ -176,7 +176,7 @@ public class TopicController : ControllerBase
         var topicInfoDtos = _mapper.Map<IEnumerable<TopicInfoDto>>(topicsFromRepo);
 
         //shape data
-        var shapedTopicInfoDtos= topicInfoDtos.ShapeData(topicResourceParameters.Fields);
+        var shapedTopicInfoDtos = topicInfoDtos.ShapeData(topicResourceParameters.Fields);
 
         return Ok(shapedTopicInfoDtos);
     }
@@ -202,9 +202,9 @@ public class TopicController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPatch("{topicName}")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> PartiallyUpdateTopicDescription([FromRoute] string topicName,[FromBody] JsonPatchDocument<TopicForUpdateDto> patchDocument)
+    public async Task<IActionResult> PartiallyUpdateTopicDescription([FromRoute] string topicName, [FromBody] JsonPatchDocument<TopicForUpdateDto> patchDocument)
     {
-        var topicFromRepo= await _topicRepository.GetTopicWithNameAsync(topicName);
+        var topicFromRepo = await _topicRepository.GetTopicWithNameAsync(topicName);
 
         if (topicFromRepo is null)
             return NotFound();

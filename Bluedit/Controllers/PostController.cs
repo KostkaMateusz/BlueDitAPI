@@ -30,14 +30,14 @@ public class PostController : ControllerBase
         _azureStorageService = azureStorageService ?? throw new ArgumentNullException(nameof(azureStorageService));
         _userContextService = userContextService ?? throw new ArgumentNullException(nameof(userContextService));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _topicRepository= topicRepository ?? throw new ArgumentNullException( nameof(topicRepository));
+        _topicRepository = topicRepository ?? throw new ArgumentNullException(nameof(topicRepository));
     }
 
 
     [HttpPost]
     public async Task<ActionResult<PostInfoDto>> CreatePost([FromRoute] string topicName, [FromForm] PostCreateDto postCreateDto)
     {
-        var topicExist =await _topicRepository.GetTopicWithNameAsync(topicName);
+        var topicExist = await _topicRepository.GetTopicWithNameAsync(topicName);
         if (topicExist is null)
             return NotFound($"Topic with name {topicName} not found");
 
@@ -135,12 +135,12 @@ public class PostController : ControllerBase
     [HttpPut("{postId}")]
     public async Task<ActionResult<PostInfoDto>> UpdatePost([FromRoute] string topicName, [FromRoute] Guid postId, [FromForm] PostUpdateDto postUpdateDto)
     {
-        var postForUpdateFromRepo=await _postRepository.GetPostByIdAsync(postId);
-        
-        if(postForUpdateFromRepo is null)
+        var postForUpdateFromRepo = await _postRepository.GetPostByIdAsync(postId);
+
+        if (postForUpdateFromRepo is null)
             return NotFound();
 
-        if(_userContextService.GetUserId != postForUpdateFromRepo.UserId)
+        if (_userContextService.GetUserId != postForUpdateFromRepo.UserId)
             return Forbid("You are not an owner of this resource");
 
         //Save new image to storage
@@ -148,13 +148,13 @@ public class PostController : ControllerBase
         await _azureStorageService.SaveFile(imageNameGuid, postUpdateDto.image);
         //delete old file
         await _azureStorageService.DeleteImage(postForUpdateFromRepo.ImageGuid);
-        
+
         // update edited field
         postForUpdateFromRepo.UpdateDate = DateTime.Now;
 
         //set new image GUID
         postForUpdateFromRepo.ImageGuid = imageNameGuid;
-        
+
         // map dto to Post
         _mapper.Map(postUpdateDto, postForUpdateFromRepo);
 
@@ -163,7 +163,7 @@ public class PostController : ControllerBase
         await _postRepository.SaveChangesAsync();
 
         // create external dto
-        var postDto=_mapper.Map<PostInfoDto>(postForUpdateFromRepo);
+        var postDto = _mapper.Map<PostInfoDto>(postForUpdateFromRepo);
         postDto.ImageContentLink = GetLinkToImage(topicName, postForUpdateFromRepo.PostId);
 
         return Ok(postDto);

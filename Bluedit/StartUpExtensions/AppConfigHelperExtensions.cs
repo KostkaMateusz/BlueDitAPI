@@ -1,8 +1,16 @@
-﻿using Bluedit.Helpers.DataShaping;
+﻿using Bluedit.Domain.Entities;
+using Bluedit.Domain.Entities.LikeEntities;
+using Bluedit.Helpers.DataShaping;
 using Bluedit.Helpers.Sorting;
+using Bluedit.Infrastructure;
 using Bluedit.Models.DataModels.UserDtos;
 using Bluedit.Models.ModelsValidators;
 using Bluedit.Services.Authentication;
+using Bluedit.Services.Repositories.LikeRepo;
+using Bluedit.Services.Repositories.PostRepo;
+using Bluedit.Services.Repositories.ReplyRepo;
+using Bluedit.Services.Repositories.TopicRepo;
+using Bluedit.Services.Repositories.UserRepo;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,14 +19,6 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
 using System.Text;
-using Bluedit.Domain.Entities;
-using Bluedit.Services.Repositories.PostRepo;
-using Bluedit.Services.Repositories.LikeRepo;
-using Bluedit.Services.Repositories.ReplyRepo;
-using Bluedit.Services.Repositories.TopicRepo;
-using Bluedit.Services.Repositories.UserRepo;
-using Bluedit.Infrastructure;
-using Bluedit.Domain.Entities.LikeEntities;
 
 namespace Bluedit.StartUpExtensions;
 
@@ -83,8 +83,8 @@ internal static class AppConfigHelperExtensions
                     new OpenApiSecurityScheme
                     {
                         Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = "PostGramApiBearerAuth" }
-                    }, new List<string>() 
-                }                
+                    }, new List<string>()
+                }
             });
         });
 
@@ -141,7 +141,7 @@ internal static class AppConfigHelperExtensions
         //data shaping
         builder.Services.AddTransient<IPropertyCheckerService, PropertyCheckerService>();
         //sorting
-        builder.Services.AddTransient<IPropertyMappingService,PropertyMappingService>();
+        builder.Services.AddTransient<IPropertyMappingService, PropertyMappingService>();
 
         return builder;
     }

@@ -1,5 +1,5 @@
-﻿using Bluedit.Models.DataModels.TopicDtos;
-using Bluedit.Domain.Entities;
+﻿using Bluedit.Domain.Entities;
+using Bluedit.Models.DataModels.TopicDtos;
 
 namespace Bluedit.Helpers.Sorting;
 
@@ -17,7 +17,7 @@ public class PropertyMappingService : IPropertyMappingService
 
     public PropertyMappingService()
     {
-        _propertyMappings.Add(new PropertyMapping<TopicInfoDto, Topic>( _authorPropertyMapping));
+        _propertyMappings.Add(new PropertyMapping<TopicInfoDto, Topic>(_authorPropertyMapping));
     }
 
     public Dictionary<string, PropertyMappingValue> GetPropertyMapping
@@ -26,8 +26,8 @@ public class PropertyMappingService : IPropertyMappingService
         // get matching mapping
         var matchingMapping = _propertyMappings.OfType<PropertyMapping<TSource, TDestination>>();
 
-        if (matchingMapping.Count() == 1)        
-            return matchingMapping.First().MappingDictionary;        
+        if (matchingMapping.Count() == 1)
+            return matchingMapping.First().MappingDictionary;
 
         throw new Exception($"Cannot find exact property mapping instance for <{typeof(TSource)},{typeof(TDestination)}");
     }
@@ -37,7 +37,7 @@ public class PropertyMappingService : IPropertyMappingService
         var propertyMapping = GetPropertyMapping<TSource, TDestination>();
 
         if (string.IsNullOrWhiteSpace(fields))
-            return true;        
+            return true;
 
         // the string is separated by ",", so we split it.
         var fieldsAfterSplit = fields.Split(',');
@@ -52,11 +52,11 @@ public class PropertyMappingService : IPropertyMappingService
             // are coming from an orderBy string, this part must be 
             // ignored
             var indexOfFirstSpace = trimmedField.IndexOf(" ");
-            var propertyName = indexOfFirstSpace == -1 ?  trimmedField : trimmedField.Remove(indexOfFirstSpace);
+            var propertyName = indexOfFirstSpace == -1 ? trimmedField : trimmedField.Remove(indexOfFirstSpace);
 
             // find the matching property
-            if (!propertyMapping.ContainsKey(propertyName))            
-                return false;            
+            if (!propertyMapping.ContainsKey(propertyName))
+                return false;
         }
 
         return true;

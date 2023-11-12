@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Bluedit.Domain.Entities;
+﻿using Bluedit.Domain.Entities;
 using Bluedit.Domain.Entities.LikeEntities;
 using Bluedit.Domain.Entities.ReplyEntities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bluedit;
 

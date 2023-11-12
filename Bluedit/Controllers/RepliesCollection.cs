@@ -47,8 +47,8 @@ public partial class RepliesCollection : ControllerBase
     public async Task<ActionResult<ReplyDto>> GetPostreplies(Guid PostId)
     {
         var postExist = await _postRepository.PostWithGivenIdExist(PostId);
-        if (postExist is false)        
-            return NotFound();        
+        if (postExist is false)
+            return NotFound();
 
         var replies = await _repliesRepository.GetRepliesByParentPostId(PostId);
 
@@ -82,17 +82,17 @@ public partial class RepliesCollection : ControllerBase
 
         Guid lastGuid;
 
-        if (Guid.TryParse(parentGuidstring, out lastGuid) is false)        
+        if (Guid.TryParse(parentGuidstring, out lastGuid) is false)
             return BadRequest();
-        
+
         //add exist check
-        var replies= await _repliesRepository.GetSubRepliesByParentReplayId(lastGuid);
+        var replies = await _repliesRepository.GetSubRepliesByParentReplayId(lastGuid);
 
         var repliesDto = _mapper.Map<IEnumerable<ReplyDto>>(replies);
-        
+
         return Ok(repliesDto);
     }
-            
+
     [HttpPost("{**repliesPath}")]
     public async Task<ActionResult<ReplyDto>> Get2Replies([FromRoute] string repliesPath, [FromBody] CreateReplyDto createReplayDto, [FromRoute] Guid PostId, [FromRoute] string topicName)
     {
@@ -100,14 +100,14 @@ public partial class RepliesCollection : ControllerBase
 
         Guid subReplayGUID;
 
-        if (Guid.TryParse(parentGuidstring, out subReplayGUID) is false)        
-            return BadRequest();        
+        if (Guid.TryParse(parentGuidstring, out subReplayGUID) is false)
+            return BadRequest();
 
         var subReplay = await _repliesRepository.GetReplyById(subReplayGUID);
 
-        if(subReplay is null)        
-            return NotFound();        
-        
+        if (subReplay is null)
+            return NotFound();
+
         var newSubreply = _mapper.Map<SubReplay>(createReplayDto);
 
         newSubreply.UserId = _userContextService.GetUserId;
@@ -118,6 +118,6 @@ public partial class RepliesCollection : ControllerBase
 
         var replyDto = _mapper.Map<ReplyDto>(newSubreply);
 
-        return CreatedAtRoute("GetRepliesCollection",new { topicName, PostId, repliesPath }, replyDto);
+        return CreatedAtRoute("GetRepliesCollection", new { topicName, PostId, repliesPath }, replyDto);
     }
 }

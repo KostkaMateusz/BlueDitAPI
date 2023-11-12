@@ -1,18 +1,18 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Bluedit.Domain.Entities;
+using Bluedit.Models.DataModels.UserDtos;
+using Bluedit.Services.Authentication;
+using Bluedit.Services.Repositories.UserRepo;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
-using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Http.HttpResults;
-using FluentValidation.AspNetCore;
-using Bluedit.Models.DataModels.UserDtos;
-using Bluedit.Services.Authentication;
-using Bluedit.Domain.Entities;
-using Bluedit.Services.Repositories.UserRepo;
 
 namespace Bluedit.Controllers;
 
@@ -32,9 +32,9 @@ public class UserController : ControllerBase
 
     public UserController(
         IValidator<RegisterUserDto> registerUserDtoValidator, IUserRepository userRepository, IMapper mapper,
-        IPasswordHasher<User> passwordHasher,  AuthenticationSettings authenticationSettings,  IUserContextService userContextService)
-    {        
-        _registerUserDtoValidator = registerUserDtoValidator;        
+        IPasswordHasher<User> passwordHasher, AuthenticationSettings authenticationSettings, IUserContextService userContextService)
+    {
+        _registerUserDtoValidator = registerUserDtoValidator;
         _passwordHasher = passwordHasher;
         _authenticationSettings = authenticationSettings;
         _userContextService = userContextService;
@@ -60,18 +60,18 @@ public class UserController : ControllerBase
     /// <response code="400">If the email or password is wrong</response>
     /// <param name="loginUserDto">Login Info</param>   
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest,Type=typeof(BadRequest))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(BadRequest))]
     [Produces("text/plain")]
     [AllowAnonymous]
     [HttpPost("login", Name = "Login")]
     public async Task<ActionResult<string>> Login([FromBody] LoginUserDto loginUserDto)
     {
-        var user =await _userRepository.GetUserByMail(loginUserDto.Email);
+        var user = await _userRepository.GetUserByMail(loginUserDto.Email);
 
         if (user is null)
             return BadRequest("Invalid User Name or Password");
 
-        if(user.PasswordHash is null)
+        if (user.PasswordHash is null)
             return BadRequest("Invalid User Name or Password");
 
         var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, loginUserDto.Password);
@@ -91,7 +91,7 @@ public class UserController : ControllerBase
         var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var expires = DateTime.Now.AddDays(_authenticationSettings.JwtExpireDays);
 
-        var token = new JwtSecurityToken(_authenticationSettings.JwtIssuer,  _authenticationSettings.JwtIssuer,
+        var token = new JwtSecurityToken(_authenticationSettings.JwtIssuer, _authenticationSettings.JwtIssuer,
             claims, expires: expires, signingCredentials: cred);
 
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -121,17 +121,17 @@ public class UserController : ControllerBase
     /// <response code="400">If the email or password is wrong or email is already taken</response>
     /// <param name="registerUserDto"></param>   
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest, Type=typeof(ValidationProblem))] 
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblem))]
     [AllowAnonymous]
     [HttpPost(Name = "RegisterUser")]
     public async Task<ActionResult<UserInfoDto>> RegisterUser([FromBody] RegisterUserDto registerUserDto)
     {
-        var validationResult =await _registerUserDtoValidator.ValidateAsync(registerUserDto);
-        
+        var validationResult = await _registerUserDtoValidator.ValidateAsync(registerUserDto);
+
         if (!validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
-            return ValidationProblem();              
+            return ValidationProblem();
         }
 
         var newUser = new User()
@@ -162,8 +162,8 @@ public class UserController : ControllerBase
     [HttpGet(Name = "UserInfo")]
     public async Task<ActionResult<UserInfoDto>> UserInfo()
     {
-        var user =await _userRepository.GetUserById((Guid)_userContextService.GetUserId);
-        var userInfo=_mapper.Map<UserInfoDto>(user);
+        var user = await _userRepository.GetUserById(_userContextService.GetUserId);
+        var userInfo = _mapper.Map<UserInfoDto>(user);
 
         return Ok(userInfo);
     }
@@ -205,8 +205,8 @@ public class UserController : ControllerBase
 
         var user = await _userRepository.GetUserById(_userContextService.GetUserId);
 
-        if(user is null)        
-            return Unauthorized();        
+        if (user is null)
+            return Unauthorized();
 
         user.Name = updateUserDto.Name;
         user.Email = updateUserDto.Email;

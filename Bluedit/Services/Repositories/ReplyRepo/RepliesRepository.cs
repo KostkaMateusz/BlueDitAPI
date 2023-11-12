@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Bluedit.Domain.Entities.ReplyEntities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Bluedit.Domain.Entities.ReplyEntities;
 
 namespace Bluedit.Services.Repositories.ReplyRepo;
 

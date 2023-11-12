@@ -42,11 +42,11 @@ public static class IEnumerableExtensions
                 // we need to include public and instance, b/c specifying a binding 
                 // flag overwrites the already-existing binding flags.
                 var propertyInfo = typeof(TSource).GetProperty(propertyName,
-                    BindingFlags.IgnoreCase |BindingFlags.Public | BindingFlags.Instance);
+                    BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 
-                if (propertyInfo is null)                
+                if (propertyInfo is null)
                     throw new Exception($"Property {propertyName} wasn't found on {typeof(TSource)}");
-                
+
                 // add propertyInfo to list 
                 propertyInfoList.Add(propertyInfo);
             }

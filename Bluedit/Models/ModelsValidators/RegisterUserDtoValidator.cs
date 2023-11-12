@@ -1,13 +1,12 @@
-﻿using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using Bluedit.Models.DataModels.UserDtos;
+﻿using Bluedit.Models.DataModels.UserDtos;
+using FluentValidation;
 
 namespace Bluedit.Models.ModelsValidators;
 
 public class RegisterUserDtoValidator : AbstractValidator<RegisterUserDto>
 {
-	public RegisterUserDtoValidator(BlueditDbContext dbContext)
-	{
+    public RegisterUserDtoValidator(BlueditDbContext dbContext)
+    {
 
         RuleFor(RegisterUserDto => RegisterUserDto.Name).MinimumLength(5);
         RuleFor(RegisterUserDto => RegisterUserDto.Name).Custom((value, context) =>

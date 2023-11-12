@@ -24,8 +24,8 @@ public class UserContextService : IUserContextService
         get
         {
             var userClaim = User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
-        
-            return Guid.Parse(userClaim.Value);            
+
+            return Guid.Parse(userClaim.Value);
         }
     }
 }

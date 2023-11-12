@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Bluedit.Domain.Entities.LikeEntities;
+﻿using Bluedit.Domain.Entities.LikeEntities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bluedit.Services.Repositories.LikeRepo;
 
