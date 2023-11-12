@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
-namespace Bluedit.Services.StorageService;
+namespace Bluedit.Infrastructure.StorageService;
 
 public class AzureStorageService : IAzureStorageService
 {
@@ -19,9 +19,9 @@ public class AzureStorageService : IAzureStorageService
     {
         // create a container client object
 
-        containerName= configuration["BlobStorage:ContainerName"] ?? throw new ArgumentNullException(nameof(configuration));
+        containerName = configuration["BlobStorage:ContainerName"] ?? throw new ArgumentNullException(nameof(configuration));
 
-        if (string.Equals(env.EnvironmentName,"Development"))
+        if (string.Equals(env.EnvironmentName, "Development"))
         {
             connectionString = configuration.GetSection("BlobStorage").GetValue<string>("AzureStorageConnectionString");
 
@@ -57,7 +57,7 @@ public class AzureStorageService : IAzureStorageService
 
         //Save file Stream to blob
         using var stream = file.OpenReadStream();
-        await blobClient.UploadAsync(stream, true);        
+        await blobClient.UploadAsync(stream, true);
     }
 
     public async Task<byte[]> GetFileData(Guid imageGuid)
@@ -73,7 +73,7 @@ public class AzureStorageService : IAzureStorageService
 
         if (imageBlob is null)
             throw new NullReferenceException(nameof(imageBlob));
-            //throw new NotFoundException($"Image with id:{imageGuid} was not found");
+        //throw new NotFoundException($"Image with id:{imageGuid} was not found");
 
         var blobClient = containerClient.GetBlobClient(imageBlob.Name);
 

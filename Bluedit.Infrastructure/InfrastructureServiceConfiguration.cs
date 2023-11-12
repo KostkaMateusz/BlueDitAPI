@@ -1,4 +1,4 @@
-﻿using Bluedit.Services.StorageService;
+﻿using Bluedit.Infrastructure.StorageService;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bluedit.Infrastructure;

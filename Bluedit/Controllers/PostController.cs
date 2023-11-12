@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Bluedit.Domain.Entities;
+using Bluedit.Infrastructure.StorageService;
 using Bluedit.Models.DataModels.PostDtos;
 using Bluedit.Services.Authentication;
 using Bluedit.Services.Repositories.PostRepo;
 using Bluedit.Services.Repositories.TopicRepo;
-using Bluedit.Services.StorageService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;

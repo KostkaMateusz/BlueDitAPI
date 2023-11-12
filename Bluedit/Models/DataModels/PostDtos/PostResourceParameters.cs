@@ -1,4 +1,4 @@
-﻿namespace Bluedit.Models.DataModels.TopicDtos;
+﻿namespace Bluedit.Models.DataModels.PostDtos;
 
 public record PostResourceParameters
 {
