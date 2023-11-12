@@ -2,7 +2,7 @@
 
 namespace Bluedit.Models.DataModels.TopicDtos;
 
-public record TopicCreateDto
+public class TopicCreateDto
 {
     [MaxLength(20)]
     [MinLength(6)]

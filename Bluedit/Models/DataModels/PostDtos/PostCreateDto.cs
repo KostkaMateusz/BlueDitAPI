@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Bluedit.Models.DataModels.PostDtos;
 
-public record PostCreateDto
+public class PostCreateDto
 {
     [MinLength(3)]
     public required string Title { get; set; }

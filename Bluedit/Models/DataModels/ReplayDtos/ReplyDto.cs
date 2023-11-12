@@ -1,7 +1,7 @@
 ﻿
 namespace Bluedit.Models.DataModels.ReplayDtos;
 
-public record ReplyDto
+public class ReplyDto
 {
     public string? Description { get; set; }
     public Guid UserId { get; set; }

@@ -2,7 +2,7 @@
 
 namespace Bluedit.Models.DataModels.UserDtos;
 
-public record ForgotPasswordDto
+public class ForgotPasswordDto
 {
     [MaxLength(255)]
     [MinLength(3)]

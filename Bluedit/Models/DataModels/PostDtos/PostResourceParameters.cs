@@ -1,6 +1,6 @@
 ﻿namespace Bluedit.Models.DataModels.PostDtos;
 
-public record PostResourceParameters
+public class PostResourceParameters
 {
     public string? TopicName { get; set; }
     public string? SearchQuery { get; set; }

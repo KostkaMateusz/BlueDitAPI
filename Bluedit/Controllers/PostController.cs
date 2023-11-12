@@ -2,11 +2,14 @@
 using Bluedit.Domain.Entities;
 using Bluedit.Infrastructure.StorageService;
 using Bluedit.Models.DataModels.PostDtos;
+using Bluedit.Models.DataModels.ReplayDtos;
+using Bluedit.Models.DataModels.TopicDtos;
 using Bluedit.Services.Authentication;
 using Bluedit.Services.Repositories.PostRepo;
 using Bluedit.Services.Repositories.ReplyRepo;
 using Bluedit.Services.Repositories.TopicRepo;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.IdentityModel.Tokens;
@@ -220,10 +223,45 @@ public class PostController : ControllerBase
         return Ok(postDto);
     }
 
-    [HttpPatch]
-    public async Task<ActionResult> PartialyUpdatePost()
+
+
+    /// <summary>
+    /// Partually Update Given Topic
+    /// </summary>
+    /// <param name="topicName">String with topic unique name</param>
+    /// <param name="patchDocument">Json PATCH Document</param>
+    /// <returns>No content</returns>
+    /// <response code="404">When Topic does not exist</response>
+    /// <response code="400">When There is data validation problem</response>
+    /// <response code="200">When Topic was edited</response>
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpPatch("{postId}")]
+    public async Task<IActionResult> PartialyUpdatePost([FromRoute] Guid postId, [FromBody] JsonPatchDocument<PartialyUpdatePostDto> patchDocument)
     {
-        throw new NotImplementedException();
+        var postFromRepo= await _postRepository.GetPostByIdAsync(postId);
+
+        if(postFromRepo is null)
+            return NotFound();
+
+        if(_userContextService.GetUserId != postFromRepo.UserId)
+            return Forbid("You are not an owner of this resource");
+
+        var postToPatch = _mapper.Map<PartialyUpdatePostDto>(postFromRepo);
+
+        patchDocument.ApplyTo(postToPatch, ModelState);
+
+        if (!TryValidateModel(postToPatch))
+            return ValidationProblem(ModelState);
+
+        _mapper.Map(postToPatch, postFromRepo);
+
+        _postRepository.UpdatePost(postFromRepo);
+
+        await _postRepository.SaveChangesAsync();
+
+        return Ok();
     }
 
 
@@ -253,7 +291,7 @@ public class PostController : ControllerBase
                 
         foreach (var postReply in postReplies)
         {
-             await _repliesRepository.DeleteReplayTree(postReply);
+             await _repliesRepository.DeleteReplyTree(postReply);
         }
 
         _postRepository.DeletePost(post);

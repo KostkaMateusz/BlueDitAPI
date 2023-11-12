@@ -5,7 +5,7 @@ namespace Bluedit.Services.Repositories.ReplyRepo
     public interface IRepliesRepository
     {
         Task Addreplay(ReplyBase replay);
-        Task DeleteReplayTree(ReplyBase replayRoot);
+        Task DeleteReplyTree(ReplyBase replayRoot);
         Task<ReplyBase?> GetReplyById(Guid ReplayId);
         Task<ReplyBase?> GetReplayByParentId(Guid ParentId);
         Task<IEnumerable<Reply?>> GetRepliesByParentPostId(Guid ParentId);

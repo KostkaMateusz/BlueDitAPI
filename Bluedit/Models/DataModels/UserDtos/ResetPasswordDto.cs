@@ -2,7 +2,7 @@
 
 namespace Bluedit.Models.DataModels.UserDtos;
 
-public record ResetPasswordDto
+public class ResetPasswordDto
 {
     public required string resetCode { get; set; }
 

@@ -104,7 +104,7 @@ public class TopicController : ControllerBase
 
 
     /// <summary>
-    /// Allows to delete given topic with all its posts
+    /// Delete given topic with all its posts
     /// </summary>
     /// <param name="topicName">String with topic unique name</param>
     /// <returns>No content</returns>
@@ -129,7 +129,7 @@ public class TopicController : ControllerBase
     }
 
     /// <summary>
-    /// Allows to get list of all topics
+    /// Get list of all topics
     /// </summary>
     /// <param name="topicResourceParameters">Object with query parameters</param>
     /// <response code="400">When Sorting or DataShaping fields are not valid</response>
@@ -189,7 +189,7 @@ public class TopicController : ControllerBase
     }
 
     /// <summary>
-    /// Allows to delete given topic with all its posts
+    /// Partually Update Given Topic
     /// </summary>
     /// <param name="topicName">String with topic unique name</param>
     /// <param name="patchDocument">Json PATCH Document</param>

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 
+
 namespace Bluedit.Models;
 
 public class PostMappingProfile : Profile
@@ -8,5 +9,6 @@ public class PostMappingProfile : Profile
     {
         CreateMap<Bluedit.Domain.Entities.Post, DataModels.PostDtos.PostInfoDto>();
         CreateMap<Bluedit.Domain.Entities.Post, DataModels.PostDtos.PostUpdateDto>().ReverseMap();
+        CreateMap<Bluedit.Domain.Entities.Post, DataModels.PostDtos.PartialyUpdatePostDto>().ReverseMap();   
     }
 }

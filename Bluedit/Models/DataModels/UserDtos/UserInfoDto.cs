@@ -1,6 +1,6 @@
 ﻿namespace Bluedit.Models.DataModels.UserDtos;
 
-public record UserInfoDto
+public class UserInfoDto
 {
     public Guid UserId { get; set; }
     public required string Name { get; set; }

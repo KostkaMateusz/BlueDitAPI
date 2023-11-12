@@ -70,7 +70,7 @@ public class RepliesController : ControllerBase
         if (replay.UserId != userId)
             return Unauthorized($"User: {userId} is not authorized to delete replay:{replyId}");
 
-        await _repliesRepository.DeleteReplayTree(replay);
+        await _repliesRepository.DeleteReplyTree(replay);
         await _repliesRepository.SaveChangesAsync();
 
         return NoContent();

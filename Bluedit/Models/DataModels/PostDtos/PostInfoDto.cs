@@ -1,6 +1,6 @@
 ﻿namespace Bluedit.Models.DataModels.PostDtos;
 
-public record PostInfoDto
+public class PostInfoDto
 {
     public Guid PostId { get; set; }
     public string? Title { get; set; }
