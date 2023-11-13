@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Bluedit.Controllers;
+namespace Bluedit.Controllers.PostRelated;
 
 
 [ApiController]
@@ -29,7 +29,7 @@ public class PostController : ControllerBase
     private readonly ITopicRepository _topicRepository;
     private readonly IRepliesRepository _repliesRepository;
 
-    public PostController(IPostRepository postRepository, ITopicRepository topicRepository,IRepliesRepository repliesRepository ,IAzureStorageService azureStorageService, IUserContextService userContextService, IMapper mapper)
+    public PostController(IPostRepository postRepository, ITopicRepository topicRepository, IRepliesRepository repliesRepository, IAzureStorageService azureStorageService, IUserContextService userContextService, IMapper mapper)
     {
         _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
         _azureStorageService = azureStorageService ?? throw new ArgumentNullException(nameof(azureStorageService));
@@ -242,12 +242,12 @@ public class PostController : ControllerBase
     [HttpPatch("{postId}")]
     public async Task<IActionResult> PartialyUpdatePost([FromRoute] Guid postId, [FromBody] JsonPatchDocument<PartialyUpdatePostDto> patchDocument)
     {
-        var postFromRepo= await _postRepository.GetPostByIdAsync(postId);
+        var postFromRepo = await _postRepository.GetPostByIdAsync(postId);
 
-        if(postFromRepo is null)
+        if (postFromRepo is null)
             return NotFound();
 
-        if(_userContextService.GetUserId != postFromRepo.UserId)
+        if (_userContextService.GetUserId != postFromRepo.UserId)
             return Forbid("You are not an owner of this resource");
 
         var postToPatch = _mapper.Map<PartialyUpdatePostDto>(postFromRepo);
@@ -290,10 +290,10 @@ public class PostController : ControllerBase
 
         if (_userContextService.GetUserId != post.UserId)
             return Forbid("You are not an owner of this resource");
-                
+
         foreach (var postReply in postReplies)
         {
-             await _repliesRepository.DeleteReplyTree(postReply);
+            await _repliesRepository.DeleteReplyTree(postReply);
         }
 
         _postRepository.DeletePost(post);

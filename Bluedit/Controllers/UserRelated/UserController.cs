@@ -14,7 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Bluedit.Controllers;
+namespace Bluedit.Controllers.UserRelated;
 
 
 [ApiController]

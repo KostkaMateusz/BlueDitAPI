@@ -4,6 +4,7 @@ namespace Bluedit.Services.Repositories.LikeRepo;
 
 public interface ILikesRepository<T> where T : LikeBase, new()
 {
+    Task<T?> GetLike(Guid ParentId, Guid UserId);
     Task AddLikeAsync(T like);
     Task<bool> CheckIfLikeExistAsync(Guid UserId, Guid parentId);
     void DeleteLike(T like);

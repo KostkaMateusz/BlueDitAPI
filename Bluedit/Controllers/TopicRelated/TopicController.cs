@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Newtonsoft.Json;
 
-namespace Bluedit.Controllers;
+namespace Bluedit.Controllers.TopicRelated;
 
 [ApiController]
 [Route("api/topics")]

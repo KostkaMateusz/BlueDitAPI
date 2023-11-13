@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Bluedit.Controllers;
+namespace Bluedit.Controllers.ReplyRelated;
 
 [Authorize]
 [ApiController]
