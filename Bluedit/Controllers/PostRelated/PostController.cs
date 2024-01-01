@@ -2,8 +2,6 @@
 using Bluedit.Domain.Entities;
 using Bluedit.Infrastructure.StorageService;
 using Bluedit.Models.DataModels.PostDtos;
-using Bluedit.Models.DataModels.ReplayDtos;
-using Bluedit.Models.DataModels.TopicDtos;
 using Bluedit.Services.Authentication;
 using Bluedit.Services.Repositories.PostRepo;
 using Bluedit.Services.Repositories.ReplyRepo;
@@ -12,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Bluedit.Controllers.PostRelated;

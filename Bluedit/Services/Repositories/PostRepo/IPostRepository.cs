@@ -13,4 +13,5 @@ public interface IPostRepository
     Task<bool> PostWithGivenIdExistAsync(Guid postId);
     void DeletePost(Post post);
     Task<Post> LoadPostRepliesAsync(Post post);
+    Task LoadPostLikesAsync(Post post);
 }

@@ -42,6 +42,14 @@ public class PostRepository : IPostRepository
         await _dbContext.Entry(post).Reference(post => post.User).LoadAsync();
     }
 
+    public async Task LoadPostLikesAsync(Post post)
+    {
+        if (post is null)
+            throw new ArgumentNullException(nameof(post));
+
+        await _dbContext.Entry(post).Reference(post => post.PostLikes).LoadAsync();
+    }
+
     public void UpdatePost(Post post)
     {
         if (post is null)

@@ -13,4 +13,5 @@ public class PostInfoDto
     public string? TopicName { get; set; }
     public string? ImageContentLink { get; set; }
     public int NumberOfReplies { get; set; } = 0;
+    public int NumberOfLikes { get; set; } =0;
 }
