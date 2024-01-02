@@ -1,7 +1,7 @@
 using Bluedit.StartUpExtensions;
 using System.Reflection;
 using Bluedit.Persistence;
-
+using Bluedit.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +15,8 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 //[*] Authentication Setup
 builder.ConfigureAuthentication();
+
+builder.Services.AddApplicationServices();
 
 builder.AddServices();
 
