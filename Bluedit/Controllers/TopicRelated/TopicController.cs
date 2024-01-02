@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Bluedit.Application.Features.TopicFeatures.Commands.CreateTopic;
+using Bluedit.Application.Features.TopicFeatures.Commands.DeleteTopic;
 using Bluedit.Application.Features.TopicFeatures.Queries.GetTopic;
 using Bluedit.Application.Features.TopicFeatures.Queries.TopicExist;
-using Bluedit.Domain.Entities;
 using Bluedit.Helpers.DataShaping;
 using Bluedit.Helpers.Pagination;
 using Bluedit.Models.DataModels.TopicDtos;
@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Newtonsoft.Json;
 
 namespace Bluedit.Controllers.TopicRelated;
 
@@ -26,7 +25,7 @@ public class TopicController : ControllerBase
     private readonly IPropertyCheckerService _propertyCheckerService;
     private readonly ProblemDetailsFactory _problemDetailsFactory;
 
-    public TopicController(IMediator mediator,ITopicRepository topicRepository, IMapper mapper, IPropertyCheckerService propertyCheckerService, ProblemDetailsFactory problemDetailsFactory)
+    public TopicController(IMediator mediator, ITopicRepository topicRepository, IMapper mapper, IPropertyCheckerService propertyCheckerService, ProblemDetailsFactory problemDetailsFactory)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _topicRepository = topicRepository ?? throw new ArgumentNullException(nameof(topicRepository));
@@ -69,7 +68,7 @@ public class TopicController : ControllerBase
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<TopicCreateDto>> CreateTopic([FromBody] CreateTopicCommand topicCreate)
-    {        
+    {
         var topicExit = await _mediator.Send(new TopicExistsQuery(topicCreate.TopicName));
 
         if (topicExit is true)
@@ -92,7 +91,7 @@ public class TopicController : ControllerBase
     [HttpGet("{topicName}", Name = "GetTopic")]
     public async Task<ActionResult<TopicInfoDto>> GetTopic([FromRoute] string topicName)
     {
-        var topic = await _mediator.Send(new GetTopicQuery(topicName));//_topicRepository.GetTopicWithNameAsync(topicName);
+        var topic = await _mediator.Send(new GetTopicQuery(topicName));
 
         if (topic is null)
             return NotFound();
@@ -115,13 +114,10 @@ public class TopicController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult> DeleteTopic([FromRoute] string topicName)
     {
-        var topicToDelete = await _topicRepository.GetTopicWithNameAsync(topicName);
+        var topicDeleted = await _mediator.Send(new DeleteTopicCommand(topicName));
 
-        if (topicToDelete is null)
+        if (topicDeleted is false)
             return NotFound();
-
-        _topicRepository.DeleteTopicAsync(topicToDelete);
-        await _topicRepository.SaveChangesAsync();
 
         return NoContent();
     }
