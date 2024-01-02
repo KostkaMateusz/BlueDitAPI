@@ -8,6 +8,8 @@ using Bluedit.Services.Repositories.LikeRepo;
 using Bluedit.Services.Repositories.PostRepo;
 using Bluedit.Services.Repositories.ReplyRepo;
 using Bluedit.Services.Repositories.UserRepo;
+using Bluedit.Services.Repositories.TopicRepo;
+using Bluedit.Helpers.Sorting;
 //using Bluedit.Services.Repositories.TopicRepo;
 
 namespace Bluedit.Persistence;
@@ -40,6 +42,12 @@ public static class PersistenceServiceConfiguration
 
         builder.Services.AddScoped<ILikesRepository<PostLike>, LikesRepository<PostLike>>();
         builder.Services.AddScoped<ILikesRepository<ReplyLike>, LikesRepository<ReplyLike>>();
+
+        builder.Services.AddScoped<ITopicRepository, TopicRepository>();
+
+        //sorting
+        builder.Services.AddTransient<IPropertyMappingService, PropertyMappingService>();
+
 
         return builder;
     }

@@ -30,9 +30,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Bluedit.Application\Bluedit.Application.csproj" />
     <ProjectReference Include="..\Bluedit.Domain\Bluedit.Domain.csproj" />
     <ProjectReference Include="..\Bluedit.Infrastructure\Bluedit.Infrastructure.csproj" />
     <ProjectReference Include="..\Bluedit.Persistence\Bluedit.Persistence.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Repositories\" />
   </ItemGroup>
 
 </Project>

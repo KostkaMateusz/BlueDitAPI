@@ -114,15 +114,12 @@ internal static class AppConfigHelperExtensions
         builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
         builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 
-        builder.Services.AddScoped<ITopicRepository, TopicRepository>();
-
+        
         //Add Azure Blob Service
         builder.Services.AddInfrastructureServices();
 
         //data shaping
         builder.Services.AddTransient<IPropertyCheckerService, PropertyCheckerService>();
-        //sorting
-        builder.Services.AddTransient<IPropertyMappingService, PropertyMappingService>();
 
         return builder;
     }
