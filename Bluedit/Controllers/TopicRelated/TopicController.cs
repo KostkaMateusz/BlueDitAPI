@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Bluedit.Application.Features.TopicFeatures.Commands.CreateTopic;
+using Bluedit.Application.Features.TopicFeatures.Queries.GetTopic;
 using Bluedit.Application.Features.TopicFeatures.Queries.TopicExist;
 using Bluedit.Domain.Entities;
 using Bluedit.Helpers.DataShaping;
@@ -69,7 +70,7 @@ public class TopicController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<TopicCreateDto>> CreateTopic([FromBody] CreateTopicCommand topicCreate)
     {        
-        var topicExit = await _mediator.Send(new TopicExistQuery(topicCreate.TopicName));
+        var topicExit = await _mediator.Send(new TopicExistsQuery(topicCreate.TopicName));
 
         if (topicExit is true)
             return Conflict("Topic with given name Already Exist");
@@ -91,16 +92,12 @@ public class TopicController : ControllerBase
     [HttpGet("{topicName}", Name = "GetTopic")]
     public async Task<ActionResult<TopicInfoDto>> GetTopic([FromRoute] string topicName)
     {
-        var topic = await _topicRepository.GetTopicWithNameAsync(topicName);
+        var topic = await _mediator.Send(new GetTopicQuery(topicName));//_topicRepository.GetTopicWithNameAsync(topicName);
 
         if (topic is null)
             return NotFound();
 
-        var topicInfoDto = _mapper.Map<TopicInfoDto>(topic);
-
-        topicInfoDto.PostCount = await _topicRepository.GetTopicPostsCountAsync(topicName);
-
-        return Ok(topicInfoDto);
+        return Ok(topic);
     }
 
 
