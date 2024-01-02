@@ -3,7 +3,7 @@ using Bluedit.Domain.Entities.LikeEntities;
 using Bluedit.Domain.Entities.ReplyEntities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Bluedit;
+namespace Bluedit.Persistence;
 
 public class BlueditDbContext : DbContext
 {

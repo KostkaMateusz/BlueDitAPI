@@ -3,6 +3,8 @@ using Bluedit.Helpers.Pagination;
 using Bluedit.Helpers.Sorting;
 using Bluedit.Models.DataModels.TopicDtos;
 using Microsoft.EntityFrameworkCore;
+using Bluedit.Persistence;
+
 
 namespace Bluedit.Services.Repositories.TopicRepo;
 

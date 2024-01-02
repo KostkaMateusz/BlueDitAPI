@@ -1,5 +1,6 @@
 ﻿using Bluedit.Models.DataModels.UserDtos;
 using FluentValidation;
+using Bluedit.Persistence;
 
 namespace Bluedit.Models.ModelsValidators;
 

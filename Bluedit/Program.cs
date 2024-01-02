@@ -1,12 +1,14 @@
 using Bluedit.StartUpExtensions;
 using System.Reflection;
+using Bluedit.Persistence;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddControllersConfiguration();
 
 //[*] Database Config
-builder.AddDataBaseContext();
+builder.AddPersistenceServices();
 
 //[*] AutoMaper Config
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());

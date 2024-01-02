@@ -1,19 +1,13 @@
 ﻿using Bluedit.Domain.Entities;
-using Bluedit.Domain.Entities.LikeEntities;
 using Bluedit.Helpers.DataShaping;
 using Bluedit.Helpers.Sorting;
 using Bluedit.Infrastructure;
 using Bluedit.Models.DataModels.UserDtos;
 using Bluedit.Models.ModelsValidators;
 using Bluedit.Services.Authentication;
-using Bluedit.Services.Repositories.LikeRepo;
-using Bluedit.Services.Repositories.PostRepo;
-using Bluedit.Services.Repositories.ReplyRepo;
 using Bluedit.Services.Repositories.TopicRepo;
-using Bluedit.Services.Repositories.UserRepo;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
@@ -24,13 +18,6 @@ namespace Bluedit.StartUpExtensions;
 
 internal static class AppConfigHelperExtensions
 {
-    public static WebApplicationBuilder AddDataBaseContext(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddDbContext<BlueditDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnectionString")));
-
-        return builder;
-    }
-
     public static WebApplicationBuilder ConfigureAuthentication(this WebApplicationBuilder builder)
     {
         var authenticationSettings = new AuthenticationSettings();
@@ -125,15 +112,9 @@ internal static class AppConfigHelperExtensions
         builder.Services.AddScoped<IUserContextService, UserContextService>();
 
         builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-        builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 
         builder.Services.AddScoped<ITopicRepository, TopicRepository>();
-        builder.Services.AddScoped<IPostRepository, PostRepository>();
-        builder.Services.AddScoped<IRepliesRepository, RepliesRepository>();
-
-        builder.Services.AddScoped<ILikesRepository<PostLike>, LikesRepository<PostLike>>();
-        builder.Services.AddScoped<ILikesRepository<ReplyLike>, LikesRepository<ReplyLike>>();
 
         //Add Azure Blob Service
         builder.Services.AddInfrastructureServices();
