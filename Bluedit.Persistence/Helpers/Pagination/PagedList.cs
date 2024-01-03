@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Bluedit.Services.Repositories.TopicRepo;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bluedit.Helpers.Pagination;
-
-public class PagedList<T> : List<T>
+public class PagedList<T> : List<T>, IPagedList<T>
 {
     public int CurrentPage { get; private set; }
     public int TotalPages { get; private set; }

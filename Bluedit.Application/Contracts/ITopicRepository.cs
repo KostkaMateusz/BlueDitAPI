@@ -1,5 +1,4 @@
 ﻿using Bluedit.Domain.Entities;
-//using Bluedit.Helpers.Pagination;
 using Bluedit.Models.DataModels.TopicDtos;
 
 namespace Bluedit.Services.Repositories.TopicRepo;
@@ -15,5 +14,5 @@ public interface ITopicRepository
     void UpdateTopicAync(Topic topic);
     void IncrementPostCount(Topic topic);
     void DecrementPostCount(Topic topic);
-    //Task<PagedList<Topic>> GetAllTopicAsync(TopicResourceParameters topicResourceParameters);
+    Task<IPagedList<Topic>> GetAllTopicAsync(TopicResourceParameters topicResourceParameters);
 }

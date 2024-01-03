@@ -62,7 +62,8 @@ public class TopicRepository : ITopicRepository
     {
         _applicationDbContext.Update(topic);
     }
-    public async Task<PagedList<Topic>> GetAllTopicAsync(TopicResourceParameters topicResourceParameters)
+
+    public async Task<IPagedList<Topic>> GetAllTopicAsync(TopicResourceParameters topicResourceParameters)
     {
         if (topicResourceParameters is null)
             throw new ArgumentNullException(nameof(topicResourceParameters));
@@ -93,7 +94,6 @@ public class TopicRepository : ITopicRepository
             topicCollectionQuery = topicCollectionQuery.ApplySort(topicResourceParameters.OrderBy, topipcPropertyMappingDictionary);
         }
 
-
         return await PagedList<Topic>.CreateAsync(topicCollectionQuery, topicResourceParameters.PageNumber, topicResourceParameters.PageSize);
     }
 
@@ -121,4 +121,6 @@ public class TopicRepository : ITopicRepository
     {
         return await _applicationDbContext.SaveChangesAsync() >= 0;
     }
+
+
 }

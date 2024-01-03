@@ -4,6 +4,7 @@ using Bluedit.Application.Features.TopicFeatures.Commands.DeleteTopic;
 using Bluedit.Application.Features.TopicFeatures.Commands.PatchTopic;
 using Bluedit.Application.Features.TopicFeatures.Queries.GetTopic;
 using Bluedit.Application.Features.TopicFeatures.Queries.TopicExist;
+using Bluedit.Domain.Entities;
 using Bluedit.Helpers.DataShaping;
 using Bluedit.Helpers.Pagination;
 using Bluedit.Models.DataModels.TopicDtos;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Newtonsoft.Json;
 
 namespace Bluedit.Controllers.TopicRelated;
 
@@ -123,58 +125,58 @@ public class TopicController : ControllerBase
         return NoContent();
     }
 
-    ///// <summary>
-    ///// Get list of all topics
-    ///// </summary>
-    ///// <param name="topicResourceParameters">Object with query parameters</param>
-    ///// <response code="400">When Sorting or DataShaping fields are not valid</response>
-    ///// <response code="200">When list of topics is returned</response>
-    ///// <returns>Action Results</returns>
-    //[ProducesResponseType(StatusCodes.Status200OK)]
-    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //[HttpHead]
-    //[HttpGet(Name = "GetTopics")]
-    //public async Task<ActionResult<IEnumerable<TopicInfoDto>>> GetTopicsAsync([FromQuery] TopicResourceParameters topicResourceParameters)
-    //{
-    //    // check if requested fields for data shape are valid
-    //    if (_propertyCheckerService.TypeHasProperties<TopicInfoDto>(topicResourceParameters.Fields) is false)
-    //    {
-    //        var problemWithFields = _problemDetailsFactory.CreateProblemDetails(HttpContext, statusCode: 400,
-    //            detail: $"Not all requested data shaping fields exist on the resource: {topicResourceParameters.Fields}");
+    /// <summary>
+    /// Get list of all topics
+    /// </summary>
+    /// <param name="topicResourceParameters">Object with query parameters</param>
+    /// <response code="400">When Sorting or DataShaping fields are not valid</response>
+    /// <response code="200">When list of topics is returned</response>
+    /// <returns>Action Results</returns>
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpHead]
+    [HttpGet(Name = "GetTopics")]
+    public async Task<ActionResult<IEnumerable<TopicInfoDto>>> GetTopicsAsync([FromQuery] TopicResourceParameters topicResourceParameters)
+    {
+        // check if requested fields for data shape are valid
+        if (_propertyCheckerService.TypeHasProperties<TopicInfoDto>(topicResourceParameters.Fields) is false)
+        {
+            var problemWithFields = _problemDetailsFactory.CreateProblemDetails(HttpContext, statusCode: 400,
+                detail: $"Not all requested data shaping fields exist on the resource: {topicResourceParameters.Fields}");
 
-    //        return BadRequest(problemWithFields);
-    //    }
+            return BadRequest(problemWithFields);
+        }
 
-    //    // check if requested fields for sorting are valid
-    //    if (_propertyCheckerService.TypeHasProperties<TopicInfoDto>(topicResourceParameters.OrderBy) is false)
-    //    {
-    //        var problemWithFields = _problemDetailsFactory.CreateProblemDetails(HttpContext, statusCode: 400,
-    //            detail: $"Not all requested sorting fields exist on the resource: {topicResourceParameters.OrderBy}");
+        // check if requested fields for sorting are valid
+        if (_propertyCheckerService.TypeHasProperties<TopicInfoDto>(topicResourceParameters.OrderBy) is false)
+        {
+            var problemWithFields = _problemDetailsFactory.CreateProblemDetails(HttpContext, statusCode: 400,
+                detail: $"Not all requested sorting fields exist on the resource: {topicResourceParameters.OrderBy}");
 
-    //        return BadRequest(problemWithFields);
-    //    }
+            return BadRequest(problemWithFields);
+        }
 
-    //    // get topic from repo
-    //    var topicsFromRepo = await _topicRepository.GetAllTopicAsync(topicResourceParameters);
+        // get topic from repo
+        var topicsFromRepo = await _topicRepository.GetAllTopicAsync(topicResourceParameters);
 
-    //    //calculate prev site if exist
-    //    var previousPageLink = topicsFromRepo.HasPrevious ?
-    //        CreateTopicResourceUri(topicResourceParameters, ResourceUriType.PreviousPage) : null;
-    //    //calculate next site if exist
-    //    var nextPageLink = topicsFromRepo.HasNext ?
-    //        CreateTopicResourceUri(topicResourceParameters, ResourceUriType.NextPage) : null;
-    //    //include pagination metadata
-    //    var paginationMetadata = new PaginationMetaData<Topic>(topicsFromRepo, previousPageLink, nextPageLink);
+        //calculate prev site if exist
+        var previousPageLink = topicsFromRepo.HasPrevious ?
+            CreateTopicResourceUri(topicResourceParameters, ResourceUriType.PreviousPage) : null;
+        //calculate next site if exist
+        var nextPageLink = topicsFromRepo.HasNext ?
+            CreateTopicResourceUri(topicResourceParameters, ResourceUriType.NextPage) : null;
+        //include pagination metadata
+        var paginationMetadata = new PaginationMetaData<Topic>((PagedList<Topic>)topicsFromRepo, previousPageLink, nextPageLink);
 
-    //    Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(paginationMetadata));
-    //    //map topics to DTO
-    //    var topicInfoDtos = _mapper.Map<IEnumerable<TopicInfoDto>>(topicsFromRepo);
+        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(paginationMetadata));
+        //map topics to DTO
+        var topicInfoDtos = _mapper.Map<IEnumerable<TopicInfoDto>>(topicsFromRepo);
 
-    //    //shape data
-    //    var shapedTopicInfoDtos = topicInfoDtos.ShapeData(topicResourceParameters.Fields);
+        //shape data
+        var shapedTopicInfoDtos = topicInfoDtos.ShapeData(topicResourceParameters.Fields);
 
-    //    return Ok(shapedTopicInfoDtos);
-    //}
+        return Ok(shapedTopicInfoDtos);
+    }
 
     [HttpOptions]
     public ActionResult GetAuthorsOptions()
