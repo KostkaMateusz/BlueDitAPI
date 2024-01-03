@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Bluedit.Application.Features.TopicFeatures.Commands.CreateTopic;
 using Bluedit.Application.Features.TopicFeatures.Commands.DeleteTopic;
+using Bluedit.Application.Features.TopicFeatures.Commands.PatchTopic;
 using Bluedit.Application.Features.TopicFeatures.Queries.GetTopic;
 using Bluedit.Application.Features.TopicFeatures.Queries.TopicExist;
 using Bluedit.Helpers.DataShaping;
@@ -183,10 +184,10 @@ public class TopicController : ControllerBase
     }
 
     /// <summary>
-    /// Partually Update Given Topic
+    /// Update Description of Given Topic
     /// </summary>
     /// <param name="topicName">String with topic unique name</param>
-    /// <param name="patchDocument">Json PATCH Document</param>
+    /// <param name="topicForUpdateDto">New Description</param>
     /// <returns>No content</returns>
     /// <response code="404">When Topic does not exist</response>
     /// <response code="400">When There is data validation problem</response>
@@ -194,27 +195,16 @@ public class TopicController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [HttpPatch("{topicName}")]
+    [HttpPut("{topicName}")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> PartiallyUpdateTopicDescription([FromRoute] string topicName, [FromBody] JsonPatchDocument<TopicForUpdateDto> patchDocument)
+    public async Task<IActionResult> PartiallyUpdateTopicDescription([FromRoute] string topicName, [FromBody] TopicForUpdateDto topicForUpdateDto)
     {
-        var topicFromRepo = await _topicRepository.GetTopicWithNameAsync(topicName);
+        var topicExit = await _mediator.Send(new TopicExistsQuery(topicName));
 
-        if (topicFromRepo is null)
+        if (topicExit is false)
             return NotFound();
 
-        var topicToPatch = _mapper.Map<TopicForUpdateDto>(topicFromRepo);
-
-        patchDocument.ApplyTo(topicToPatch, ModelState);
-
-        if (!TryValidateModel(topicToPatch))
-            return ValidationProblem(ModelState);
-
-        _mapper.Map(topicToPatch, topicFromRepo);
-
-        _topicRepository.UpdateTopicAync(topicFromRepo);
-
-        await _topicRepository.SaveChangesAsync();
+        await _mediator.Send(new PutTopicCommand(topicName, topicForUpdateDto.TopicDescription));
 
         return Ok();
     }
