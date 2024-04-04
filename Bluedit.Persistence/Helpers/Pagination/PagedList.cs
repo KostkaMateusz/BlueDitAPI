@@ -1,7 +1,7 @@
-﻿using Bluedit.Services.Repositories.TopicRepo;
+﻿using Bluedit.Application.Contracts;
 using Microsoft.EntityFrameworkCore;
 
-namespace Bluedit.Helpers.Pagination;
+namespace Bluedit.Persistence.Helpers.Pagination;
 public class PagedList<T> : List<T>, IPagedList<T>
 {
     public int CurrentPage { get; private set; }
@@ -11,7 +11,7 @@ public class PagedList<T> : List<T>, IPagedList<T>
     public bool HasPrevious => CurrentPage > 1;
     public bool HasNext => CurrentPage < TotalPages;
 
-    public PagedList(List<T> items, int count, int pageNumber, int pageSize)
+    private PagedList(List<T> items, int count, int pageNumber, int pageSize)
     {
         TotalCount = count;
         PageSize = pageSize;

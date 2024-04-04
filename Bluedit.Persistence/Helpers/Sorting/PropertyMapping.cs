@@ -1,4 +1,4 @@
-﻿namespace Bluedit.Helpers.Sorting;
+﻿namespace Bluedit.Persistence.Helpers.Sorting;
 
 public class PropertyMapping<TSource, TDestination> : IPropertyMapping
 {

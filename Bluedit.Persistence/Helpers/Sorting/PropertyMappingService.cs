@@ -1,7 +1,7 @@
 ﻿using Bluedit.Domain.Entities;
 using Bluedit.Models.DataModels.TopicDtos;
 
-namespace Bluedit.Helpers.Sorting;
+namespace Bluedit.Persistence.Helpers.Sorting;
 
 public class PropertyMappingService : IPropertyMappingService
 {

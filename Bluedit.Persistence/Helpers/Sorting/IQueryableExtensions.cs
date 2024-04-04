@@ -1,7 +1,6 @@
-﻿
-using System.Linq.Dynamic.Core;
+﻿using System.Linq.Dynamic.Core;
 
-namespace Bluedit.Helpers.Sorting;
+namespace Bluedit.Persistence.Helpers.Sorting;
 
 public static class IQueryableExtensions
 {

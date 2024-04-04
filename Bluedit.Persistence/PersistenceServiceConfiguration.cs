@@ -9,7 +9,7 @@ using Bluedit.Services.Repositories.PostRepo;
 using Bluedit.Services.Repositories.ReplyRepo;
 using Bluedit.Services.Repositories.UserRepo;
 using Bluedit.Services.Repositories.TopicRepo;
-using Bluedit.Helpers.Sorting;
+using Bluedit.Persistence.Helpers.Sorting;
 using Bluedit.Persistence.Repositories.TopicRepo;
 
 //using Bluedit.Services.Repositories.TopicRepo;

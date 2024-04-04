@@ -1,6 +1,5 @@
 ﻿using Bluedit.Domain.Entities;
 using Bluedit.Helpers.DataShaping;
-using Bluedit.Helpers.Sorting;
 using Bluedit.Infrastructure;
 using Bluedit.Models.DataModels.UserDtos;
 using Bluedit.Models.ModelsValidators;

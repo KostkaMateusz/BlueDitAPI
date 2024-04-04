@@ -7,9 +7,8 @@ using Bluedit.Application.Features.TopicFeatures.Queries.GetTopic;
 using Bluedit.Application.Features.TopicFeatures.Queries.TopicExist;
 using Bluedit.Domain.Entities;
 using Bluedit.Helpers.DataShaping;
-using Bluedit.Helpers.Pagination;
 using Bluedit.Models.DataModels.TopicDtos;
-using Bluedit.Services.Repositories.TopicRepo;
+using Bluedit.Persistence.Helpers.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,36 +22,34 @@ namespace Bluedit.Controllers.TopicRelated;
 public class TopicController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly ITopicRepository _topicRepository;
     private readonly IMapper _mapper;
     private readonly IPropertyCheckerService _propertyCheckerService;
     private readonly ProblemDetailsFactory _problemDetailsFactory;
 
-    public TopicController(IMediator mediator, ITopicRepository topicRepository, IMapper mapper, IPropertyCheckerService propertyCheckerService, ProblemDetailsFactory problemDetailsFactory)
+    public TopicController(IMediator mediator, IMapper mapper, IPropertyCheckerService propertyCheckerService, ProblemDetailsFactory problemDetailsFactory)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        _topicRepository = topicRepository ?? throw new ArgumentNullException(nameof(topicRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _propertyCheckerService = propertyCheckerService ?? throw new ArgumentNullException(nameof(propertyCheckerService));
         _problemDetailsFactory = problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
     }
 
-    private string? CreateTopicResourceUri(TopicResourceParametersBase topicResourceParametersBase, ResourceUriType type)
+    private string? CreateTopicResourceUri(TopicResourceParameters topicResourceParameters, ResourceUriType type)
     {
         var pageNumber = type switch
         {
-            ResourceUriType.PreviousPage => topicResourceParametersBase.PageNumber - 1,
-            ResourceUriType.NextPage => topicResourceParametersBase.PageNumber + 1,
-            _ => topicResourceParametersBase.PageNumber
+            ResourceUriType.PreviousPage => topicResourceParameters.PageNumber - 1,
+            ResourceUriType.NextPage => topicResourceParameters.PageNumber + 1,
+            _ => topicResourceParameters.PageNumber
         };
 
         var uri = Url.Link("GetTopics",
             new
             {
                 pageNumber,
-                pageSize = topicResourceParametersBase.PageSize,
-                mainCategory = topicResourceParametersBase.TopicName,
-                searchQuery = topicResourceParametersBase.SearchQuery
+                pageSize = topicResourceParameters.PageSize,
+                mainCategory = topicResourceParameters.TopicName,
+                searchQuery = topicResourceParameters.SearchQuery
             });
 
         return uri;
@@ -128,7 +125,7 @@ public class TopicController : ControllerBase
     /// <summary>
     /// Get list of all topics
     /// </summary>
-    /// <param name="topicResourceParametersBase">Object with query parameters</param>
+    /// <param name="topicResourceParameters">Object with query parameters</param>
     /// <response code="400">When Sorting or DataShaping fields are not valid</response>
     /// <response code="200">When list of topics is returned</response>
     /// <returns>Action Results</returns>
@@ -136,36 +133,36 @@ public class TopicController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpHead]
     [HttpGet(Name = "GetTopics")]
-    public async Task<ActionResult<IEnumerable<TopicInfoDto>>> GetTopicsAsync([FromQuery] TopicResourceParametersBase topicResourceParametersBase)
+    public async Task<ActionResult<IEnumerable<TopicInfoDto>>> GetTopicsAsync([FromQuery] TopicResourceParameters topicResourceParameters)
     {
         // check if requested fields for data shape are valid
-        if (_propertyCheckerService.TypeHasProperties<TopicInfoDto>(topicResourceParametersBase.Fields) is false)
+        if (_propertyCheckerService.TypeHasProperties<TopicInfoDto>(topicResourceParameters.Fields) is false)
         {
             var problemWithFields = _problemDetailsFactory.CreateProblemDetails(HttpContext, 400,
-                detail: $"Not all requested data shaping fields exist on the resource: {topicResourceParametersBase.Fields}");
+                detail: $"Not all requested data shaping fields exist on the resource: {topicResourceParameters.Fields}");
 
             return BadRequest(problemWithFields);
         }
 
         // check if requested fields for sorting are valid
-        if (_propertyCheckerService.TypeHasProperties<TopicInfoDto>(topicResourceParametersBase.OrderBy) is false)
+        if (_propertyCheckerService.TypeHasProperties<TopicInfoDto>(topicResourceParameters.OrderBy) is false)
         {
             var problemWithFields = _problemDetailsFactory.CreateProblemDetails(HttpContext, 400,
-                detail: $"Not all requested sorting fields exist on the resource: {topicResourceParametersBase.OrderBy}");
+                detail: $"Not all requested sorting fields exist on the resource: {topicResourceParameters.OrderBy}");
 
             return BadRequest(problemWithFields);
         }
 
         // get topic from repo
-        var topicsFromRepo = await _topicRepository.GetAllTopicAsync(topicResourceParametersBase);
+        var topicsFromRepo = await _mediator.Send(topicResourceParameters);
 
         //calculate prev site if exist
         var previousPageLink = topicsFromRepo.HasPrevious
-            ? CreateTopicResourceUri(topicResourceParametersBase, ResourceUriType.PreviousPage)
+            ? CreateTopicResourceUri(topicResourceParameters, ResourceUriType.PreviousPage)
             : null;
         //calculate next site if exist
         var nextPageLink = topicsFromRepo.HasNext
-            ? CreateTopicResourceUri(topicResourceParametersBase, ResourceUriType.NextPage)
+            ? CreateTopicResourceUri(topicResourceParameters, ResourceUriType.NextPage)
             : null;
         //include pagination metadata
         var paginationMetadata =
@@ -176,7 +173,7 @@ public class TopicController : ControllerBase
         var topicInfoDtos = _mapper.Map<IEnumerable<TopicInfoDto>>(topicsFromRepo);
 
         //shape data
-        var shapedTopicInfoDtos = topicInfoDtos.ShapeData(topicResourceParametersBase.Fields);
+        var shapedTopicInfoDtos = topicInfoDtos.ShapeData(topicResourceParameters.Fields);
 
         return Ok(shapedTopicInfoDtos);
     }

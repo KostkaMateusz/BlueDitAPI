@@ -1,4 +1,4 @@
-﻿namespace Bluedit.Services.Repositories.TopicRepo;
+﻿namespace Bluedit.Application.Contracts;
 
 public interface IPagedList<T>
 {

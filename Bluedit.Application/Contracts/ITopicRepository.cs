@@ -1,4 +1,5 @@
-﻿using Bluedit.Application.DataModels.TopicDtos;
+﻿using Bluedit.Application.Contracts;
+using Bluedit.Application.DataModels.TopicDtos;
 using Bluedit.Domain.Entities;
 using Bluedit.Models.DataModels.TopicDtos;
 
@@ -15,5 +16,5 @@ public interface ITopicRepository
     void UpdateTopicAsync(Topic topic);
     void IncrementPostCount(Topic topic);
     void DecrementPostCount(Topic topic);
-    Task<IPagedList<Topic>> GetAllTopicAsync(TopicResourceParametersBase topicResourceParametersBase);
+    Task<IPagedList<Topic>> GetAllTopicAsync(TopicResourceParameters topicResourceParameters);
 }

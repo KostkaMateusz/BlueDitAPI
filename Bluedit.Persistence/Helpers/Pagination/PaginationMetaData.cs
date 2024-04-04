@@ -1,4 +1,4 @@
-﻿namespace Bluedit.Helpers.Pagination;
+﻿namespace Bluedit.Persistence.Helpers.Pagination;
 
 public class PaginationMetaData<T>
 {

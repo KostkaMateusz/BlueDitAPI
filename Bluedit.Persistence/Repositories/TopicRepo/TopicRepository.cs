@@ -1,8 +1,9 @@
-﻿using Bluedit.Application.DataModels.TopicDtos;
+﻿using Bluedit.Application.Contracts;
+using Bluedit.Application.DataModels.TopicDtos;
 using Bluedit.Domain.Entities;
-using Bluedit.Helpers.Pagination;
-using Bluedit.Helpers.Sorting;
 using Bluedit.Models.DataModels.TopicDtos;
+using Bluedit.Persistence.Helpers.Pagination;
+using Bluedit.Persistence.Helpers.Sorting;
 using Bluedit.Services.Repositories.TopicRepo;
 using Microsoft.EntityFrameworkCore;
 
@@ -64,40 +65,40 @@ public class TopicRepository : ITopicRepository
         _applicationDbContext.Update(topic);
     }
 
-    public async Task<IPagedList<Topic>> GetAllTopicAsync(TopicResourceParametersBase topicResourceParametersBase)
+    public async Task<IPagedList<Topic>> GetAllTopicAsync(TopicResourceParameters topicResourceParameters)
     {
-        if (topicResourceParametersBase is null)
-            throw new ArgumentNullException(nameof(topicResourceParametersBase));
+        if (topicResourceParameters is null)
+            throw new ArgumentNullException(nameof(topicResourceParameters));
 
         var topicCollectionQuery = _applicationDbContext.Topics as IQueryable<Topic>;
 
         // filter by name
-        if (string.IsNullOrWhiteSpace(topicResourceParametersBase.TopicName) is false)
+        if (string.IsNullOrWhiteSpace(topicResourceParameters.TopicName) is false)
         {
-            var topicName = topicResourceParametersBase.TopicName.Trim().ToUpper();
+            var topicName = topicResourceParameters.TopicName.Trim().ToUpper();
             topicCollectionQuery = topicCollectionQuery.Where(topic => topic.TopicName == topicName);
         }
 
         //search by in name and description
-        if (string.IsNullOrWhiteSpace(topicResourceParametersBase.SearchQuery) is false)
+        if (string.IsNullOrWhiteSpace(topicResourceParameters.SearchQuery) is false)
         {
-            var searchQuery = topicResourceParametersBase.SearchQuery.Trim();
+            var searchQuery = topicResourceParameters.SearchQuery.Trim();
             topicCollectionQuery = topicCollectionQuery.Where(topic => topic.TopicName.Contains(searchQuery)
                                                                        || topic.TopicDescription.Contains(searchQuery));
         }
 
         //apply sorting
-        if (string.IsNullOrWhiteSpace(topicResourceParametersBase.OrderBy) is false)
+        if (string.IsNullOrWhiteSpace(topicResourceParameters.OrderBy) is false)
         {
             // get property mapping dictionary
             var topicPropertyMappingDictionary = _propertyMappingService.GetPropertyMapping<TopicInfoDto, Topic>();
 
             topicCollectionQuery =
-                topicCollectionQuery.ApplySort(topicResourceParametersBase.OrderBy, topicPropertyMappingDictionary);
+                topicCollectionQuery.ApplySort(topicResourceParameters.OrderBy, topicPropertyMappingDictionary);
         }
 
-        return await PagedList<Topic>.CreateAsync(topicCollectionQuery, topicResourceParametersBase.PageNumber,
-            topicResourceParametersBase.PageSize);
+        return await PagedList<Topic>.CreateAsync(topicCollectionQuery, topicResourceParameters.PageNumber,
+            topicResourceParameters.PageSize);
     }
 
     public void IncrementPostCount(Topic topic)

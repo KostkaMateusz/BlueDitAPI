@@ -1,5 +1,3 @@
-﻿namespace Bluedit.Helpers.Sorting;
+﻿namespace Bluedit.Persistence.Helpers.Sorting;
 
-public interface IPropertyMapping
-{
-}
+public interface IPropertyMapping;
