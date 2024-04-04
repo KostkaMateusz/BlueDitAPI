@@ -2,21 +2,21 @@
 
 public class PaginationMetaData<T>
 {
-    public int totalCount;
-    public int pageSize;
-    public int currentPage;
-    public int totalPages;
-    public string? previousPageLink;
-    public string? nextPageLink;
+    public int TotalCount;
+    public int PageSize;
+    public int CurrentPage;
+    public int TotalPages;
+    public string? PreviousPageLink;
+    public string? NextPageLink;
 
     public PaginationMetaData(PagedList<T> pagedList, string? previousPageLink, string? nextPageLink)
     {
-        totalCount = pagedList.TotalCount;
-        pageSize = pagedList.PageSize;
-        currentPage = pagedList.CurrentPage;
-        totalPages = pagedList.TotalPages;
-        this.previousPageLink = previousPageLink;
-        this.nextPageLink = nextPageLink;
+        TotalCount = pagedList.TotalCount;
+        PageSize = pagedList.PageSize;
+        CurrentPage = pagedList.CurrentPage;
+        TotalPages = pagedList.TotalPages;
+        PreviousPageLink = previousPageLink;
+        NextPageLink = nextPageLink;
     }
 
 }

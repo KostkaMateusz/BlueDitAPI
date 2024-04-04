@@ -1,15 +1,14 @@
-﻿
-using MediatR;
+﻿using MediatR;
 
 namespace Bluedit.Application.Features.TopicFeatures.Commands.PutTopic;
 
 public class PutTopicCommand : IRequest<bool>
 {
-    public string TopicName { get; set; } = string.Empty;
-    public string TopicDescription { get; set; } = string.Empty;
-    public PutTopicCommand(string TopicName, string TopicDescription)
+    public string TopicName { get; set; }
+    public string TopicDescription { get; set; }
+    public PutTopicCommand(string topicName, string topicDescription)
     {
-        this.TopicName = TopicName;
-        this.TopicDescription = TopicDescription;
+        this.TopicName = topicName;
+        this.TopicDescription = topicDescription;
     }
 }

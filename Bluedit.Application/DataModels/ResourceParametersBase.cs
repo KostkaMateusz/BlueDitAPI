@@ -15,5 +15,5 @@ public class ResourceParametersBase
         set => _pageSize = value > MaxPageSize ? MaxPageSize : value;
     }
     public string? Fields { get; set; }
-    public virtual string OrderBy { get; set; } 
+    public string OrderBy { get; set; } = string.Empty;
 }

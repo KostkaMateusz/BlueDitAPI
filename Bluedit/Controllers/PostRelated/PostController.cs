@@ -65,7 +65,7 @@ public class PostController : ControllerBase
 
         //Save file to storage
         var imageNameGuid = Guid.NewGuid();
-        await _azureStorageService.SaveFile(imageNameGuid, postCreateDto.image);
+        await _azureStorageService.SaveFile(imageNameGuid, postCreateDto.Image);
 
         var post = new Post()
         {
@@ -198,7 +198,7 @@ public class PostController : ControllerBase
 
         //Save new image to storage
         var imageNameGuid = Guid.NewGuid();
-        await _azureStorageService.SaveFile(imageNameGuid, postUpdateDto.image);
+        await _azureStorageService.SaveFile(imageNameGuid, postUpdateDto.Image);
         //delete old file
         await _azureStorageService.DeleteImage(postForUpdateFromRepo.ImageGuid);
 

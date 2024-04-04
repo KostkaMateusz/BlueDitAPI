@@ -4,10 +4,10 @@ namespace Bluedit.Application.Features.TopicFeatures.Queries.GetTopic;
 
 public class GetTopicQuery : IRequest<GetTopicQueryResponse?>
 {
-    public string TopicName { get; set; }=string.Empty;
+    public string TopicName { get; set; }
 
-    public GetTopicQuery(string TopicName)
+    public GetTopicQuery(string topicName)
     {
-        this.TopicName = TopicName;
+        this.TopicName = topicName;
     }
 }

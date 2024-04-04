@@ -9,8 +9,8 @@ public class RegisterUserDtoValidator : AbstractValidator<RegisterUserDto>
     public RegisterUserDtoValidator(BlueditDbContext dbContext)
     {
 
-        RuleFor(RegisterUserDto => RegisterUserDto.Name).MinimumLength(5);
-        RuleFor(RegisterUserDto => RegisterUserDto.Name).Custom((value, context) =>
+        RuleFor(registerUserDto => registerUserDto.Name).MinimumLength(5);
+        RuleFor(registerUserDto => registerUserDto.Name).Custom((value, context) =>
         {
             var nameInUse = dbContext.Users.Any(u => u.Name == value);
             if (nameInUse)
@@ -19,11 +19,11 @@ public class RegisterUserDtoValidator : AbstractValidator<RegisterUserDto>
             }
         }); ;
 
-        RuleFor(RegisterUserDto => RegisterUserDto.Password).MinimumLength(6);
+        RuleFor(registerUserDto => registerUserDto.Password).MinimumLength(6);
 
-        RuleFor(RegisterUserDto => RegisterUserDto.Email).NotEmpty().EmailAddress();
+        RuleFor(registerUserDto => registerUserDto.Email).NotEmpty().EmailAddress();
 
-        RuleFor(RegisterUserDto => RegisterUserDto.Email).Custom((value, context) =>
+        RuleFor(registerUserDto => registerUserDto.Email).Custom((value, context) =>
             {
                 var emailInUse = dbContext.Users.Any(u => u.Email == value);
                 if (emailInUse)

@@ -9,12 +9,10 @@ namespace Bluedit.Application.Features.TopicFeatures.Queries.GetTopicsQuery;
 public class GetTopicsQueryHandler : IRequestHandler<TopicResourceParameters,IPagedList<Topic>>
 {
     private readonly ITopicRepository _topicRepository;
-    private readonly IMapper _mapper;
 
-    public GetTopicsQueryHandler(ITopicRepository topicRepository, IMapper mapper)
+    public GetTopicsQueryHandler(ITopicRepository topicRepository)
     {
         _topicRepository = topicRepository ?? throw new ArgumentNullException(nameof(topicRepository));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
     
     public async Task<IPagedList<Topic>> Handle(TopicResourceParameters request, CancellationToken cancellationToken)
