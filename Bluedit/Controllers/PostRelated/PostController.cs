@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Bluedit.Controllers.PostRelated;
@@ -83,6 +82,10 @@ public class PostController : ControllerBase
         var postDto = _mapper.Map<PostInfoDto>(post);
         postDto.ImageContentLink = GetLinkToImage(topicName, post.PostId);
 
+        topicExist.PostCount++;
+        _topicRepository.UpdateTopicAsync(topicExist);
+        await _topicRepository.SaveChangesAsync();
+        
         return CreatedAtRoute("GetPostInfo", new { topicName, post.PostId }, postDto);
     }
 
