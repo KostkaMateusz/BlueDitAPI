@@ -1,29 +1,21 @@
-﻿using Bluedit.Entities;
-using Bluedit.Models.DataModels.UserDtos;
+﻿using Bluedit.Domain.Entities;
+using Bluedit.Helpers.DataShaping;
+using Bluedit.Infrastructure;
 using Bluedit.Models.ModelsValidators;
 using Bluedit.Services.Authentication;
-using Bluedit.Services.Repositories;
-using Bluedit.Services.StorageService;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
 using System.Text;
+using Bluedit.Application.DataModels.UserDtos;
 
 namespace Bluedit.StartUpExtensions;
 
 internal static class AppConfigHelperExtensions
 {
-    public static WebApplicationBuilder AddDataBaseContext(this WebApplicationBuilder builder)
-    {
-        builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnectionString")));
-
-        return builder;
-    }
-
     public static WebApplicationBuilder ConfigureAuthentication(this WebApplicationBuilder builder)
     {
         var authenticationSettings = new AuthenticationSettings();
@@ -76,8 +68,8 @@ internal static class AppConfigHelperExtensions
                     new OpenApiSecurityScheme
                     {
                         Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = "PostGramApiBearerAuth" }
-                    }, new List<string>() 
-                }                
+                    }, new List<string>()
+                }
             });
         });
 
@@ -118,13 +110,14 @@ internal static class AppConfigHelperExtensions
         builder.Services.AddScoped<IUserContextService, UserContextService>();
 
         builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-        builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 
-        builder.Services.AddScoped<ITopicRepository, TopicRepository>();
-        builder.Services.AddScoped<IPostRepository, PostRepository>();
         
-        builder.Services.AddSingleton<IAzureStorageService, AzureStorageService>();
+        //Add Azure Blob Service
+        builder.Services.AddInfrastructureServices();
+
+        //data shaping
+        builder.Services.AddTransient<IPropertyCheckerService, PropertyCheckerService>();
 
         return builder;
     }

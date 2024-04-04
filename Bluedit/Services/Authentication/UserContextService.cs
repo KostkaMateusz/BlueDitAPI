@@ -5,7 +5,7 @@ namespace Bluedit.Services.Authentication;
 public interface IUserContextService
 {
     ClaimsPrincipal User { get; }
-    Guid? GetUserId { get; }
+    Guid GetUserId { get; }
 }
 
 public class UserContextService : IUserContextService
@@ -17,18 +17,15 @@ public class UserContextService : IUserContextService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public ClaimsPrincipal User => _httpContextAccessor.HttpContext?.User;
+    public ClaimsPrincipal User => _httpContextAccessor.HttpContext.User;
 
-    public Guid? GetUserId
+    public Guid GetUserId
     {
         get
         {
             var userClaim = User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
-            if (userClaim is null) return null;
-            else
-            {
-                return Guid.Parse(userClaim.Value);
-            }
+
+            return Guid.Parse(userClaim.Value);
         }
     }
 }
