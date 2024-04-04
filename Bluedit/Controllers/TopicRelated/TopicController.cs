@@ -2,12 +2,11 @@
 using Bluedit.Application.DataModels.TopicDtos;
 using Bluedit.Application.Features.TopicFeatures.Commands.CreateTopic;
 using Bluedit.Application.Features.TopicFeatures.Commands.DeleteTopic;
-using Bluedit.Application.Features.TopicFeatures.Commands.PatchTopic;
+using Bluedit.Application.Features.TopicFeatures.Commands.PutTopic;
 using Bluedit.Application.Features.TopicFeatures.Queries.GetTopic;
-using Bluedit.Application.Features.TopicFeatures.Queries.TopicExist;
+using Bluedit.Application.Features.TopicFeatures.Queries.TopicExists;
 using Bluedit.Domain.Entities;
 using Bluedit.Helpers.DataShaping;
-using Bluedit.Models.DataModels.TopicDtos;
 using Bluedit.Persistence.Helpers.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

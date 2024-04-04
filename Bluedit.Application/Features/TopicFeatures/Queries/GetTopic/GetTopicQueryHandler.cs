@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using Bluedit.Services.Repositories.TopicRepo;
 using AutoMapper;
+using Bluedit.Application.Contracts;
 
 namespace Bluedit.Application.Features.TopicFeatures.Queries.GetTopic;
 

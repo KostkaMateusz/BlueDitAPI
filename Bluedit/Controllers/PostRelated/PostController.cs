@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
+using Bluedit.Application.Contracts;
+using Bluedit.Application.DataModels.PostDtos;
 using Bluedit.Domain.Entities;
 using Bluedit.Infrastructure.StorageService;
-using Bluedit.Models.DataModels.PostDtos;
+using Bluedit.Persistence.Repositories.PostRepo;
+using Bluedit.Persistence.Repositories.ReplyRepo;
 using Bluedit.Services.Authentication;
-using Bluedit.Services.Repositories.PostRepo;
-using Bluedit.Services.Repositories.ReplyRepo;
-using Bluedit.Services.Repositories.TopicRepo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;

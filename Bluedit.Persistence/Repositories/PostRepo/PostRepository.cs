@@ -1,9 +1,7 @@
 ﻿using Bluedit.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Bluedit.Persistence;
 
-
-namespace Bluedit.Services.Repositories.PostRepo;
+namespace Bluedit.Persistence.Repositories.PostRepo;
 
 public class PostRepository : IPostRepository
 {

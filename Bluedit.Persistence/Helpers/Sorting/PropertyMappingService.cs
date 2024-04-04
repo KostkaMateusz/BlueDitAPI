@@ -1,5 +1,5 @@
-﻿using Bluedit.Domain.Entities;
-using Bluedit.Models.DataModels.TopicDtos;
+﻿using Bluedit.Application.DataModels.TopicDtos;
+using Bluedit.Domain.Entities;
 
 namespace Bluedit.Persistence.Helpers.Sorting;
 

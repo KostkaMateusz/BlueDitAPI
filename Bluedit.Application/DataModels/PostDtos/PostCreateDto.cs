@@ -1,9 +1,8 @@
-﻿using Bluedit.Models.ModelsValidators;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http;
 
-namespace Bluedit.Models.DataModels.PostDtos;
+namespace Bluedit.Application.DataModels.PostDtos;
 
 public class PostCreateDto
 {

@@ -1,5 +1,5 @@
-﻿using Bluedit.Domain.Entities;
-using Bluedit.Services.Repositories.TopicRepo;
+﻿using Bluedit.Application.Contracts;
+using Bluedit.Domain.Entities;
 using MediatR;
 
 namespace Bluedit.Application.Features.TopicFeatures.Commands.CreateTopic;

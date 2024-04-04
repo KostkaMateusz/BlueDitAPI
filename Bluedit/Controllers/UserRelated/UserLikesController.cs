@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
+using Bluedit.Application.DataModels.LikesDto;
 using Bluedit.Domain.Entities.LikeEntities;
-using Bluedit.Models.DataModels.LikesDto;
+using Bluedit.Persistence.Repositories.LikeRepo;
 using Bluedit.Services.Authentication;
-using Bluedit.Services.Repositories.LikeRepo;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bluedit.Controllers.UserRelated;

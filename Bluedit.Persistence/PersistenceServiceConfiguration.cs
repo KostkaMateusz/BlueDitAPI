@@ -1,16 +1,15 @@
-﻿using Bluedit.Domain.Entities.LikeEntities;
+﻿using Bluedit.Application.Contracts;
+using Bluedit.Domain.Entities.LikeEntities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
-using Bluedit.Services.Repositories.LikeRepo;
-using Bluedit.Services.Repositories.PostRepo;
-using Bluedit.Services.Repositories.ReplyRepo;
-using Bluedit.Services.Repositories.UserRepo;
-using Bluedit.Services.Repositories.TopicRepo;
 using Bluedit.Persistence.Helpers.Sorting;
+using Bluedit.Persistence.Repositories.LikeRepo;
+using Bluedit.Persistence.Repositories.PostRepo;
+using Bluedit.Persistence.Repositories.ReplyRepo;
 using Bluedit.Persistence.Repositories.TopicRepo;
+using Bluedit.Persistence.Repositories.UserRepo;
 
 //using Bluedit.Services.Repositories.TopicRepo;
 
@@ -27,18 +26,18 @@ public static class PersistenceServiceConfiguration
         return builder;
     }
 
-    public static WebApplicationBuilder AddDataBaseContext(this WebApplicationBuilder builder)
+    private static WebApplicationBuilder AddDataBaseContext(this WebApplicationBuilder builder)
     {
-        builder.Services.AddDbContext<BlueditDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnectionString")));
+        builder.Services.AddDbContext<BlueditDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnectionString")));
 
         return builder;
     }
 
-    public static WebApplicationBuilder AddRepositories(this WebApplicationBuilder builder)
+    private static WebApplicationBuilder AddRepositories(this WebApplicationBuilder builder)
     {
-
         builder.Services.AddScoped<IUserRepository, UserRepository>();
-        
+
         builder.Services.AddScoped<IPostRepository, PostRepository>();
         builder.Services.AddScoped<IRepliesRepository, RepliesRepository>();
 
@@ -50,9 +49,6 @@ public static class PersistenceServiceConfiguration
         //sorting
         builder.Services.AddTransient<IPropertyMappingService, PropertyMappingService>();
 
-
         return builder;
     }
-
-
 }

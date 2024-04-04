@@ -1,7 +1,7 @@
-﻿using Bluedit.Services.Repositories.TopicRepo;
+﻿using Bluedit.Application.Contracts;
 using MediatR;
 
-namespace Bluedit.Application.Features.TopicFeatures.Queries.TopicExist;
+namespace Bluedit.Application.Features.TopicFeatures.Queries.TopicExists;
 
 public class TopicExistsQueryHandler : IRequestHandler<TopicExistsQuery, bool>
 {

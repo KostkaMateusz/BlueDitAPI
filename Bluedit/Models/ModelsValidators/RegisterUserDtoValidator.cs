@@ -1,4 +1,4 @@
-﻿using Bluedit.Models.DataModels.UserDtos;
+﻿using Bluedit.Application.DataModels.UserDtos;
 using FluentValidation;
 using Bluedit.Persistence;
 

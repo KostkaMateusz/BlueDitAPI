@@ -1,9 +1,7 @@
-﻿using Bluedit.Application.Contracts;
-using Bluedit.Application.DataModels.TopicDtos;
+﻿using Bluedit.Application.DataModels.TopicDtos;
 using Bluedit.Domain.Entities;
-using Bluedit.Models.DataModels.TopicDtos;
 
-namespace Bluedit.Services.Repositories.TopicRepo;
+namespace Bluedit.Application.Contracts;
 
 public interface ITopicRepository
 {

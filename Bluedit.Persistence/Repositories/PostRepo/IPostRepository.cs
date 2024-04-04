@@ -1,6 +1,6 @@
 ﻿using Bluedit.Domain.Entities;
 
-namespace Bluedit.Services.Repositories.PostRepo;
+namespace Bluedit.Persistence.Repositories.PostRepo;
 
 public interface IPostRepository
 {

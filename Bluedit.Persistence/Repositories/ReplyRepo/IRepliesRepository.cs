@@ -1,6 +1,6 @@
 ﻿using Bluedit.Domain.Entities.ReplyEntities;
 
-namespace Bluedit.Services.Repositories.ReplyRepo
+namespace Bluedit.Persistence.Repositories.ReplyRepo
 {
     public interface IRepliesRepository
     {

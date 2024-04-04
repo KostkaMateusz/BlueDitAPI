@@ -1,4 +1,4 @@
-﻿namespace Bluedit.Models.DataModels.PostDtos;
+﻿namespace Bluedit.Application.DataModels.PostDtos;
 
 public class PartialyUpdatePostDto
 {

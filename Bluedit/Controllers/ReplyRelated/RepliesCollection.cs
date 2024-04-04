@@ -1,14 +1,14 @@
-﻿using AutoMapper;
+﻿using System.Text.RegularExpressions;
+using AutoMapper;
+using Bluedit.Application.DataModels.ReplayDtos;
 using Bluedit.Domain.Entities.ReplyEntities;
-using Bluedit.Models.DataModels.ReplayDtos;
+using Bluedit.Persistence.Repositories.PostRepo;
+using Bluedit.Persistence.Repositories.ReplyRepo;
 using Bluedit.Services.Authentication;
-using Bluedit.Services.Repositories.PostRepo;
-using Bluedit.Services.Repositories.ReplyRepo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.RegularExpressions;
 
-namespace Bluedit.Controllers;
+namespace Bluedit.Controllers.ReplyRelated;
 
 
 [ApiController]

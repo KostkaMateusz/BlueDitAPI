@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using Bluedit.Domain.Entities;
-using Bluedit.Models.DataModels.UserDtos;
 using Bluedit.Services.Authentication;
-using Bluedit.Services.Repositories.UserRepo;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Bluedit.Application.DataModels.UserDtos;
+using Bluedit.Persistence.Repositories.UserRepo;
 
 namespace Bluedit.Controllers.UserRelated;
 

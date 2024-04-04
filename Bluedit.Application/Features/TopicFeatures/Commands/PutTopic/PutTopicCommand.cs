@@ -1,7 +1,7 @@
 ﻿
 using MediatR;
 
-namespace Bluedit.Application.Features.TopicFeatures.Commands.PatchTopic;
+namespace Bluedit.Application.Features.TopicFeatures.Commands.PutTopic;
 
 public class PutTopicCommand : IRequest<bool>
 {

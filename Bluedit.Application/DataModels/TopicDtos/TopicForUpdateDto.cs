@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Bluedit.Models.DataModels.TopicDtos;
+namespace Bluedit.Application.DataModels.TopicDtos;
 
 public class TopicForUpdateDto
 {

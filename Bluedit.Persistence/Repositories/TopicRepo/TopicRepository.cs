@@ -1,10 +1,8 @@
 ﻿using Bluedit.Application.Contracts;
 using Bluedit.Application.DataModels.TopicDtos;
 using Bluedit.Domain.Entities;
-using Bluedit.Models.DataModels.TopicDtos;
 using Bluedit.Persistence.Helpers.Pagination;
 using Bluedit.Persistence.Helpers.Sorting;
-using Bluedit.Services.Repositories.TopicRepo;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bluedit.Persistence.Repositories.TopicRepo;

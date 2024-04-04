@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using Bluedit.Application.DataModels.LikesDto;
 using Bluedit.Domain.Entities.LikeEntities;
-using Bluedit.Models.DataModels.LikesDto;
 
 namespace Bluedit.Models;
 

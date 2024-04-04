@@ -1,7 +1,7 @@
-﻿using Bluedit.Services.Repositories.TopicRepo;
+﻿using Bluedit.Application.Contracts;
 using MediatR;
 
-namespace Bluedit.Application.Features.TopicFeatures.Commands.PatchTopic;
+namespace Bluedit.Application.Features.TopicFeatures.Commands.PutTopic;
 
 public class PutTopicCommandHandler : IRequestHandler<PutTopicCommand, bool>
 {

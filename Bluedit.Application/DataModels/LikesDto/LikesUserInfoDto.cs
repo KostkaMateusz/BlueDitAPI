@@ -1,4 +1,4 @@
-﻿namespace Bluedit.Models.DataModels.LikesDto;
+﻿namespace Bluedit.Application.DataModels.LikesDto;
 
 public class LikesUserInfoDto
 {

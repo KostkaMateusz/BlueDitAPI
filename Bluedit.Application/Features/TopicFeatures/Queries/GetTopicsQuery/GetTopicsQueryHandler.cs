@@ -2,7 +2,6 @@
 using Bluedit.Application.Contracts;
 using Bluedit.Application.DataModels.TopicDtos;
 using Bluedit.Domain.Entities;
-using Bluedit.Services.Repositories.TopicRepo;
 using MediatR;
 
 namespace Bluedit.Application.Features.TopicFeatures.Queries.GetTopicsQuery;

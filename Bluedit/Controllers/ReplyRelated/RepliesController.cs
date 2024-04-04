@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
+using Bluedit.Application.DataModels.ReplayDtos;
 using Bluedit.Domain.Entities.ReplyEntities;
-using Bluedit.Models.DataModels.ReplayDtos;
+using Bluedit.Persistence.Repositories.ReplyRepo;
 using Bluedit.Services.Authentication;
-using Bluedit.Services.Repositories.ReplyRepo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;

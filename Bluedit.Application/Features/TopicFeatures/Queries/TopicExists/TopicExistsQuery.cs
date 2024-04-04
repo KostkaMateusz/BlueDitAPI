@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Bluedit.Application.Features.TopicFeatures.Queries.TopicExist;
+namespace Bluedit.Application.Features.TopicFeatures.Queries.TopicExists;
 
 public class TopicExistsQuery : IRequest<bool>
 {
