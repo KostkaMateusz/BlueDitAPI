@@ -1,12 +1,12 @@
-﻿using Bluedit.Domain.Entities;
+﻿using Bluedit.Application.DataModels.TopicDtos;
+using Bluedit.Domain.Entities;
 using Bluedit.Helpers.Pagination;
 using Bluedit.Helpers.Sorting;
 using Bluedit.Models.DataModels.TopicDtos;
+using Bluedit.Services.Repositories.TopicRepo;
 using Microsoft.EntityFrameworkCore;
-using Bluedit.Persistence;
 
-
-namespace Bluedit.Services.Repositories.TopicRepo;
+namespace Bluedit.Persistence.Repositories.TopicRepo;
 
 public class TopicRepository : ITopicRepository
 {
@@ -16,7 +16,8 @@ public class TopicRepository : ITopicRepository
     public TopicRepository(BlueditDbContext applicationDbContext, IPropertyMappingService propertyMappingService)
     {
         _applicationDbContext = applicationDbContext;
-        _propertyMappingService = propertyMappingService ?? throw new ArgumentNullException(nameof(propertyMappingService));
+        _propertyMappingService =
+            propertyMappingService ?? throw new ArgumentNullException(nameof(propertyMappingService));
     }
 
     public async Task<bool> IsTopicExistAsync(string topicName)
@@ -40,7 +41,7 @@ public class TopicRepository : ITopicRepository
         return postInTopicCount;
     }
 
-    public async Task CreateTopicAync(Topic topic)
+    public async Task CreateTopicAsync(Topic topic)
     {
         if (topic is null)
             throw new ArgumentNullException(nameof(topic));
@@ -58,43 +59,45 @@ public class TopicRepository : ITopicRepository
         _applicationDbContext.Topics.Remove(topic);
     }
 
-    public void UpdateTopicAync(Topic topic)
+    public void UpdateTopicAsync(Topic topic)
     {
         _applicationDbContext.Update(topic);
     }
 
-    public async Task<IPagedList<Topic>> GetAllTopicAsync(TopicResourceParameters topicResourceParameters)
+    public async Task<IPagedList<Topic>> GetAllTopicAsync(TopicResourceParametersBase topicResourceParametersBase)
     {
-        if (topicResourceParameters is null)
-            throw new ArgumentNullException(nameof(topicResourceParameters));
+        if (topicResourceParametersBase is null)
+            throw new ArgumentNullException(nameof(topicResourceParametersBase));
 
         var topicCollectionQuery = _applicationDbContext.Topics as IQueryable<Topic>;
 
         // filter by name
-        if (string.IsNullOrWhiteSpace(topicResourceParameters.TopicName) is false)
+        if (string.IsNullOrWhiteSpace(topicResourceParametersBase.TopicName) is false)
         {
-            var topicName = topicResourceParameters.TopicName.Trim().ToUpper();
+            var topicName = topicResourceParametersBase.TopicName.Trim().ToUpper();
             topicCollectionQuery = topicCollectionQuery.Where(topic => topic.TopicName == topicName);
         }
 
         //search by in name and description
-        if (string.IsNullOrWhiteSpace(topicResourceParameters.SearchQuery) is false)
+        if (string.IsNullOrWhiteSpace(topicResourceParametersBase.SearchQuery) is false)
         {
-            var searchQuery = topicResourceParameters.SearchQuery.Trim();
+            var searchQuery = topicResourceParametersBase.SearchQuery.Trim();
             topicCollectionQuery = topicCollectionQuery.Where(topic => topic.TopicName.Contains(searchQuery)
-                                                            || topic.TopicDescription.Contains(searchQuery));
+                                                                       || topic.TopicDescription.Contains(searchQuery));
         }
 
         //apply sorting
-        if (string.IsNullOrWhiteSpace(topicResourceParameters.OrderBy) is false)
+        if (string.IsNullOrWhiteSpace(topicResourceParametersBase.OrderBy) is false)
         {
             // get property mapping dictionary
-            var topipcPropertyMappingDictionary = _propertyMappingService.GetPropertyMapping<TopicInfoDto, Topic>();
+            var topicPropertyMappingDictionary = _propertyMappingService.GetPropertyMapping<TopicInfoDto, Topic>();
 
-            topicCollectionQuery = topicCollectionQuery.ApplySort(topicResourceParameters.OrderBy, topipcPropertyMappingDictionary);
+            topicCollectionQuery =
+                topicCollectionQuery.ApplySort(topicResourceParametersBase.OrderBy, topicPropertyMappingDictionary);
         }
 
-        return await PagedList<Topic>.CreateAsync(topicCollectionQuery, topicResourceParameters.PageNumber, topicResourceParameters.PageSize);
+        return await PagedList<Topic>.CreateAsync(topicCollectionQuery, topicResourceParametersBase.PageNumber,
+            topicResourceParametersBase.PageSize);
     }
 
     public void IncrementPostCount(Topic topic)
@@ -121,6 +124,4 @@ public class TopicRepository : ITopicRepository
     {
         return await _applicationDbContext.SaveChangesAsync() >= 0;
     }
-
-
 }

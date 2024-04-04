@@ -20,7 +20,7 @@ public class PutTopicCommandHandler : IRequestHandler<PutTopicCommand, bool>
 
         topicForUpdate.TopicDescription = request.TopicDescription;
 
-        _topicRepository.UpdateTopicAync(topicForUpdate);
+        _topicRepository.UpdateTopicAsync(topicForUpdate);
 
         await _topicRepository.SaveChangesAsync();
 

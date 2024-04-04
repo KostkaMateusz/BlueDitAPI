@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Bluedit.Application.DataModels.TopicDtos;
 using Bluedit.Application.Features.TopicFeatures.Commands.CreateTopic;
 using Bluedit.Application.Features.TopicFeatures.Commands.DeleteTopic;
 using Bluedit.Application.Features.TopicFeatures.Commands.PatchTopic;
@@ -11,7 +12,6 @@ using Bluedit.Models.DataModels.TopicDtos;
 using Bluedit.Services.Repositories.TopicRepo;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Newtonsoft.Json;
@@ -37,22 +37,22 @@ public class TopicController : ControllerBase
         _problemDetailsFactory = problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
     }
 
-    private string? CreateTopicResourceUri(TopicResourceParameters topicResourceParameters, ResourceUriType type)
+    private string? CreateTopicResourceUri(TopicResourceParametersBase topicResourceParametersBase, ResourceUriType type)
     {
         var pageNumber = type switch
         {
-            ResourceUriType.PreviousPage => topicResourceParameters.PageNumber - 1,
-            ResourceUriType.NextPage => topicResourceParameters.PageNumber + 1,
-            _ => topicResourceParameters.PageNumber
+            ResourceUriType.PreviousPage => topicResourceParametersBase.PageNumber - 1,
+            ResourceUriType.NextPage => topicResourceParametersBase.PageNumber + 1,
+            _ => topicResourceParametersBase.PageNumber
         };
 
         var uri = Url.Link("GetTopics",
             new
             {
                 pageNumber,
-                pageSize = topicResourceParameters.PageSize,
-                mainCategory = topicResourceParameters.TopicName,
-                searchQuery = topicResourceParameters.SearchQuery
+                pageSize = topicResourceParametersBase.PageSize,
+                mainCategory = topicResourceParametersBase.TopicName,
+                searchQuery = topicResourceParametersBase.SearchQuery
             });
 
         return uri;
@@ -70,7 +70,7 @@ public class TopicController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<TopicCreateDto>> CreateTopic([FromBody] CreateTopicCommand topicCreate)
+    public async Task<ActionResult<TopicCreatedDto>> CreateTopic([FromBody] CreateTopicCommand topicCreate)
     {
         var topicExit = await _mediator.Send(new TopicExistsQuery(topicCreate.TopicName));
 
@@ -128,7 +128,7 @@ public class TopicController : ControllerBase
     /// <summary>
     /// Get list of all topics
     /// </summary>
-    /// <param name="topicResourceParameters">Object with query parameters</param>
+    /// <param name="topicResourceParametersBase">Object with query parameters</param>
     /// <response code="400">When Sorting or DataShaping fields are not valid</response>
     /// <response code="200">When list of topics is returned</response>
     /// <returns>Action Results</returns>
@@ -136,44 +136,47 @@ public class TopicController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpHead]
     [HttpGet(Name = "GetTopics")]
-    public async Task<ActionResult<IEnumerable<TopicInfoDto>>> GetTopicsAsync([FromQuery] TopicResourceParameters topicResourceParameters)
+    public async Task<ActionResult<IEnumerable<TopicInfoDto>>> GetTopicsAsync([FromQuery] TopicResourceParametersBase topicResourceParametersBase)
     {
         // check if requested fields for data shape are valid
-        if (_propertyCheckerService.TypeHasProperties<TopicInfoDto>(topicResourceParameters.Fields) is false)
+        if (_propertyCheckerService.TypeHasProperties<TopicInfoDto>(topicResourceParametersBase.Fields) is false)
         {
-            var problemWithFields = _problemDetailsFactory.CreateProblemDetails(HttpContext, statusCode: 400,
-                detail: $"Not all requested data shaping fields exist on the resource: {topicResourceParameters.Fields}");
+            var problemWithFields = _problemDetailsFactory.CreateProblemDetails(HttpContext, 400,
+                detail: $"Not all requested data shaping fields exist on the resource: {topicResourceParametersBase.Fields}");
 
             return BadRequest(problemWithFields);
         }
 
         // check if requested fields for sorting are valid
-        if (_propertyCheckerService.TypeHasProperties<TopicInfoDto>(topicResourceParameters.OrderBy) is false)
+        if (_propertyCheckerService.TypeHasProperties<TopicInfoDto>(topicResourceParametersBase.OrderBy) is false)
         {
-            var problemWithFields = _problemDetailsFactory.CreateProblemDetails(HttpContext, statusCode: 400,
-                detail: $"Not all requested sorting fields exist on the resource: {topicResourceParameters.OrderBy}");
+            var problemWithFields = _problemDetailsFactory.CreateProblemDetails(HttpContext, 400,
+                detail: $"Not all requested sorting fields exist on the resource: {topicResourceParametersBase.OrderBy}");
 
             return BadRequest(problemWithFields);
         }
 
         // get topic from repo
-        var topicsFromRepo = await _topicRepository.GetAllTopicAsync(topicResourceParameters);
+        var topicsFromRepo = await _topicRepository.GetAllTopicAsync(topicResourceParametersBase);
 
         //calculate prev site if exist
-        var previousPageLink = topicsFromRepo.HasPrevious ?
-            CreateTopicResourceUri(topicResourceParameters, ResourceUriType.PreviousPage) : null;
+        var previousPageLink = topicsFromRepo.HasPrevious
+            ? CreateTopicResourceUri(topicResourceParametersBase, ResourceUriType.PreviousPage)
+            : null;
         //calculate next site if exist
-        var nextPageLink = topicsFromRepo.HasNext ?
-            CreateTopicResourceUri(topicResourceParameters, ResourceUriType.NextPage) : null;
+        var nextPageLink = topicsFromRepo.HasNext
+            ? CreateTopicResourceUri(topicResourceParametersBase, ResourceUriType.NextPage)
+            : null;
         //include pagination metadata
-        var paginationMetadata = new PaginationMetaData<Topic>((PagedList<Topic>)topicsFromRepo, previousPageLink, nextPageLink);
+        var paginationMetadata =
+            new PaginationMetaData<Topic>((PagedList<Topic>)topicsFromRepo, previousPageLink, nextPageLink);
 
         Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(paginationMetadata));
         //map topics to DTO
         var topicInfoDtos = _mapper.Map<IEnumerable<TopicInfoDto>>(topicsFromRepo);
 
         //shape data
-        var shapedTopicInfoDtos = topicInfoDtos.ShapeData(topicResourceParameters.Fields);
+        var shapedTopicInfoDtos = topicInfoDtos.ShapeData(topicResourceParametersBase.Fields);
 
         return Ok(shapedTopicInfoDtos);
     }
@@ -199,7 +202,8 @@ public class TopicController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPut("{topicName}")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> PartiallyUpdateTopicDescription([FromRoute] string topicName, [FromBody] TopicForUpdateDto topicForUpdateDto)
+    public async Task<IActionResult> PartiallyUpdateTopicDescription([FromRoute] string topicName,
+        [FromBody] TopicForUpdateDto topicForUpdateDto)
     {
         var topicExit = await _mediator.Send(new TopicExistsQuery(topicName));
 

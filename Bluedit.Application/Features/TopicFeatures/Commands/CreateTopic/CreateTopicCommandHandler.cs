@@ -17,7 +17,7 @@ public class CreateTopicCommandHandler : IRequestHandler<CreateTopicCommand, Top
     {
         var topicEntity = new Topic { TopicName = request.TopicName, TopicDescription = request.TopicDescription };
 
-        await _topicRepository.CreateTopicAync(topicEntity);
+        await _topicRepository.CreateTopicAsync(topicEntity);
 
         await _topicRepository.SaveChangesAsync();
 
