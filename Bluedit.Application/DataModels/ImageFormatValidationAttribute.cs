@@ -8,13 +8,9 @@ public class ImageFormatValidationAttribute : ValidationAttribute
     public override bool IsValid(object? value)
     {
         if (value is null)
-        {
             return false;
-        }
 
-        var image = (IFormFile)value;
-
-        if (image is null)
+        if (value is not IFormFile image)
             return false;
         else
             return image.ContentType.Equals("image/jpeg")
