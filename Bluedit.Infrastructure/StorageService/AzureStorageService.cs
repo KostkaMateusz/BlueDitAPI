@@ -9,51 +9,49 @@ namespace Bluedit.Infrastructure.StorageService;
 
 public class AzureStorageService : IAzureStorageService
 {
-    private string? connectionString;
-    private readonly string containerName = string.Empty;
-    private readonly string blobAddres = string.Empty;
-    private BlobContainerClient containerClient;
-    private BlobServiceClient blobServiceClient;
+    private readonly string _containerName;
+    private readonly BlobContainerClient _containerClient;
+    private readonly BlobServiceClient _blobServiceClient;
 
     public AzureStorageService(IConfiguration configuration, IWebHostEnvironment env)
     {
         // create a container client object
 
-        containerName = configuration["BlobStorage:ContainerName"] ?? throw new ArgumentNullException(nameof(configuration));
+        _containerName = configuration["BlobStorage:ContainerName"] ?? throw new ArgumentNullException(nameof(configuration));
 
         if (string.Equals(env.EnvironmentName, "Development"))
         {
-            connectionString = configuration.GetSection("BlobStorage").GetValue<string>("AzureStorageConnectionString");
+            var connectionString = configuration.GetSection("BlobStorage").GetValue<string>("AzureStorageConnectionString");
 
             if (string.IsNullOrEmpty(connectionString))
                 throw new ArgumentNullException(nameof(connectionString));
 
-            containerClient = new BlobContainerClient(connectionString, containerName);
+            _containerClient = new BlobContainerClient(connectionString, _containerName);
 
-            blobServiceClient = new BlobServiceClient(connectionString);
+            _blobServiceClient = new BlobServiceClient(connectionString);
         }
         else
         {
-            blobAddres = configuration["BlobStorage:AzureBlobContainerLink"] ?? throw new ArgumentNullException(nameof(configuration));
+            var blobAddres = configuration["BlobStorage:AzureBlobContainerLink"] ?? throw new ArgumentNullException(nameof(configuration));
             if (string.IsNullOrEmpty(blobAddres))
                 throw new ArgumentNullException(nameof(blobAddres));
 
-            blobServiceClient = new BlobServiceClient(new Uri(blobAddres), new DefaultAzureCredential());
+            _blobServiceClient = new BlobServiceClient(new Uri(blobAddres), new DefaultAzureCredential());
 
-            containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+            _containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
         }
     }
 
     public void CreateStorage()
     {
         //Create a container
-        blobServiceClient.CreateBlobContainer(containerName);
+        _blobServiceClient.CreateBlobContainer(_containerName);
     }
 
     public async Task SaveFile(Guid fileName, IFormFile file)
     {
         // Get a reference to a blob
-        BlobClient blobClient = containerClient.GetBlobClient(fileName.ToString());
+        BlobClient blobClient = _containerClient.GetBlobClient(fileName.ToString());
 
         //Save file Stream to blob
         using var stream = file.OpenReadStream();
@@ -62,7 +60,7 @@ public class AzureStorageService : IAzureStorageService
 
     public async Task<byte[]> GetFileData(Guid imageGuid)
     {
-        var imageBlobs = containerClient.GetBlobsAsync(prefix: imageGuid.ToString());
+        var imageBlobs = _containerClient.GetBlobsAsync(prefix: imageGuid.ToString());
 
         var listofBlobs = new List<BlobItem>();
         await foreach (var blob in imageBlobs)
@@ -75,7 +73,7 @@ public class AzureStorageService : IAzureStorageService
             throw new NullReferenceException(nameof(imageBlob));
         //throw new NotFoundException($"Image with id:{imageGuid} was not found");
 
-        var blobClient = containerClient.GetBlobClient(imageBlob.Name);
+        var blobClient = _containerClient.GetBlobClient(imageBlob.Name);
 
         using var stream = new MemoryStream();
         await blobClient.DownloadToAsync(stream);
@@ -86,11 +84,11 @@ public class AzureStorageService : IAzureStorageService
 
     public async Task DeleteImage(Guid imageGuid)
     {
-        var imageBlobs = containerClient.GetBlobsAsync(prefix: imageGuid.ToString());
+        var imageBlobs = _containerClient.GetBlobsAsync(prefix: imageGuid.ToString());
 
         await foreach (var blob in imageBlobs)
         {
-            var blobClient = containerClient.GetBlobClient(blob.Name);
+            var blobClient = _containerClient.GetBlobClient(blob.Name);
             await blobClient.DeleteIfExistsAsync();
         }
     }

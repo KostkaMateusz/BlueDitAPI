@@ -13,44 +13,44 @@ public class RepliesRepository : IRepliesRepository
         _dbContext = dbContext;
     }
 
-    public async Task<ReplyBase?> GetReplyById(Guid ReplayId)
+    public async Task<ReplyBase?> GetReplyById(Guid replayId)
     {
-        return await _dbContext.Replies.FirstOrDefaultAsync(r => r.ReplyId == ReplayId); ;
+        return await _dbContext.Replies.FirstOrDefaultAsync(r => r.ReplyId == replayId); 
     }
 
-    public async Task Addreplay(ReplyBase replay)
+    public async Task Addreply(ReplyBase replay)
     {
         await _dbContext.Replies.AddAsync(replay);
     }
 
-    public async Task<IEnumerable<Reply?>> GetRepliesByParentPostId(Guid ParentId)
+    public async Task<IEnumerable<Reply?>> GetRepliesByParentPostId(Guid parentId)
     {
-        var postReplay = await _dbContext.Replies.OfType<Reply>().Where(r => r.ParentPostId == ParentId).ToListAsync();
+        var postReplay = await _dbContext.Replies.OfType<Reply>().Where(r => r.ParentPostId == parentId).ToListAsync();
 
         return postReplay;
     }
 
-    public async Task<IEnumerable<SubReplay>> GetSubRepliesByParentReplayId(Guid ParentId)
+    public async Task<IEnumerable<SubReplay>> GetSubRepliesByParentReplayId(Guid parentId)
     {
-        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().Where(r => r.ParentReplyId == ParentId).ToListAsync();
+        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().Where(r => r.ParentReplyId == parentId).ToListAsync();
 
         return replayReplay;
     }
 
-    public async Task<SubReplay?> GetSubReplyById(Guid SubreplayId)
+    public async Task<SubReplay?> GetSubReplyById(Guid subreplyId)
     {
-        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().FirstOrDefaultAsync(r => r.ReplyId == SubreplayId);
+        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().FirstOrDefaultAsync(r => r.ReplyId == subreplyId);
 
         return replayReplay;
     }
 
-    public async Task<ReplyBase?> GetReplayByParentId(Guid ParentId)
+    public async Task<ReplyBase?> GetReplayByParentId(Guid parentId)
     {
-        var postReplay = await _dbContext.Replies.OfType<Reply>().FirstOrDefaultAsync(r => r.ParentPostId == ParentId);
+        var postReplay = await _dbContext.Replies.OfType<Reply>().FirstOrDefaultAsync(r => r.ParentPostId == parentId);
         if (postReplay is not null)
             return postReplay;
 
-        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().FirstOrDefaultAsync(r => r.ParentReplyId == ParentId);
+        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().FirstOrDefaultAsync(r => r.ParentReplyId == parentId);
         if (replayReplay is not null)
             return replayReplay;
 

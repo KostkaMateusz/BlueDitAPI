@@ -1,6 +1,5 @@
 ﻿using Bluedit.Application.Contracts;
 using Bluedit.Application.DataModels.PostDtos;
-using Bluedit.Application.DataModels.TopicDtos;
 using Bluedit.Domain.Entities;
 using Bluedit.Persistence.Helpers.Pagination;
 using Bluedit.Persistence.Helpers.Sorting;
@@ -86,7 +85,7 @@ public class PostRepository : IPostRepository
         if (post is null)
             throw new ArgumentNullException(nameof(post));
 
-        await _dbContext.Entry(post).Reference(post => post.User).LoadAsync();
+        await _dbContext.Entry(post).Reference(postClass => postClass.User).LoadAsync();
     }
 
     public async Task LoadPostLikesAsync(Post post)

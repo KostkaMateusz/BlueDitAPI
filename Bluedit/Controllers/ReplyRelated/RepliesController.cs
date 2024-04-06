@@ -50,7 +50,7 @@ public class RepliesController : ControllerBase
 
         var newReply = new SubReplay() { UserId = _userContextService.GetUserId, Description = createReplayDto.Description, ParentReplyId = parentReply.ReplyId };
 
-        await _repliesRepository.Addreplay(newReply);
+        await _repliesRepository.Addreply(newReply);
         replyId = newReply.ReplyId;
 
         await _repliesRepository.SaveChangesAsync();
