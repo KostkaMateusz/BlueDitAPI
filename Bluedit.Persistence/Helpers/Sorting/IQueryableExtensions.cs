@@ -8,11 +8,9 @@ public static class IQueryableExtensions
 {
     public static IQueryable<T> ApplySort<T>(this IQueryable<T> source, string orderBy, Dictionary<string, PropertyMappingValue> mappingDictionary)
     {
-        if (source is null)
-            throw new ArgumentNullException(nameof(source));
+        ArgumentNullException.ThrowIfNull(source);
 
-        if (mappingDictionary is null)
-            throw new ArgumentNullException(nameof(mappingDictionary));
+        ArgumentNullException.ThrowIfNull(mappingDictionary);
 
         if (string.IsNullOrWhiteSpace(orderBy))
             return source;
@@ -22,7 +20,7 @@ public static class IQueryableExtensions
         // the orderBy string is separated by ",", so we split it.
         var orderByAfterSplit = orderBy.Split(',');
 
-        // apply each orderby clause  
+        // apply each order by clause  
         foreach (var orderByClause in orderByAfterSplit)
         {
             // trim the orderBy clause, as it might contain leading
@@ -31,21 +29,21 @@ public static class IQueryableExtensions
             var trimmedOrderByClause = orderByClause.Trim();
 
             // if the sort option ends with with " desc", we order
-            // descending, ortherwise ascending
+            // descending, otherwise ascending
             var orderDescending = trimmedOrderByClause.EndsWith(" desc");
 
             // remove " asc" or " desc" from the orderBy clause, so we 
             // get the property name to look for in the mapping dictionary
-            var indexOfFirstSpace = trimmedOrderByClause.IndexOf(" ");
+            var indexOfFirstSpace = trimmedOrderByClause.IndexOf(" ", StringComparison.Ordinal);
             
             var propertyName = indexOfFirstSpace == -1 ? trimmedOrderByClause : trimmedOrderByClause.Remove(indexOfFirstSpace);
 
             // find the matching property
-            if (!mappingDictionary.ContainsKey(propertyName))
+            if (!mappingDictionary.TryGetValue(propertyName, out PropertyMappingValue? value))
                 throw new ArgumentException($"Key mapping for {propertyName} is missing");
 
             // get the PropertyMappingValue
-            var propertyMappingValue = mappingDictionary[propertyName];
+            var propertyMappingValue = value;
 
             if (propertyMappingValue is null)
                 throw new ArgumentNullException(nameof(propertyMappingValue));
@@ -65,4 +63,3 @@ public static class IQueryableExtensions
         return source.OrderBy(orderByStringNuBuilder.ToString());
     }
 }
-
