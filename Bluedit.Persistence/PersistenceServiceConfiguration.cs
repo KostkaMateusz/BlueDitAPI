@@ -11,8 +11,6 @@ using Bluedit.Persistence.Repositories.ReplyRepo;
 using Bluedit.Persistence.Repositories.TopicRepo;
 using Bluedit.Persistence.Repositories.UserRepo;
 
-//using Bluedit.Services.Repositories.TopicRepo;
-
 namespace Bluedit.Persistence;
 
 public static class PersistenceServiceConfiguration
@@ -47,6 +45,7 @@ public static class PersistenceServiceConfiguration
         builder.Services.AddScoped<ITopicRepository, TopicRepository>();
 
         //sorting
+        builder.Services.AddSingleton<ApplicationPropertyMappings>();
         builder.Services.AddTransient<IPropertyMappingService, PropertyMappingService>();
 
         return builder;
