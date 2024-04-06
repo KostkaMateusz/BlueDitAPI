@@ -7,6 +7,6 @@ public class UserMappingProfile : Profile
 {
     public UserMappingProfile()
     {
-        CreateMap<Bluedit.Domain.Entities.User, UserInfoDto>();
+        CreateMap<Domain.Entities.User, UserInfoDto>();
     }
 }

@@ -6,6 +6,6 @@ public class PostResourceParameters : ResourceParametersBase
     public string? TopicName { get; set; }
     public PostResourceParameters()
     {
-        base.OrderBy = "CreationDate";
+        OrderBy = "CreationDate";
     }
 }

@@ -9,6 +9,6 @@ public class TopicResourceParameters : ResourceParametersBase, IRequest<IPagedLi
     public string? TopicName { get; set; }
     public TopicResourceParameters()
     {
-        base.OrderBy  = "postCount";
+        OrderBy  = "postCount";
     }
 }

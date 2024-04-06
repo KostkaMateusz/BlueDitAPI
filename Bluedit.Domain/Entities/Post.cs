@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Bluedit.Domain.Entities.LikeEntities;
+﻿using Bluedit.Domain.Entities.LikeEntities;
 using Bluedit.Domain.Entities.ReplyEntities;
 
 namespace Bluedit.Domain.Entities;
@@ -13,7 +12,6 @@ public class Post
     public DateTime UpdateDate { get; set; }
     public Guid ImageGuid { get; set; }
     public User? User { get; set; }
-    [AllowNull]
     public Guid? UserId { get; set; }
     public Topic? Topic { get; set; }
     public required string TopicName { get; set; }

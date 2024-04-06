@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Bluedit.Application.Contracts;
+﻿using Bluedit.Application.Contracts;
 using Bluedit.Application.DataModels.TopicDtos;
 using Bluedit.Domain.Entities;
 using MediatR;

@@ -17,7 +17,7 @@ public class RegisterUserDtoValidator : AbstractValidator<RegisterUserDto>
             {
                 context.AddFailure("User Name", "That User Name is taken");
             }
-        }); ;
+        });
 
         RuleFor(registerUserDto => registerUserDto.Password).MinimumLength(6);
 

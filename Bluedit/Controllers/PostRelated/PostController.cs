@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using Bluedit.Application.Contracts;
 using Bluedit.Application.DataModels.PostDtos;
-using Bluedit.Application.DataModels.TopicDtos;
 using Bluedit.Domain.Entities;
-using Bluedit.Helpers;
 using Bluedit.Helpers.DataShaping;
 using Bluedit.Infrastructure.StorageService;
 using Bluedit.Persistence.Helpers.Pagination;
@@ -119,27 +117,6 @@ public class PostController : ControllerBase
         
         return CreatedAtRoute("GetPostInfo", new { topicName, post.PostId }, postDto);
     }
-
-    // [ProducesResponseType(StatusCodes.Status200OK)]
-    // [ProducesResponseType(StatusCodes.Status404NotFound)]
-    // [HttpGet]
-    // [AllowAnonymous]
-    // public async Task<ActionResult<IEnumerable<PostInfoDto>>> GetAllMainTopicPosts([FromRoute] string topicName)
-    // {
-    //     var postsByTopic = await _postRepository.GetAllPostsByTopicAsync(topicName);
-    //
-    //     if (postsByTopic.IsNullOrEmpty() is true)
-    //         return NotFound();
-    //
-    //     var postsDtos = _mapper.Map<IEnumerable<PostInfoDto>>(postsByTopic);
-    //
-    //     foreach (var postDto in postsDtos)
-    //     {
-    //         postDto.ImageContentLink = GetLinkToImage(topicName, postDto.PostId);
-    //     }
-    //
-    //     return Ok(postsDtos);
-    // }
     
     /// <summary>
     /// Get Posts by Topic Name
@@ -178,7 +155,7 @@ public class PostController : ControllerBase
         // get topic from repo
         var postPagedList = await _postRepository.GetPostsAsync(postResourceParameters);
 
-        if (((IEnumerable<Post>)postPagedList).IsNullOrEmpty() is true)
+        if (((IEnumerable<Post>)postPagedList).IsNullOrEmpty())
             return NotFound();
         
         //calculate prev site if exist
@@ -206,10 +183,6 @@ public class PostController : ControllerBase
 
         return Ok(shapedPostInfoDtos);
     }
-    
-    
-    
-
     /// <summary>
     /// Get Post Details
     /// </summary>
@@ -318,8 +291,6 @@ public class PostController : ControllerBase
         return Ok(postDto);
     }
 
-
-
     /// <summary>
     /// Partialy Update Given Topic
     /// </summary>
@@ -397,5 +368,4 @@ public class PostController : ControllerBase
 
         return NoContent();
     }
-
 }

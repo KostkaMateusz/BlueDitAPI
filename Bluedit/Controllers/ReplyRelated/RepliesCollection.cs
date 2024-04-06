@@ -33,7 +33,7 @@ public partial class RepliesCollection : ControllerBase
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _guidRegex = GuidRegex();
     }
-    private string? LastRegexMatch(string subRepliesPath, Regex regex)
+    private string LastRegexMatch(string subRepliesPath, Regex regex)
     {
         MatchCollection guidMatch = regex.Matches(subRepliesPath);
 

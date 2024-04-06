@@ -17,7 +17,7 @@ public class UserContextService : IUserContextService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public ClaimsPrincipal User => _httpContextAccessor.HttpContext.User;
+    public ClaimsPrincipal User => _httpContextAccessor.HttpContext!.User;
 
     public Guid GetUserId
     {
@@ -25,7 +25,7 @@ public class UserContextService : IUserContextService
         {
             var userClaim = User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
 
-            return Guid.Parse(userClaim.Value);
+            return Guid.Parse(userClaim!.Value);
         }
     }
 }

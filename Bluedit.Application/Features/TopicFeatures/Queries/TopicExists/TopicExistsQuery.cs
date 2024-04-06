@@ -4,10 +4,10 @@ namespace Bluedit.Application.Features.TopicFeatures.Queries.TopicExists;
 
 public class TopicExistsQuery : IRequest<bool>
 {
-    public string TopicName { get; set; } =string.Empty;
+    public string TopicName { get; set; }
 
-    public TopicExistsQuery(string TopicName)
+    public TopicExistsQuery(string topicName)
     {
-        this.TopicName = TopicName;
+        this.TopicName = topicName;
     }
 }
