@@ -1,4 +1,6 @@
-﻿using Bluedit.Domain.Entities;
+﻿using Bluedit.Application.Contracts;
+using Bluedit.Application.DataModels.PostDtos;
+using Bluedit.Domain.Entities;
 
 namespace Bluedit.Persistence.Repositories.PostRepo;
 
@@ -14,4 +16,5 @@ public interface IPostRepository
     void DeletePost(Post post);
     Task<Post> LoadPostRepliesAsync(Post post);
     Task LoadPostLikesAsync(Post post);
+    Task<IPagedList<Post>> GetPostsAsync(PostResourceParameters postResourceParameters);
 }

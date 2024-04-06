@@ -8,8 +8,8 @@ public class PostMappingProfile : Profile
 {
     public PostMappingProfile()
     {
-        CreateMap<Bluedit.Domain.Entities.Post, PostInfoDto>();
-        CreateMap<Bluedit.Domain.Entities.Post, PostUpdateDto>().ReverseMap();
-        CreateMap<Bluedit.Domain.Entities.Post, PartialyUpdatePostDto>().ReverseMap();   
+        CreateMap<Domain.Entities.Post, PostInfoDto>();
+        CreateMap<Domain.Entities.Post, PostUpdateDto>().ReverseMap();
+        CreateMap<Domain.Entities.Post, PartialyUpdatePostDto>().ReverseMap();   
     }
 }

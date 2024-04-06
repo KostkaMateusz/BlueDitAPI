@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Bluedit.Application.Contracts;
+﻿using Bluedit.Application.Contracts;
 using Bluedit.Application.DataModels.TopicDtos;
 using Bluedit.Domain.Entities;
 using MediatR;
@@ -19,10 +18,6 @@ public class GetTopicsQueryHandler : IRequestHandler<TopicResourceParameters,IPa
     {
         var topicsPagedList=await _topicRepository.GetAllTopicAsync(request);
 
-        foreach (var topic in (IEnumerable<Topic>)topicsPagedList)
-        { 
-            topic.PostCount =await _topicRepository.GetTopicPostsCountAsync(topic.TopicName);
-        }
         return topicsPagedList;
     }
 }

@@ -24,9 +24,9 @@ public class LikesRepository<T> : ILikesRepository<T> where T : LikeBase, new()
         return await _likeContex.Include(l => l.User).Where(l => l.ParentId == parentId).ToListAsync();
     }
 
-    public async Task<IEnumerable<T>> GetLikesByUserIdAsync(Guid UserId)
+    public async Task<IEnumerable<T>> GetLikesByUserIdAsync(Guid userId)
     {
-        return await _likeContex.Where(l => l.UserId == UserId).ToListAsync();
+        return await _likeContex.Where(l => l.UserId == userId).ToListAsync();
     }
 
     public async Task<int> GetLikesCountByParentIdAsync(Guid parentId)
@@ -34,9 +34,9 @@ public class LikesRepository<T> : ILikesRepository<T> where T : LikeBase, new()
         return await _likeContex.Where(l => l.ParentId == parentId).CountAsync();
     }
 
-    public async Task<bool> CheckIfLikeExistAsync(Guid UserId, Guid parentId)
+    public async Task<bool> CheckIfLikeExistAsync(Guid userId, Guid parentId)
     {
-        return await _likeContex.Where(l => l.ParentId == parentId && l.UserId == UserId).AnyAsync();
+        return await _likeContex.Where(l => l.ParentId == parentId && l.UserId == userId).AnyAsync();
     }
 
     public void DeleteLike(T like)

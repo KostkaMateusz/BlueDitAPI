@@ -4,13 +4,13 @@ namespace Bluedit.Persistence.Repositories.ReplyRepo
 {
     public interface IRepliesRepository
     {
-        Task Addreplay(ReplyBase replay);
+        Task Addreply(ReplyBase replay);
         Task DeleteReplyTree(ReplyBase replayRoot);
-        Task<ReplyBase?> GetReplyById(Guid ReplayId);
-        Task<ReplyBase?> GetReplayByParentId(Guid ParentId);
-        Task<IEnumerable<Reply?>> GetRepliesByParentPostId(Guid ParentId);
-        Task<IEnumerable<SubReplay>> GetSubRepliesByParentReplayId(Guid ParentId);
-        Task<SubReplay?> GetSubReplyById(Guid SubreplayId);
+        Task<ReplyBase?> GetReplyById(Guid replayId);
+        Task<ReplyBase?> GetReplayByParentId(Guid parentId);
+        Task<IEnumerable<Reply?>> GetRepliesByParentPostId(Guid parentId);
+        Task<IEnumerable<SubReplay>> GetSubRepliesByParentReplayId(Guid parentId);
+        Task<SubReplay?> GetSubReplyById(Guid subreplyId);
         Task<bool> SaveChangesAsync();
         void UpdateReply(ReplyBase reply);
     }

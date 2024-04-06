@@ -1,4 +1,4 @@
 ﻿
 namespace Bluedit.Application.DataModels.UserDtos;
 
-public class UpdateUserDto : RegisterUserDto { }
+public class UpdateUserDto : RegisterUserDto ;

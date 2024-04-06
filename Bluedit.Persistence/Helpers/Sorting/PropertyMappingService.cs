@@ -1,27 +1,15 @@
-﻿using Bluedit.Application.DataModels.TopicDtos;
-using Bluedit.Domain.Entities;
-
+﻿
 namespace Bluedit.Persistence.Helpers.Sorting;
 
 public class PropertyMappingService : IPropertyMappingService
 {
-    private readonly Dictionary<string, PropertyMappingValue> _authorPropertyMapping =
-        new(StringComparer.OrdinalIgnoreCase)
-        {
-            { "TopicName", new(new[] { "TopicName" }) },
-            { "TopicDescription", new(new[] { "TopicDescription" }) },
-            { "PostCount", new(new[] { "PostCount" }, true) },
-        };
-
-    private readonly IList<IPropertyMapping> _propertyMappings = new List<IPropertyMapping>();
-
-    public PropertyMappingService()
+    private readonly List<IPropertyMapping> _propertyMappings = [];
+    public PropertyMappingService(ApplicationPropertyMappings applicationPropertyMappings)
     {
-        _propertyMappings.Add(new PropertyMapping<TopicInfoDto, Topic>(_authorPropertyMapping));
+        _propertyMappings.AddRange(applicationPropertyMappings.PropertyMappings);
     }
 
-    public Dictionary<string, PropertyMappingValue> GetPropertyMapping
-          <TSource, TDestination>()
+    public Dictionary<string, PropertyMappingValue> GetPropertyMapping<TSource, TDestination>()
     {
         // get matching mapping
         var matchingMapping = _propertyMappings.OfType<PropertyMapping<TSource, TDestination>>();
@@ -51,7 +39,7 @@ public class PropertyMappingService : IPropertyMappingService
             // remove everything after the first " " - if the fields 
             // are coming from an orderBy string, this part must be 
             // ignored
-            var indexOfFirstSpace = trimmedField.IndexOf(" ");
+            var indexOfFirstSpace = trimmedField.IndexOf(' ');
             var propertyName = indexOfFirstSpace == -1 ? trimmedField : trimmedField.Remove(indexOfFirstSpace);
 
             // find the matching property

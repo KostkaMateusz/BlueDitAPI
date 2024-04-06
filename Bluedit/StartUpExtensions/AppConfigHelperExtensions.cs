@@ -83,7 +83,7 @@ internal static class AppConfigHelperExtensions
             options.AddPolicy("FrontEndClient", policyBuilder => policyBuilder
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .WithOrigins(builder.Configuration["AllowedHosts"]));
+            .WithOrigins(builder.Configuration["AllowedHosts"] ?? string.Empty));
         });
 
         return builder;
