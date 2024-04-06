@@ -1,4 +1,6 @@
 ﻿using System.Linq.Dynamic.Core;
+using System.Text;
+using Microsoft.Extensions.Primitives;
 
 namespace Bluedit.Persistence.Helpers.Sorting;
 
@@ -14,8 +16,8 @@ public static class IQueryableExtensions
 
         if (string.IsNullOrWhiteSpace(orderBy))
             return source;
-        
-        var orderByString = string.Empty;
+
+        var orderByStringNuBuilder = new StringBuilder();
 
         // the orderBy string is separated by ",", so we split it.
         var orderByAfterSplit = orderBy.Split(',');
@@ -55,11 +57,12 @@ public static class IQueryableExtensions
             // Run through the property names 
             foreach (var destinationProperty in propertyMappingValue.DestinationProperties)
             {
-                orderByString = orderByString + (string.IsNullOrWhiteSpace(orderByString) ? string.Empty : ", ") + destinationProperty + (orderDescending ? " descending" : " ascending");
+                orderByStringNuBuilder.Append(orderByStringNuBuilder.Length == 0 ? string.Empty : ", ");
+                orderByStringNuBuilder.Append(destinationProperty);
+                orderByStringNuBuilder.Append(orderDescending ? " descending" : " ascending");
             }
         }
-
-        return source.OrderBy(orderByString);
+        return source.OrderBy(orderByStringNuBuilder.ToString());
     }
 }
 
