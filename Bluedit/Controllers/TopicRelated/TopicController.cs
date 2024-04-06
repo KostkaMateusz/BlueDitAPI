@@ -180,7 +180,7 @@ public class TopicController : ControllerBase
     [HttpOptions]
     public ActionResult GetAuthorsOptions()
     {
-        Response.Headers.Append("Allow", "GET,HEAD,POST,DELETE,PATCH,OPTIONS");
+        Response.Headers.Append("Allow", "GET,HEAD,POST,DELETE,OPTIONS");
         return Ok();
     }
 
