@@ -1,6 +1,4 @@
-﻿using Bluedit.Application.DataModels.TopicDtos;
-using Bluedit.Domain.Entities;
-
+﻿
 namespace Bluedit.Persistence.Helpers.Sorting;
 
 public class PropertyMappingService : IPropertyMappingService

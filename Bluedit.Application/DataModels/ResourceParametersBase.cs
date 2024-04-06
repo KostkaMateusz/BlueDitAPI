@@ -2,7 +2,6 @@
 
 public class ResourceParametersBase
 {
-    public string? TopicName { get; set; }
     public string? SearchQuery { get; set; }
     public int PageNumber { get; set; } = 1;
 

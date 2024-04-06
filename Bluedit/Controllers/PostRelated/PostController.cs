@@ -1,16 +1,22 @@
 ﻿using AutoMapper;
 using Bluedit.Application.Contracts;
 using Bluedit.Application.DataModels.PostDtos;
+using Bluedit.Application.DataModels.TopicDtos;
 using Bluedit.Domain.Entities;
+using Bluedit.Helpers;
+using Bluedit.Helpers.DataShaping;
 using Bluedit.Infrastructure.StorageService;
+using Bluedit.Persistence.Helpers.Pagination;
 using Bluedit.Persistence.Repositories.PostRepo;
 using Bluedit.Persistence.Repositories.ReplyRepo;
 using Bluedit.Services.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace Bluedit.Controllers.PostRelated;
 
@@ -26,8 +32,10 @@ public class PostController : ControllerBase
     private readonly IMapper _mapper;
     private readonly ITopicRepository _topicRepository;
     private readonly IRepliesRepository _repliesRepository;
+    private readonly IPropertyCheckerService _propertyCheckerService;
+    private readonly ProblemDetailsFactory _problemDetailsFactory;
 
-    public PostController(IPostRepository postRepository, ITopicRepository topicRepository, IRepliesRepository repliesRepository, IAzureStorageService azureStorageService, IUserContextService userContextService, IMapper mapper)
+    public PostController(IPostRepository postRepository, ITopicRepository topicRepository, IRepliesRepository repliesRepository, IAzureStorageService azureStorageService, IUserContextService userContextService, IMapper mapper,IPropertyCheckerService propertyCheckerService, ProblemDetailsFactory problemDetailsFactory)
     {
         _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
         _azureStorageService = azureStorageService ?? throw new ArgumentNullException(nameof(azureStorageService));
@@ -35,6 +43,8 @@ public class PostController : ControllerBase
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _topicRepository = topicRepository ?? throw new ArgumentNullException(nameof(topicRepository));
         _repliesRepository = repliesRepository ?? throw new ArgumentNullException(nameof(repliesRepository));
+        _propertyCheckerService = propertyCheckerService ?? throw new ArgumentNullException(nameof(propertyCheckerService));
+        _problemDetailsFactory = problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
     }
 
     private string? GetLinkToImage(string topicName, Guid postId)
@@ -43,6 +53,27 @@ public class PostController : ControllerBase
         var navigationParametersObject = new { topicName, postId };
 
         return Url.Link(imageFuncName, navigationParametersObject);
+    }
+    
+    private string? CreatePostResourceUri(PostResourceParameters postResourceParameters, ResourceUriType type)
+    {
+        var pageNumber = type switch
+        {
+            ResourceUriType.PreviousPage => postResourceParameters.PageNumber - 1,
+            ResourceUriType.NextPage => postResourceParameters.PageNumber + 1,
+            _ => postResourceParameters.PageNumber
+        };
+
+        var uri = Url.Link("GetPosts",
+            new
+            {
+                pageNumber,
+                pageSize = postResourceParameters.PageSize,
+                topicName = postResourceParameters.TopicName,
+                searchQuery = postResourceParameters.SearchQuery
+            });
+
+        return uri;
     }
 
     /// <summary>
@@ -89,33 +120,95 @@ public class PostController : ControllerBase
         return CreatedAtRoute("GetPostInfo", new { topicName, post.PostId }, postDto);
     }
 
+    // [ProducesResponseType(StatusCodes.Status200OK)]
+    // [ProducesResponseType(StatusCodes.Status404NotFound)]
+    // [HttpGet]
+    // [AllowAnonymous]
+    // public async Task<ActionResult<IEnumerable<PostInfoDto>>> GetAllMainTopicPosts([FromRoute] string topicName)
+    // {
+    //     var postsByTopic = await _postRepository.GetAllPostsByTopicAsync(topicName);
+    //
+    //     if (postsByTopic.IsNullOrEmpty() is true)
+    //         return NotFound();
+    //
+    //     var postsDtos = _mapper.Map<IEnumerable<PostInfoDto>>(postsByTopic);
+    //
+    //     foreach (var postDto in postsDtos)
+    //     {
+    //         postDto.ImageContentLink = GetLinkToImage(topicName, postDto.PostId);
+    //     }
+    //
+    //     return Ok(postsDtos);
+    // }
+    
     /// <summary>
     /// Get Posts by Topic Name
     /// </summary>
-    /// <param name="topicName">Topic where new post will be creted</param>
+    /// <param name="topicName">Topic where post is created</param>
+    /// <param name="postResourceParameters">Query Data</param>
     /// <response code="404">When topic is not found</response>
     /// <response code="200">When resource present</response>
     /// <returns>Action Results</returns>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [HttpGet]
+    [HttpGet(Name = "GetPosts")]
     [AllowAnonymous]
-    public async Task<ActionResult<IEnumerable<PostInfoDto>>> GetAllMainTopicPosts([FromRoute] string topicName)
+    public async Task<ActionResult<IEnumerable<PostInfoDto>>> GetPostsAsync([FromRoute] string topicName,[FromQuery] PostResourceParameters postResourceParameters)
     {
-        var postsByTopic = await _postRepository.GetAllPostsByTopicAsync(topicName);
+        postResourceParameters.TopicName = topicName;
+        
+        // check if requested fields for data shape are valid
+        if (_propertyCheckerService.TypeHasProperties<PostInfoDto>(postResourceParameters.Fields) is false)
+        {
+            var problemWithFields = _problemDetailsFactory.CreateProblemDetails(HttpContext, 400,
+                detail: $"Not all requested data shaping fields exist on the resource: {postResourceParameters.Fields}");
 
-        if (postsByTopic.IsNullOrEmpty() is true)
+            return BadRequest(problemWithFields);
+        }
+
+        // check if requested fields for sorting are valid
+        if (_propertyCheckerService.TypeHasProperties<PostInfoDto>(postResourceParameters.OrderBy) is false)
+        {
+            var problemWithFields = _problemDetailsFactory.CreateProblemDetails(HttpContext, 400,
+                detail: $"Not all requested sorting fields exist on the resource: {postResourceParameters.OrderBy}");
+
+            return BadRequest(problemWithFields);
+        }
+
+        // get topic from repo
+        var postPagedList = await _postRepository.GetPostsAsync(postResourceParameters);
+
+        if (((IEnumerable<Post>)postPagedList).IsNullOrEmpty() is true)
             return NotFound();
+        
+        //calculate prev site if exist
+        var previousPageLink = postPagedList.HasPrevious
+            ? CreatePostResourceUri(postResourceParameters, ResourceUriType.PreviousPage)
+            : null;
+        //calculate next site if exist
+        var nextPageLink = postPagedList.HasNext
+            ? CreatePostResourceUri(postResourceParameters, ResourceUriType.NextPage)
+            : null;
+        //include pagination metadata
+        var paginationMetadata =
+            new PaginationMetaData<Post>((PagedList<Post>)postPagedList, previousPageLink, nextPageLink);
 
-        var postsDtos = _mapper.Map<IEnumerable<PostInfoDto>>(postsByTopic);
+        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(paginationMetadata));
+        //map topics to DTO
+        var postInfoDtos = _mapper.Map<IEnumerable<PostInfoDto>>(postPagedList);
 
-        foreach (var postDto in postsDtos)
+        foreach (var postDto in postInfoDtos)
         {
             postDto.ImageContentLink = GetLinkToImage(topicName, postDto.PostId);
         }
+        //shape data
+        var shapedPostInfoDtos = postInfoDtos.ShapeData(postResourceParameters.Fields);
 
-        return Ok(postsDtos);
+        return Ok(shapedPostInfoDtos);
     }
+    
+    
+    
 
     /// <summary>
     /// Get Post Details
