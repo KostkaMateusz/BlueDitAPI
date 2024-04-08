@@ -20,19 +20,5 @@ public class BlueditDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-        modelBuilder.Entity<ReplyLike>(entityBuilder =>
-        {
-            entityBuilder.HasKey(rl => new { rl.UserId, rl.ParentId });
-            entityBuilder.HasOne(rl => rl.Reply).WithMany(r => r.ReplyLikes).HasForeignKey(rl => rl.ParentId);
-
-        });
-
-        modelBuilder.Entity<PostLike>(entityBuilder =>
-        {
-            entityBuilder.HasKey(rl => new { rl.UserId, rl.ParentId });
-            entityBuilder.HasOne(rl => rl.Post).WithMany(r => r.PostLikes).HasForeignKey(rl => rl.ParentId);
-
-        });
     }
 }
