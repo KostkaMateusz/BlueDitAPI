@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace Bluedit.Helpers.DataShaping;
 
-public static class IEnumerableExtensions
+public static class EnumerableExtensions
 {
     public static IEnumerable<ExpandoObject> ShapeData<TSource>(this IEnumerable<TSource> source, string? fields)
     {

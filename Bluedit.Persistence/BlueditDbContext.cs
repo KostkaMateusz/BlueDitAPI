@@ -10,12 +10,12 @@ public class BlueditDbContext : DbContext
 {
     public BlueditDbContext(DbContextOptions<BlueditDbContext> options) : base(options) { }
 
-    public DbSet<User> Users { get; set; }
-    public DbSet<Post> Posts { get; set; }
-    public DbSet<ReplyBase> Replies { get; set; }
-    public DbSet<Topic> Topics { get; set; }
-    public DbSet<ReplyLike> ReplyLikes { get; set; }
-    public DbSet<PostLike> PostLikes { get; set; }
+    public DbSet<User> Users { get; init; }
+    public DbSet<Post> Posts { get; init; }
+    public DbSet<ReplyBase> Replies { get; init; }
+    public DbSet<Topic> Topics { get; init; }
+    public DbSet<ReplyLike> ReplyLikes { get; init; }
+    public DbSet<PostLike> PostLikes { get; init; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
