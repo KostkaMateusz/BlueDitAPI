@@ -15,4 +15,26 @@ public class PostLikesController : LikesController<PostLike>
     public PostLikesController(IMapper mapper, ILikesRepository<PostLike> likeRepository, IUserContextService userContextService) : base(mapper, likeRepository, userContextService)
     {
     }
+
+    [HttpGet]
+    public new async Task<ActionResult<LikesDto>> GetLikesWithUser([FromRoute] Guid postId)
+    {
+        return await base.GetLikesWithUser(postId);
+    }
+    
+    [Authorize]
+    [HttpPost]
+    public new async Task<ActionResult> CreateLike([FromRoute] Guid postId)
+    {
+        return await base.CreateLike(postId);
+    }
+    
+    [Authorize]
+    [HttpDelete]
+    public new async Task<ActionResult> DeleteLike([FromRoute] Guid postId)
+    {
+        return await base.DeleteLike(postId);
+    }
+    
+    
 }

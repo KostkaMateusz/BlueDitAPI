@@ -3,12 +3,10 @@ using Bluedit.Application.DataModels.LikesDto;
 using Bluedit.Domain.Entities.LikeEntities;
 using Bluedit.Persistence.Repositories.LikeRepo;
 using Bluedit.Services.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bluedit.Controllers;
 
-[ApiController]
 public abstract class LikesController<T> : ControllerBase where T : LikeBase, new()
 {
     private readonly ILikesRepository<T> _likeRepository;
@@ -21,45 +19,42 @@ public abstract class LikesController<T> : ControllerBase where T : LikeBase, ne
         _mapper = mapper;
         _userContextService = userContextService;
     }
-
-    [HttpGet]
-    public async Task<List<PostLikesDto>> GetLikesWithUser(Guid postId)
+    
+    protected async Task<ActionResult<LikesDto>> GetLikesWithUser(Guid parentId)
     {
-        var postLikes = await _likeRepository.GetLikesByParentIdAsync(postId);
+        var likes = await _likeRepository.GetLikesByParentIdAsync(parentId);
 
-        var postLikesDto = _mapper.Map<List<PostLikesDto>>(postLikes);
+        var likesDto = _mapper.Map<List<LikesDto>>(likes);
 
-        return postLikesDto;
+        return Ok(likesDto);
     }
 
-    [Authorize]
-    [HttpPost]
-    public async Task<ActionResult> CreateLike(Guid postId)
+    protected async Task<ActionResult> CreateLike(Guid parentId)
     {
         var userId = _userContextService.GetUserId;
         
-        var likeExist=await _likeRepository.CheckIfLikeExistAsync(userId,postId);
+        var likeExist=await _likeRepository.CheckIfLikeExistAsync(userId,parentId);
         if (likeExist)
             return Conflict();
         
         
-        var newLike = new T() { UserId =userId, ParentId = postId };
+        var newLike = new T() { UserId =userId, ParentId = parentId };
         await _likeRepository.AddLikeAsync(newLike);
         await _likeRepository.SaveChangesAsync();
         
-        return Created();
+        var likesDto = _mapper.Map<LikesDto>(newLike);
+        
+        return Created("",likesDto);
     }
 
-    [Authorize]
-    [HttpDelete]
-    public async Task<ActionResult> DeleteLike(Guid postId)
+    protected async Task<ActionResult> DeleteLike(Guid parentId)
     {
-        var postLike = await _likeRepository.GetLike(postId, _userContextService.GetUserId);
+        var like = await _likeRepository.GetLike(parentId, _userContextService.GetUserId);
 
-        if (postLike is null)
+        if (like is null)
             return NotFound();
 
-        _likeRepository.DeleteLike(postLike);
+        _likeRepository.DeleteLike(like);
         await _likeRepository.SaveChangesAsync();
         
         return NoContent();
