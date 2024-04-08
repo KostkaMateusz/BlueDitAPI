@@ -1,7 +1,8 @@
-﻿using Bluedit.Domain.Entities;
+﻿using Bluedit.Application.Contracts;
+using Bluedit.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Bluedit.Persistence.Repositories.UserRepo;
+namespace Bluedit.Persistence.Repositories;
 
 public class UserRepository : IUserRepository
 {

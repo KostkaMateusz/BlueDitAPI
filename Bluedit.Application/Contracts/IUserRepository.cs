@@ -1,6 +1,6 @@
 ﻿using Bluedit.Domain.Entities;
 
-namespace Bluedit.Persistence.Repositories.UserRepo;
+namespace Bluedit.Application.Contracts;
 
 public interface IUserRepository
 {

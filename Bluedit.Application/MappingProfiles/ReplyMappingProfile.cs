@@ -2,11 +2,11 @@
 using Bluedit.Application.DataModels.ReplayDtos;
 using Bluedit.Domain.Entities.ReplyEntities;
 
-namespace Bluedit.Models;
+namespace Bluedit.Application.MappingProfiles;
 
-public class ReplayMappingProfile : Profile
+public class ReplyMappingProfile : Profile
 {
-    public ReplayMappingProfile()
+    public ReplyMappingProfile()
     {
         CreateMap<ReplyBase, ReplyDto>().ReverseMap();
         CreateMap<Reply, ReplyDto>().ReverseMap();

@@ -1,6 +1,6 @@
 ﻿using Bluedit.Domain.Entities.LikeEntities;
 
-namespace Bluedit.Persistence.Repositories.LikeRepo;
+namespace Bluedit.Application.Contracts;
 
 public interface ILikesRepository<T> where T : LikeBase, new()
 {

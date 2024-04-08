@@ -5,8 +5,6 @@ using Bluedit.Domain.Entities;
 using Bluedit.Helpers.DataShaping;
 using Bluedit.Infrastructure.StorageService;
 using Bluedit.Persistence.Helpers.Pagination;
-using Bluedit.Persistence.Repositories.PostRepo;
-using Bluedit.Persistence.Repositories.ReplyRepo;
 using Bluedit.Services.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;

@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Bluedit.Persistence.Helpers.Sorting;
 
-public static class IQueryableExtensions
+public static class QueryableExtensions
 {
     public static IQueryable<T> ApplySort<T>(this IQueryable<T> source, string orderBy, Dictionary<string, PropertyMappingValue> mappingDictionary)
     {

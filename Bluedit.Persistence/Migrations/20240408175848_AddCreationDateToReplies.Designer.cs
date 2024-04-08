@@ -4,6 +4,7 @@ using Bluedit.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bluedit.Persistence.Migrations
 {
     [DbContext(typeof(BlueditDbContext))]
-    partial class BlueditDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240408175848_AddCreationDateToReplies")]
+    partial class AddCreationDateToReplies
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +37,7 @@ namespace Bluedit.Persistence.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("PostLikes", (string)null);
+                    b.ToTable("PostLikes");
                 });
 
             modelBuilder.Entity("Bluedit.Domain.Entities.LikeEntities.ReplyLike", b =>
@@ -49,7 +52,7 @@ namespace Bluedit.Persistence.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("ReplyLikes", (string)null);
+                    b.ToTable("ReplyLikes");
                 });
 
             modelBuilder.Entity("Bluedit.Domain.Entities.Post", b =>
@@ -90,7 +93,7 @@ namespace Bluedit.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Posts", (string)null);
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("Bluedit.Domain.Entities.ReplyEntities.ReplyBase", b =>
@@ -117,7 +120,7 @@ namespace Bluedit.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Replies", (string)null);
+                    b.ToTable("Replies");
 
                     b.HasDiscriminator<bool>("IsPostReplay");
 
@@ -138,7 +141,7 @@ namespace Bluedit.Persistence.Migrations
 
                     b.HasKey("TopicName");
 
-                    b.ToTable("Topics", (string)null);
+                    b.ToTable("Topics");
                 });
 
             modelBuilder.Entity("Bluedit.Domain.Entities.User", b =>
@@ -171,7 +174,7 @@ namespace Bluedit.Persistence.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Bluedit.Domain.Entities.ReplyEntities.Reply", b =>

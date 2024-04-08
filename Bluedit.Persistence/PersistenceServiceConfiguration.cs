@@ -5,11 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Bluedit.Persistence.Helpers.Sorting;
-using Bluedit.Persistence.Repositories.LikeRepo;
-using Bluedit.Persistence.Repositories.PostRepo;
-using Bluedit.Persistence.Repositories.ReplyRepo;
-using Bluedit.Persistence.Repositories.TopicRepo;
-using Bluedit.Persistence.Repositories.UserRepo;
+using Bluedit.Persistence.Repositories;
 
 namespace Bluedit.Persistence;
 

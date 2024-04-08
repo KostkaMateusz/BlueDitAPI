@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using Bluedit.Application.Contracts;
 using Bluedit.Application.DataModels.LikesDto;
 using Bluedit.Domain.Entities.LikeEntities;
-using Bluedit.Persistence.Repositories.LikeRepo;
 using Bluedit.Services.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,52 +9,30 @@ using Microsoft.AspNetCore.Mvc;
 namespace Bluedit.Controllers.ReplyRelated;
 
 [ApiController]
-[Route("api/topics/{topicName}/posts/{PostId}/reply/{replyId}/likes")]
-public class ReplyLikesController : ControllerBase
+[Route("api/topics/{topicName}/posts/{postId:guid}/replies/{replyId:guid}/likes")]
+public class ReplyLikesController : LikesController<ReplyLike>
 {
-    private readonly ILikesRepository<ReplyLike> _replyLikeRepository;
-    private readonly IMapper _mapper;
-    private readonly IUserContextService _userContextService;
-
-    public ReplyLikesController(IMapper mapper, ILikesRepository<ReplyLike> replyLikeRepository, IUserContextService userContextService)
+    public ReplyLikesController(IMapper mapper, ILikesRepository<ReplyLike> likeRepository, IUserContextService userContextService) : base(mapper, likeRepository, userContextService)
     {
-
-        _replyLikeRepository = replyLikeRepository;
-        _mapper = mapper;
-        _userContextService = userContextService;
     }
-
+    
     [HttpGet]
-    public async Task<List<ReplyLikesDto>> GetReplyLikesWithUser(Guid ReplyId)
+    public new async Task<ActionResult<LikesDto>> GetLikesWithUser([FromRoute] Guid postId,[FromRoute] Guid replyId)
     {
-        var postLikes = await _replyLikeRepository.GetLikesByParentIdAsync(ReplyId);
-
-        var replyLikesDto = _mapper.Map<List<ReplyLikesDto>>(postLikes);
-
-        return replyLikesDto;
+        return await base.GetLikesWithUser(replyId);
     }
-
+        
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult> CreateReplyike(Guid replyId)
+    public new async Task<ActionResult> CreateLike([FromRoute] Guid postId,[FromRoute] Guid replyId)
     {
-        var newLike = new ReplyLike() { UserId = _userContextService.GetUserId, ParentId = replyId };
-        await _replyLikeRepository.AddLikeAsync(newLike);
-
-        return Created();
+        return await base.CreateLike(replyId);
     }
-
+        
     [Authorize]
     [HttpDelete]
-    public async Task<ActionResult> DeleteReplyLike(Guid ReplyId)
+    public new async Task<ActionResult> DeleteLike([FromRoute] Guid postId,[FromRoute] Guid replyId)
     {
-        var replyLike = await _replyLikeRepository.GetLike(ReplyId, _userContextService.GetUserId);
-
-        if (replyLike is null)
-            return NotFound();
-
-        _replyLikeRepository.DeleteLike(replyLike);
-
-        return NoContent();
+        return await base.DeleteLike(replyId);
     }
 }

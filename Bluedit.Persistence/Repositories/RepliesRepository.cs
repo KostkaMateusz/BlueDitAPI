@@ -1,8 +1,9 @@
-﻿using Bluedit.Domain.Entities.ReplyEntities;
+﻿using Bluedit.Application.Contracts;
+using Bluedit.Domain.Entities.ReplyEntities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Bluedit.Persistence.Repositories.ReplyRepo;
+namespace Bluedit.Persistence.Repositories;
 
 public class RepliesRepository : IRepliesRepository
 {
@@ -18,7 +19,7 @@ public class RepliesRepository : IRepliesRepository
         return await _dbContext.Replies.FirstOrDefaultAsync(r => r.ReplyId == replayId); 
     }
 
-    public async Task Addreply(ReplyBase replay)
+    public async Task AddReply(ReplyBase replay)
     {
         await _dbContext.Replies.AddAsync(replay);
     }
@@ -30,16 +31,16 @@ public class RepliesRepository : IRepliesRepository
         return postReplay;
     }
 
-    public async Task<IEnumerable<SubReplay>> GetSubRepliesByParentReplayId(Guid parentId)
+    public async Task<IEnumerable<SubReplay>> GetSubRepliesByParentReplyId(Guid parentId)
     {
         var replayReplay = await _dbContext.Replies.OfType<SubReplay>().Where(r => r.ParentReplyId == parentId).ToListAsync();
 
         return replayReplay;
     }
 
-    public async Task<SubReplay?> GetSubReplyById(Guid subreplyId)
+    public async Task<SubReplay?> GetSubReplyById(Guid subReplyId)
     {
-        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().FirstOrDefaultAsync(r => r.ReplyId == subreplyId);
+        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().FirstOrDefaultAsync(r => r.ReplyId == subReplyId);
 
         return replayReplay;
     }
@@ -51,10 +52,8 @@ public class RepliesRepository : IRepliesRepository
             return postReplay;
 
         var replayReplay = await _dbContext.Replies.OfType<SubReplay>().FirstOrDefaultAsync(r => r.ParentReplyId == parentId);
-        if (replayReplay is not null)
-            return replayReplay;
-
-        return null;
+        
+        return replayReplay;
     }
 
     public void UpdateReply(ReplyBase reply)
@@ -66,9 +65,9 @@ public class RepliesRepository : IRepliesRepository
     {
         _dbContext.Replies.Remove(replayRoot);
 
-        var childrenReposnes = await GetAllChildReply(replayRoot.ReplyId);
+        var childrenReposes = await GetAllChildReply(replayRoot.ReplyId);
 
-        _dbContext.RemoveRange(childrenReposnes);
+        _dbContext.RemoveRange(childrenReposes);
     }
 
 
@@ -79,25 +78,25 @@ public class RepliesRepository : IRepliesRepository
 
     private async Task<IEnumerable<ReplyBase>> GetAllChildReply(Guid parentReplyId)
     {
-        var firstChildrens = await _dbContext.Replies.OfType<SubReplay>().Where(reply => reply.ParentReplyId == parentReplyId).ToListAsync();
+        var firstChildren = await _dbContext.Replies.OfType<SubReplay>().Where(reply => reply.ParentReplyId == parentReplyId).ToListAsync();
 
         // init output list
-        List<ReplyBase> childrenResponses = new(firstChildrens);
+        List<ReplyBase> childrenResponses = [..firstChildren];
         // init stack with first level children
-        Stack<ReplyBase> reponses = new(firstChildrens);
+        Stack<ReplyBase> responses = new(firstChildren);
 
         // until all reply sub tree is found
-        while (reponses.IsNullOrEmpty() is false)
+        while (responses.IsNullOrEmpty() is false)
         {
             // Return one element from Stack
-            var currentResponse = reponses.Pop();
-            // Query DB for imediate Children of this Node
-            var nodeReponses = await _dbContext.Replies.OfType<SubReplay>().Where(reply => reply.ParentReplyId == currentResponse.ReplyId).ToListAsync();
+            var currentResponse = responses.Pop();
+            // Query DB for immediate Children of this Node
+            var nodeResponses = await _dbContext.Replies.OfType<SubReplay>().Where(reply => reply.ParentReplyId == currentResponse.ReplyId).ToListAsync();
             // save children to list, push new children to be queried to stack
-            foreach (var nodeReponse in nodeReponses)
+            foreach (var nodeResponse in nodeResponses)
             {
-                reponses.Append(nodeReponse);
-                childrenResponses.Add(nodeReponse);
+                responses.Push(nodeResponse);
+                childrenResponses.Add(nodeResponse);
             }
         }
 
