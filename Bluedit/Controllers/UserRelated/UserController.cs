@@ -11,8 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Bluedit.Application.Contracts;
 using Bluedit.Application.DataModels.UserDtos;
-using Bluedit.Persistence.Repositories.UserRepo;
 
 namespace Bluedit.Controllers.UserRelated;
 

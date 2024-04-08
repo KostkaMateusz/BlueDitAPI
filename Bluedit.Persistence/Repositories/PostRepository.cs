@@ -5,7 +5,7 @@ using Bluedit.Persistence.Helpers.Pagination;
 using Bluedit.Persistence.Helpers.Sorting;
 using Microsoft.EntityFrameworkCore;
 
-namespace Bluedit.Persistence.Repositories.PostRepo;
+namespace Bluedit.Persistence.Repositories;
 
 public class PostRepository : IPostRepository
 {

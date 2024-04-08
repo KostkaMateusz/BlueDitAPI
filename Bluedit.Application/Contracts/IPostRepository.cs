@@ -1,8 +1,7 @@
-﻿using Bluedit.Application.Contracts;
-using Bluedit.Application.DataModels.PostDtos;
+﻿using Bluedit.Application.DataModels.PostDtos;
 using Bluedit.Domain.Entities;
 
-namespace Bluedit.Persistence.Repositories.PostRepo;
+namespace Bluedit.Application.Contracts;
 
 public interface IPostRepository
 {

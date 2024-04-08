@@ -1,8 +1,9 @@
-﻿using Bluedit.Domain.Entities.ReplyEntities;
+﻿using Bluedit.Application.Contracts;
+using Bluedit.Domain.Entities.ReplyEntities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Bluedit.Persistence.Repositories.ReplyRepo;
+namespace Bluedit.Persistence.Repositories;
 
 public class RepliesRepository : IRepliesRepository
 {

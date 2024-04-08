@@ -1,7 +1,8 @@
-﻿using Bluedit.Domain.Entities.LikeEntities;
+﻿using Bluedit.Application.Contracts;
+using Bluedit.Domain.Entities.LikeEntities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Bluedit.Persistence.Repositories.LikeRepo;
+namespace Bluedit.Persistence.Repositories;
 
 public class LikesRepository<T> : ILikesRepository<T> where T : LikeBase, new()
 {

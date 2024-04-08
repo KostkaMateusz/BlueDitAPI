@@ -1,6 +1,6 @@
 ﻿namespace Bluedit.Application.DataModels;
 
-public class ResourceParametersBase
+public abstract class ResourceParametersBase
 {
     public string? SearchQuery { get; set; }
     public int PageNumber { get; set; } = 1;

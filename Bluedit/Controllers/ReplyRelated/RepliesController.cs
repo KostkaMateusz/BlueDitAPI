@@ -1,9 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 using AutoMapper;
+using Bluedit.Application.Contracts;
 using Bluedit.Application.DataModels.ReplayDtos;
 using Bluedit.Domain.Entities.ReplyEntities;
-using Bluedit.Persistence.Repositories.PostRepo;
-using Bluedit.Persistence.Repositories.ReplyRepo;
 using Bluedit.Services.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
