@@ -85,7 +85,7 @@ public partial class RepliesController : ControllerBase
         {
             var newReply = new Reply { Description = createReplayDto.Description, UserId = userId, ParentPostId = postId };
         
-            await _repliesRepository.Addreply(newReply);
+            await _repliesRepository.AddReply(newReply);
             await _repliesRepository.SaveChangesAsync();
         
             return CreatedAtRoute("GetReplies", routeValues: new { PostId = postId, topicName }, createReplayDto);
@@ -107,7 +107,7 @@ public partial class RepliesController : ControllerBase
             newSubreply.UserId = userId;
             newSubreply.ParentReplyId = subReplayGuid;
 
-            await _repliesRepository.Addreply(newSubreply);
+            await _repliesRepository.AddReply(newSubreply);
             await _repliesRepository.SaveChangesAsync();
 
             var replyDto = _mapper.Map<ReplyDto>(newSubreply);
