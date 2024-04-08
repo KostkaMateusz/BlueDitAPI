@@ -1,4 +1,5 @@
-﻿using Bluedit.Domain.Entities;
+﻿using System.Reflection;
+using Bluedit.Domain.Entities;
 using Bluedit.Domain.Entities.LikeEntities;
 using Bluedit.Domain.Entities.ReplyEntities;
 using Microsoft.EntityFrameworkCore;
@@ -18,35 +19,7 @@ public class BlueditDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>(entityBuilder =>
-        {
-            entityBuilder.Property(user => user.CreationTime).HasDefaultValueSql("getutcdate()");
-            entityBuilder.HasMany(user => user.Posts).WithOne(post => post.User);
-            entityBuilder.Property(user => user.Role).HasDefaultValue("StandartUser");
-        });
-
-        modelBuilder.Entity<Post>(entityBuilder =>
-        {
-            entityBuilder.HasOne(post => post.User).WithMany(user => user.Posts);
-            entityBuilder.HasOne(post => post.Topic).WithMany(topic => topic.Posts).HasForeignKey(post => post.TopicName);
-            entityBuilder.Property(c => c.CreationDate).HasDefaultValueSql("getutcdate()");
-            entityBuilder.Property(c => c.UpdateDate).ValueGeneratedOnUpdate();
-        });
-
-        modelBuilder.Entity<Topic>(entityBuilder =>
-        {
-            entityBuilder.HasKey(topic => topic.TopicName);
-            entityBuilder.HasMany(topic => topic.Posts).WithOne(post => post.Topic);
-
-        });
-
-        modelBuilder.Entity<ReplyBase>(entityBuilder =>
-        {
-            entityBuilder.HasKey(r => r.ReplyId);
-            entityBuilder.HasDiscriminator(r => r.IsPostReplay).HasValue<Reply>(true).HasValue<SubReplay>(false);
-            entityBuilder.Property(r => r.CreationDate).HasDefaultValueSql("getutcdate()");
-
-        });
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         modelBuilder.Entity<ReplyLike>(entityBuilder =>
         {
@@ -61,7 +34,5 @@ public class BlueditDbContext : DbContext
             entityBuilder.HasOne(rl => rl.Post).WithMany(r => r.PostLikes).HasForeignKey(rl => rl.ParentId);
 
         });
-
-
     }
 }

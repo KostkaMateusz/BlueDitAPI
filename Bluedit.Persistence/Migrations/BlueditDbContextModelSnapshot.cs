@@ -34,7 +34,7 @@ namespace Bluedit.Persistence.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("PostLikes");
+                    b.ToTable("PostLikes", (string)null);
                 });
 
             modelBuilder.Entity("Bluedit.Domain.Entities.LikeEntities.ReplyLike", b =>
@@ -49,7 +49,7 @@ namespace Bluedit.Persistence.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("ReplyLikes");
+                    b.ToTable("ReplyLikes", (string)null);
                 });
 
             modelBuilder.Entity("Bluedit.Domain.Entities.Post", b =>
@@ -90,7 +90,7 @@ namespace Bluedit.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("Bluedit.Domain.Entities.ReplyEntities.ReplyBase", b =>
@@ -117,7 +117,7 @@ namespace Bluedit.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Replies");
+                    b.ToTable("Replies", (string)null);
 
                     b.HasDiscriminator<bool>("IsPostReplay");
 
@@ -138,7 +138,7 @@ namespace Bluedit.Persistence.Migrations
 
                     b.HasKey("TopicName");
 
-                    b.ToTable("Topics");
+                    b.ToTable("Topics", (string)null);
                 });
 
             modelBuilder.Entity("Bluedit.Domain.Entities.User", b =>
@@ -171,7 +171,7 @@ namespace Bluedit.Persistence.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Bluedit.Domain.Entities.ReplyEntities.Reply", b =>
