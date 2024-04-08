@@ -2,7 +2,7 @@
 using Bluedit.Application.DataModels.LikesDto;
 using Bluedit.Domain.Entities.LikeEntities;
 
-namespace Bluedit.Models;
+namespace Bluedit.Application.MappingProfiles;
 
 public class LikeMappingProfile : Profile
 {

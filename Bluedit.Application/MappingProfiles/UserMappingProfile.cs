@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Bluedit.Application.DataModels.UserDtos;
 
-namespace Bluedit.Models;
+namespace Bluedit.Application.MappingProfiles;
 
 public class UserMappingProfile : Profile
 {

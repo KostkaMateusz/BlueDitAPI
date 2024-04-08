@@ -1,7 +1,6 @@
 ﻿using Bluedit.Domain.Entities;
 using Bluedit.Helpers.DataShaping;
 using Bluedit.Infrastructure;
-using Bluedit.Models.ModelsValidators;
 using Bluedit.Services.Authentication;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +10,7 @@ using Newtonsoft.Json.Serialization;
 using System.Reflection;
 using System.Text;
 using Bluedit.Application.DataModels.UserDtos;
+using Bluedit.ModelsValidators;
 
 namespace Bluedit.StartUpExtensions;
 

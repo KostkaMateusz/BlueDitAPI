@@ -1,8 +1,8 @@
 ﻿using Bluedit.Application.DataModels.UserDtos;
-using FluentValidation;
 using Bluedit.Persistence;
+using FluentValidation;
 
-namespace Bluedit.Models.ModelsValidators;
+namespace Bluedit.ModelsValidators;
 
 public class RegisterUserDtoValidator : AbstractValidator<RegisterUserDto>
 {

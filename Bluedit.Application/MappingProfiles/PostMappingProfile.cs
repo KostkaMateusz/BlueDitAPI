@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using Bluedit.Application.DataModels.PostDtos;
 
-
-namespace Bluedit.Models;
+namespace Bluedit.Application.MappingProfiles;
 
 public class PostMappingProfile : Profile
 {
