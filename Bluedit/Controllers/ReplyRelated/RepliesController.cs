@@ -6,8 +6,8 @@ using Bluedit.Persistence.Repositories.PostRepo;
 using Bluedit.Persistence.Repositories.ReplyRepo;
 using Bluedit.Services.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Bluedit.Controllers.ReplyRelated;
 
@@ -17,14 +17,11 @@ namespace Bluedit.Controllers.ReplyRelated;
 [Authorize]
 public partial class RepliesController : ControllerBase
 {
+    private readonly Regex _guidRegex;
+    private readonly IMapper _mapper;
+    private readonly IPostRepository _postRepository;
     private readonly IRepliesRepository _repliesRepository;
     private readonly IUserContextService _userContextService;
-    private readonly IPostRepository _postRepository;
-    private readonly IMapper _mapper;
-    private readonly Regex _guidRegex;
-
-    [GeneratedRegex(@"(?<=\S*)(?:\{{0,1}(?:[0-9a-fA-F]){8}-(?:[0-9a-fA-F]){4}-(?:[0-9a-fA-F]){4}-(?:[0-9a-fA-F]){4}-(?:[0-9a-fA-F]){12}\}{0,1})(?=\S*)")]
-    private static partial Regex GuidRegex();
 
     public RepliesController(IRepliesRepository repliesRepository, IUserContextService userContextService, IPostRepository postRepository, IMapper mapper)
     {
@@ -34,6 +31,10 @@ public partial class RepliesController : ControllerBase
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _guidRegex = GuidRegex();
     }
+
+    [GeneratedRegex(@"(?<=\S*)(?:\{{0,1}(?:[0-9a-fA-F]){8}-(?:[0-9a-fA-F]){4}-(?:[0-9a-fA-F]){4}-(?:[0-9a-fA-F]){4}-(?:[0-9a-fA-F]){12}\}{0,1})(?=\S*)")]
+    private static partial Regex GuidRegex();
+
     private string LastRegexMatch(string subRepliesPath, Regex regex)
     {
         MatchCollection guidMatch = regex.Matches(subRepliesPath);
@@ -65,7 +66,7 @@ public partial class RepliesController : ControllerBase
             if (Guid.TryParse(parentGuidString, out var lastGuid) is false)
                 return BadRequest();
             
-            var replies = await _repliesRepository.GetSubRepliesByParentReplayId(lastGuid);
+            var replies = await _repliesRepository.GetSubRepliesByParentReplyId(lastGuid);
             var repliesDto = _mapper.Map<IEnumerable<ReplyDto>>(replies);
            
             return Ok(repliesDto);
@@ -115,7 +116,7 @@ public partial class RepliesController : ControllerBase
             return CreatedAtRoute("GetReplies", new { topicName, PostId = postId, repliesPath }, replyDto);
         }
     }
-    
+
     [HttpDelete]
     public async Task<IActionResult> DeleteReplyTree([FromRoute] string repliesPath)
     {
@@ -138,7 +139,7 @@ public partial class RepliesController : ControllerBase
 
         return NoContent();
     }
-    
+
     [HttpPut]
     public async Task<ActionResult<ReplyDto>> UpdateReply([FromRoute] string repliesPath, [FromBody] UpdateReplyDto updateReply)
     {
@@ -165,7 +166,7 @@ public partial class RepliesController : ControllerBase
 
         return Ok(replyDto);
     }
-    
+
     [HttpPatch]
     public async Task<ActionResult<UpdateReplyDto>> PartiallyUpdateReply([FromRoute] string repliesPath, [FromBody] JsonPatchDocument<UpdateReplyDto> patchDocument)
     {
@@ -197,5 +198,4 @@ public partial class RepliesController : ControllerBase
 
         return Ok(replyToPatch);
     }
-    
 }

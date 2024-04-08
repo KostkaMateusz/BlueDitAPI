@@ -9,7 +9,7 @@ namespace Bluedit.Persistence.Repositories.ReplyRepo
         Task<ReplyBase?> GetReplyById(Guid replayId);
         Task<ReplyBase?> GetReplayByParentId(Guid parentId);
         Task<IEnumerable<Reply?>> GetRepliesByParentPostId(Guid parentId);
-        Task<IEnumerable<SubReplay>> GetSubRepliesByParentReplayId(Guid parentId);
+        Task<IEnumerable<SubReplay>> GetSubRepliesByParentReplyId(Guid parentId);
         Task<SubReplay?> GetSubReplyById(Guid subReplyId);
         Task<bool> SaveChangesAsync();
         void UpdateReply(ReplyBase reply);

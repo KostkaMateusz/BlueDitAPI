@@ -30,7 +30,7 @@ public class RepliesRepository : IRepliesRepository
         return postReplay;
     }
 
-    public async Task<IEnumerable<SubReplay>> GetSubRepliesByParentReplayId(Guid parentId)
+    public async Task<IEnumerable<SubReplay>> GetSubRepliesByParentReplyId(Guid parentId)
     {
         var replayReplay = await _dbContext.Replies.OfType<SubReplay>().Where(r => r.ParentReplyId == parentId).ToListAsync();
 

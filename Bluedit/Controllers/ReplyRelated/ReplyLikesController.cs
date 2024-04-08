@@ -12,8 +12,8 @@ namespace Bluedit.Controllers.ReplyRelated;
 [Route("api/topics/{topicName}/posts/{PostId}/reply/{replyId}/likes")]
 public class ReplyLikesController : ControllerBase
 {
-    private readonly ILikesRepository<ReplyLike> _replyLikeRepository;
     private readonly IMapper _mapper;
+    private readonly ILikesRepository<ReplyLike> _replyLikeRepository;
     private readonly IUserContextService _userContextService;
 
     public ReplyLikesController(IMapper mapper, ILikesRepository<ReplyLike> replyLikeRepository, IUserContextService userContextService)
