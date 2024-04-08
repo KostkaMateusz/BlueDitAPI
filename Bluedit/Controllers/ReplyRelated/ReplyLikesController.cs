@@ -25,9 +25,9 @@ public class ReplyLikesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<List<ReplyLikesDto>> GetReplyLikesWithUser(Guid ReplyId)
+    public async Task<List<ReplyLikesDto>> GetReplyLikesWithUser(Guid replyId)
     {
-        var postLikes = await _replyLikeRepository.GetLikesByParentIdAsync(ReplyId);
+        var postLikes = await _replyLikeRepository.GetLikesByParentIdAsync(replyId);
 
         var replyLikesDto = _mapper.Map<List<ReplyLikesDto>>(postLikes);
 
@@ -46,9 +46,9 @@ public class ReplyLikesController : ControllerBase
 
     [Authorize]
     [HttpDelete]
-    public async Task<ActionResult> DeleteReplyLike(Guid ReplyId)
+    public async Task<ActionResult> DeleteReplyLike(Guid replyId)
     {
-        var replyLike = await _replyLikeRepository.GetLike(ReplyId, _userContextService.GetUserId);
+        var replyLike = await _replyLikeRepository.GetLike(replyId, _userContextService.GetUserId);
 
         if (replyLike is null)
             return NotFound();

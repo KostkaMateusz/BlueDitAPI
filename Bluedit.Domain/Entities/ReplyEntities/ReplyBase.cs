@@ -10,4 +10,5 @@ public abstract class ReplyBase
     public Guid? UserId { get; set; }
     public bool IsPostReplay { get; set; }
     public IEnumerable<ReplyLike> ReplyLikes { get; set; } = new List<ReplyLike>();
+    public DateTime CreationDate { get; set; } 
 }

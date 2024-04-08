@@ -44,6 +44,7 @@ public class BlueditDbContext : DbContext
         {
             entityBuilder.HasKey(r => r.ReplyId);
             entityBuilder.HasDiscriminator(r => r.IsPostReplay).HasValue<Reply>(true).HasValue<SubReplay>(false);
+            entityBuilder.Property(r => r.CreationDate).HasDefaultValueSql("getutcdate()");
 
         });
 
