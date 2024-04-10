@@ -10,6 +10,7 @@ using Newtonsoft.Json.Serialization;
 using System.Reflection;
 using System.Text;
 using Bluedit.Application.DataModels.UserDtos;
+using Bluedit.Middlewares;
 using Bluedit.ModelsValidators;
 
 namespace Bluedit.StartUpExtensions;
@@ -108,7 +109,8 @@ internal static class AppConfigHelperExtensions
     {
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddScoped<IUserContextService, UserContextService>();
-
+        builder.Services.AddScoped<ErrorHandlingMiddleware>();
+        
         builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
         builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 

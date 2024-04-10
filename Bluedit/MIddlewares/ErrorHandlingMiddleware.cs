@@ -19,6 +19,11 @@ public class ErrorHandlingMiddleware() : IMiddleware
         {
             context.Response.StatusCode = 403;
             await context.Response.WriteAsync("Access forbidden");
+        }        
+        catch (ConflictException)
+        {
+            context.Response.StatusCode = 409;
+            await context.Response.WriteAsync("Resource already exist");
         }
         catch (Exception ex)
         {

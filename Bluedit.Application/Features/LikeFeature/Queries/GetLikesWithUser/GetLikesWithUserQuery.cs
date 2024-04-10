@@ -3,7 +3,12 @@ using MediatR;
 
 namespace Bluedit.Application.Features.LikeFeature.Queries.GetLikesWithUser;
 
-public class GetLikesWithUserQuery<T> : IRequest<List<LikesDto>>
+public sealed class GetLikesWithUserQuery<T> : IRequest<List<LikesDto>>
 {
-    public Guid ParentId { get; init; }
+    public Guid ParentId { get; }
+
+    public GetLikesWithUserQuery(Guid parentId)
+    {
+        ParentId = parentId;
+    }
 }

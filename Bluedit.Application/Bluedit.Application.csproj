@@ -20,8 +20,4 @@
     <ProjectReference Include="..\Bluedit.Domain\Bluedit.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\LikeFeature\Commands\" />
-  </ItemGroup>
-
 </Project>

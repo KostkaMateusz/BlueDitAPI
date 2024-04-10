@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Bluedit.Application.Contracts;
 using Bluedit.Application.DataModels.LikesDto;
+using Bluedit.Application.Features.LikeFeature.Commands.CreateLike;
 using Bluedit.Application.Features.LikeFeature.Queries.GetLikesWithUser;
 using Bluedit.Domain.Entities.LikeEntities;
 using Bluedit.Services.Authentication;
@@ -26,7 +27,7 @@ public abstract class LikesController<T> : ControllerBase where T : LikeBase, ne
     
     protected async Task<ActionResult<LikesDto>> GetLikesWithUser(Guid parentId)
     {
-        var likesDto =await _mediator.Send(new GetLikesWithUserQuery<T>(){ParentId = parentId});
+        var likesDto =await _mediator.Send(new GetLikesWithUserQuery<T>(parentId));
 
         return Ok(likesDto);
     }
@@ -34,17 +35,8 @@ public abstract class LikesController<T> : ControllerBase where T : LikeBase, ne
     protected async Task<ActionResult> CreateLike(Guid parentId)
     {
         var userId = _userContextService.GetUserId;
-        
-        var likeExist=await _likeRepository.CheckIfLikeExistAsync(userId,parentId);
-        if (likeExist)
-            return Conflict();
-        
-        
-        var newLike = new T() { UserId =userId, ParentId = parentId };
-        await _likeRepository.AddLikeAsync(newLike);
-        await _likeRepository.SaveChangesAsync();
-        
-        var likesDto = _mapper.Map<LikesDto>(newLike);
+
+        var likesDto =await _mediator.Send(new CreateLikeRequest<T>(userId, parentId));
         
         return Created("",likesDto);
     }
