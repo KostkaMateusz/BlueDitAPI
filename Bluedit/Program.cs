@@ -33,7 +33,10 @@ app.UseMiddleware<ErrorHandlingMiddleware>();
 app.MapGet("/checkEnviroment", () => app.Environment.EnvironmentName);
 
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(options =>
+{
+    options.EnableTryItOutByDefault();
+});
 
 app.UseStaticFiles();
 
