@@ -55,8 +55,8 @@ public class LikesRepository<T> : ILikesRepository<T> where T : LikeBase, new()
         return await _dbContext.SaveChangesAsync() >= 0;
     }
 
-    public async Task<T?> GetLike(Guid ParentId, Guid UserId)
+    public async Task<T?> GetLike(Guid parentId, Guid userId)
     {
-        return await _likeContex.FirstOrDefaultAsync(l=>l.ParentId== ParentId && l.UserId==UserId);
+        return await _likeContex.FirstOrDefaultAsync(l=>l.ParentId== parentId && l.UserId==userId);
     }
 }

@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Bluedit.Application.Features.LikeFeature.Queries.GetLikesWithUser;
 
-public sealed class GetLikesWithUserQueryHandler<T> : IRequestHandler<GetLikesWithUserQuery<T>,List<LikesDto>> where T : LikeBase, new()
+internal sealed class GetLikesWithUserQueryHandler<T> : IRequestHandler<GetLikesWithUserQuery<T>,List<LikesDto>> where T : LikeBase, new()
 {
     private readonly ILikesRepository<T> _likeRepository;
     private readonly IMapper _mapper;

@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Bluedit.Application.Features.LikeFeature.Commands.CreateLike;
 
-public sealed class CreateLikeRequestHandler<T> : IRequestHandler<CreateLikeRequest<T>,LikesDto>  where T : LikeBase, new()
+internal sealed class CreateLikeRequestHandler<T> : IRequestHandler<CreateLikeRequest<T>,LikesDto>  where T : LikeBase, new()
 {
     private readonly ILikesRepository<T> _likeRepository;
     private readonly IMapper _mapper;

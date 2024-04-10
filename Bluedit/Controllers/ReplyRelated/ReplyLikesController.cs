@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using Bluedit.Application.Contracts;
-using Bluedit.Application.DataModels.LikesDto;
+﻿using Bluedit.Application.DataModels.LikesDto;
 using Bluedit.Domain.Entities.LikeEntities;
 using Bluedit.Services.Authentication;
 using MediatR;
@@ -13,7 +11,7 @@ namespace Bluedit.Controllers.ReplyRelated;
 [Route("api/topics/{topicName}/posts/{postId:guid}/replies/{replyId:guid}/likes")]
 public class ReplyLikesController : LikesController<ReplyLike>
 {
-    public ReplyLikesController(IMapper mapper, ILikesRepository<ReplyLike> likeRepository, IUserContextService userContextService,IMediator mediator) : base(mapper, likeRepository, userContextService,mediator)
+    public ReplyLikesController(IUserContextService userContextService,IMediator mediator) : base(userContextService,mediator)
     {
     }
     

@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Bluedit.Application.Features.TopicFeatures.Commands.PutTopic;
 
-public class PutTopicCommandHandler : IRequestHandler<PutTopicCommand, bool>
+internal class PutTopicCommandHandler : IRequestHandler<PutTopicCommand, bool>
 {
     private readonly ITopicRepository _topicRepository;
 

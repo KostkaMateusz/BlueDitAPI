@@ -1,5 +1,6 @@
 ﻿using Bluedit.Application.DataModels.LikesDto;
 using Bluedit.Application.Features.LikeFeature.Commands.CreateLike;
+using Bluedit.Application.Features.LikeFeature.Commands.DeleteLike;
 using Bluedit.Application.Features.LikeFeature.Queries.GetLikesWithUser;
 using Bluedit.Domain.Entities.LikeEntities;
 using MediatR;
@@ -25,6 +26,10 @@ public static class ApplicationServiceRegistration
             .AddTransient<IRequestHandler<CreateLikeRequest<PostLike>, LikesDto>, CreateLikeRequestHandler<PostLike>>()
             .AddTransient<IRequestHandler<CreateLikeRequest<ReplyLike>, LikesDto>, CreateLikeRequestHandler<ReplyLike>>();
          
+        services
+            .AddTransient<IRequestHandler<DeleteLikeRequest<PostLike>>, DeleteLikeRequestHandler<PostLike>>()
+            .AddTransient<IRequestHandler<DeleteLikeRequest<ReplyLike>>, DeleteLikeRequestHandler<ReplyLike>>();
+
         
         return services;
     }

@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Bluedit.Application.Features.TopicFeatures.Commands.CreateTopic;
 
-public class CreateTopicCommandHandler : IRequestHandler<CreateTopicCommand, Topic>
+internal class CreateTopicCommandHandler : IRequestHandler<CreateTopicCommand, Topic>
 {
     private readonly ITopicRepository _topicRepository;
 

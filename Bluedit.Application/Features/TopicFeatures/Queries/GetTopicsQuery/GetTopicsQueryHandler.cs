@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Bluedit.Application.Features.TopicFeatures.Queries.GetTopicsQuery;
 
-public class GetTopicsQueryHandler : IRequestHandler<TopicResourceParameters,IPagedList<Topic>>
+internal class GetTopicsQueryHandler : IRequestHandler<TopicResourceParameters,IPagedList<Topic>>
 {
     private readonly ITopicRepository _topicRepository;
 

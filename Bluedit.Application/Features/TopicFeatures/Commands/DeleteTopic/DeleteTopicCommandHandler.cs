@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Bluedit.Application.Features.TopicFeatures.Commands.DeleteTopic;
 
-public class DeleteTopicCommandHandler : IRequestHandler<DeleteTopicCommand, bool>
+internal class DeleteTopicCommandHandler : IRequestHandler<DeleteTopicCommand, bool>
 {
     private readonly ITopicRepository _topicRepository;
 

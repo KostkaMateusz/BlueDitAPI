@@ -1,7 +1,6 @@
-﻿using AutoMapper;
-using Bluedit.Application.Contracts;
-using Bluedit.Application.DataModels.LikesDto;
+﻿using Bluedit.Application.DataModels.LikesDto;
 using Bluedit.Application.Features.LikeFeature.Commands.CreateLike;
+using Bluedit.Application.Features.LikeFeature.Commands.DeleteLike;
 using Bluedit.Application.Features.LikeFeature.Queries.GetLikesWithUser;
 using Bluedit.Domain.Entities.LikeEntities;
 using Bluedit.Services.Authentication;
@@ -12,15 +11,11 @@ namespace Bluedit.Controllers;
 
 public abstract class LikesController<T> : ControllerBase where T : LikeBase, new()
 {
-    private readonly ILikesRepository<T> _likeRepository;
-    private readonly IMapper _mapper;
     private readonly IUserContextService _userContextService;
     private readonly IMediator _mediator;
 
-    protected LikesController(IMapper mapper, ILikesRepository<T> likeRepository, IUserContextService userContextService, IMediator mediator)
+    protected LikesController(IUserContextService userContextService, IMediator mediator)
     {
-        _likeRepository = likeRepository;
-        _mapper = mapper;
         _userContextService = userContextService;
         _mediator = mediator;
     }
@@ -43,14 +38,10 @@ public abstract class LikesController<T> : ControllerBase where T : LikeBase, ne
 
     protected async Task<ActionResult> DeleteLike(Guid parentId)
     {
-        var like = await _likeRepository.GetLike(parentId, _userContextService.GetUserId);
-
-        if (like is null)
-            return NotFound();
-
-        _likeRepository.DeleteLike(like);
-        await _likeRepository.SaveChangesAsync();
+        var userId = _userContextService.GetUserId;
         
+        await _mediator.Send(new DeleteLikeRequest<T>(parentId,userId) );
+
         return NoContent();
     }
 }

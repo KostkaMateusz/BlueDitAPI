@@ -4,7 +4,7 @@ using Bluedit.Application.Contracts;
 
 namespace Bluedit.Application.Features.TopicFeatures.Queries.GetTopic;
 
-public class GetTopicQueryHandler : IRequestHandler<GetTopicQuery,GetTopicQueryResponse?>
+internal class GetTopicQueryHandler : IRequestHandler<GetTopicQuery,GetTopicQueryResponse?>
 {
     private readonly ITopicRepository _topicRepository;
     private readonly IMapper _mapper;
