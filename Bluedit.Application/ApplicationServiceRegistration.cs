@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Bluedit.Application.DataModels.LikesDto;
+using Bluedit.Application.Features.LikeFeature.Queries.GetLikesWithUser;
+using Bluedit.Domain.Entities.LikeEntities;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Bluedit.Application;
 
@@ -12,6 +16,9 @@ public static class ApplicationServiceRegistration
             cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
         });
 
+        services.AddTransient<IRequestHandler<GetLikesWithUserQuery<PostLike>,List<LikesDto>>,GetLikesWithUserQueryHandler<PostLike>>() ;
+        services.AddTransient<IRequestHandler<GetLikesWithUserQuery<ReplyLike>,List<LikesDto>>,GetLikesWithUserQueryHandler<ReplyLike>>();
+        
         return services;
     }
 }
