@@ -175,6 +175,7 @@ public class PostController : ControllerBase
         foreach (var postDto in postInfoDtos)
         {
             postDto.ImageContentLink = GetLinkToImage(topicName, postDto.PostId);
+            postDto.NumberOfLikes= await  _postRepository.CountPostLikes(postDto.PostId);
         }
         //shape data
         var shapedPostInfoDtos = postInfoDtos.ShapeData(postResourceParameters.Fields);
@@ -205,7 +206,8 @@ public class PostController : ControllerBase
         var postDto = _mapper.Map<PostInfoDto>(post);
 
         postDto.ImageContentLink = GetLinkToImage(topicName, postId);
-
+        postDto.NumberOfLikes= await  _postRepository.CountPostLikes(postDto.PostId);
+        
         return Ok(postDto);
     }
 

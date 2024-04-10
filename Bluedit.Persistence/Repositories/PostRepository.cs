@@ -61,7 +61,11 @@ public class PostRepository : IPostRepository
         return await PagedList<Post>.CreateAsync(postCollectionQuery, postResourceParameters.PageNumber,
             postResourceParameters.PageSize);
     }
-    
+
+    public async Task<int> CountPostLikes(Guid parentId)
+    {
+        return await _dbContext.PostLikes.Where(like => like.ParentId == parentId).CountAsync();
+    }
     
     public async Task<bool> PostWithGivenIdExistAsync(Guid postId)
     {

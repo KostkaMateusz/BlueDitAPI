@@ -16,4 +16,5 @@ public interface IPostRepository
     Task<Post> LoadPostRepliesAsync(Post post);
     Task LoadPostLikesAsync(Post post);
     Task<IPagedList<Post>> GetPostsAsync(PostResourceParameters postResourceParameters);
+    Task<int> CountPostLikes(Guid parentId);
 }
