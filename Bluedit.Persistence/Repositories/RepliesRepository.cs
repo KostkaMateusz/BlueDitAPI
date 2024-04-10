@@ -14,11 +14,17 @@ public class RepliesRepository : IRepliesRepository
         _dbContext = dbContext;
     }
 
-    public async Task<ReplyBase?> GetReplyById(Guid replayId)
+    public async Task<ReplyBase?> GetReplyById(Guid replyId)
     {
-        return await _dbContext.Replies.FirstOrDefaultAsync(r => r.ReplyId == replayId); 
+        return await _dbContext.Replies.FirstOrDefaultAsync(r => r.ReplyId == replyId); 
     }
 
+    public async Task<bool> ReplyWithGivenIdExistAsync(Guid replyId)
+    {
+        return await _dbContext.Replies.AnyAsync(reply => reply.ReplyId == replyId);
+    }
+    
+    
     public async Task AddReply(ReplyBase replay)
     {
         await _dbContext.Replies.AddAsync(replay);
@@ -75,7 +81,7 @@ public class RepliesRepository : IRepliesRepository
     {
         return await _dbContext.SaveChangesAsync() >= 0;
     }
-
+    
     private async Task<IEnumerable<ReplyBase>> GetAllChildReply(Guid parentReplyId)
     {
         var firstChildren = await _dbContext.Replies.OfType<SubReplay>().Where(reply => reply.ParentReplyId == parentReplyId).ToListAsync();

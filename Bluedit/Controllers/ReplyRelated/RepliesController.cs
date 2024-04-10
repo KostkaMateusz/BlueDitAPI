@@ -2,6 +2,7 @@
 using AutoMapper;
 using Bluedit.Application.Contracts;
 using Bluedit.Application.DataModels.ReplayDtos;
+using Bluedit.Domain.Entities.LikeEntities;
 using Bluedit.Domain.Entities.ReplyEntities;
 using Bluedit.Services.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -20,11 +21,13 @@ public partial class RepliesController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
     private readonly IRepliesRepository _repliesRepository;
+    private readonly ILikesRepository<ReplyLike> _replylikesRepository;
     private readonly IUserContextService _userContextService;
 
-    public RepliesController(IRepliesRepository repliesRepository, IUserContextService userContextService, IPostRepository postRepository, IMapper mapper)
+    public RepliesController(IRepliesRepository repliesRepository,ILikesRepository<ReplyLike> replylikesRepository,IUserContextService userContextService, IPostRepository postRepository, IMapper mapper)
     {
         _repliesRepository = repliesRepository ?? throw new ArgumentNullException(nameof(repliesRepository));
+        _replylikesRepository = replylikesRepository ?? throw new ArgumentNullException(nameof(replylikesRepository));
         _userContextService = userContextService ?? throw new ArgumentNullException(nameof(userContextService));
         _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -55,6 +58,11 @@ public partial class RepliesController : ControllerBase
         {
             var replies  = await _repliesRepository.GetRepliesByParentPostId(postId); 
             var repliesDto = _mapper.Map<IEnumerable<ReplyDto>>(replies);
+
+            foreach (var replyDto in repliesDto)
+            {
+                replyDto.LikesCount = await _replylikesRepository.GetLikesCountByParentIdAsync(replyDto.ReplyId);
+            }
             
             return Ok(repliesDto);
         }
@@ -68,6 +76,11 @@ public partial class RepliesController : ControllerBase
             var replies = await _repliesRepository.GetSubRepliesByParentReplyId(lastGuid);
             var repliesDto = _mapper.Map<IEnumerable<ReplyDto>>(replies);
            
+            foreach (var replyDto in repliesDto)
+            {
+                replyDto.LikesCount = await _replylikesRepository.GetLikesCountByParentIdAsync(replyDto.ReplyId);
+            }
+            
             return Ok(repliesDto);
         }
 
@@ -88,10 +101,15 @@ public partial class RepliesController : ControllerBase
             await _repliesRepository.AddReply(newReply);
             await _repliesRepository.SaveChangesAsync();
         
-            return CreatedAtRoute("GetReplies", routeValues: new { PostId = postId, topicName }, createReplayDto);
+            var replyDto = _mapper.Map<ReplyDto>(newReply);
+            
+            return CreatedAtRoute("GetReplies", routeValues: new { PostId = postId, topicName }, replyDto);
         }
         else
         {
+            if(string.IsNullOrEmpty(repliesPath))
+                return BadRequest();
+            
             var parentGuidString = LastRegexMatch(repliesPath, _guidRegex);
 
             if (Guid.TryParse(parentGuidString, out var subReplayGuid) is false)
@@ -162,6 +180,7 @@ public partial class RepliesController : ControllerBase
         await _repliesRepository.SaveChangesAsync();
 
         var replyDto = _mapper.Map<ReplyDto>(reply);
+        replyDto.LikesCount = await _replylikesRepository.GetLikesCountByParentIdAsync(replyDto.ReplyId);
 
         return Ok(replyDto);
     }

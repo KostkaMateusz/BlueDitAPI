@@ -25,10 +25,10 @@ public class ErrorHandlingMiddleware() : IMiddleware
             context.Response.StatusCode = 409;
             await context.Response.WriteAsync("Resource already exist");
         }
-        catch (Exception ex)
-        {
-            context.Response.StatusCode = 500;
-            await context.Response.WriteAsync("Something went wrong");
-        }
+        // catch (Exception ex)
+        // {
+        //     context.Response.StatusCode = 500;
+        //     await context.Response.WriteAsync("Something went wrong");
+        // }
     }
 }
