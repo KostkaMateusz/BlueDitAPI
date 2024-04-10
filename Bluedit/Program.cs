@@ -2,6 +2,7 @@ using Bluedit.StartUpExtensions;
 using System.Reflection;
 using Bluedit.Persistence;
 using Bluedit.Application;
+using Bluedit.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,7 @@ builder.ConfigureCors();
 
 var app = builder.Build();
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
 // Configure the HTTP request pipeline.
 
 app.MapGet("/checkEnviroment", () => app.Environment.EnvironmentName);
