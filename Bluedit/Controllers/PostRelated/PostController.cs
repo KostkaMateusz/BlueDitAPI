@@ -16,22 +16,24 @@ using Newtonsoft.Json;
 
 namespace Bluedit.Controllers.PostRelated;
 
-
 [ApiController]
 [Route("api/topics/{topicName}/posts")]
 [Authorize]
 public class PostController : ControllerBase
 {
-    private readonly IPostRepository _postRepository;
     private readonly IAzureStorageService _azureStorageService;
-    private readonly IUserContextService _userContextService;
     private readonly IMapper _mapper;
-    private readonly ITopicRepository _topicRepository;
-    private readonly IRepliesRepository _repliesRepository;
-    private readonly IPropertyCheckerService _propertyCheckerService;
+    private readonly IPostRepository _postRepository;
     private readonly ProblemDetailsFactory _problemDetailsFactory;
+    private readonly IPropertyCheckerService _propertyCheckerService;
+    private readonly IRepliesRepository _repliesRepository;
+    private readonly ITopicRepository _topicRepository;
+    private readonly IUserContextService _userContextService;
 
-    public PostController(IPostRepository postRepository, ITopicRepository topicRepository, IRepliesRepository repliesRepository, IAzureStorageService azureStorageService, IUserContextService userContextService, IMapper mapper,IPropertyCheckerService propertyCheckerService, ProblemDetailsFactory problemDetailsFactory)
+    public PostController(IPostRepository postRepository, ITopicRepository topicRepository,
+        IRepliesRepository repliesRepository, IAzureStorageService azureStorageService,
+        IUserContextService userContextService, IMapper mapper, IPropertyCheckerService propertyCheckerService,
+        ProblemDetailsFactory problemDetailsFactory)
     {
         _postRepository = postRepository ?? throw new ArgumentNullException(nameof(postRepository));
         _azureStorageService = azureStorageService ?? throw new ArgumentNullException(nameof(azureStorageService));
@@ -39,8 +41,10 @@ public class PostController : ControllerBase
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _topicRepository = topicRepository ?? throw new ArgumentNullException(nameof(topicRepository));
         _repliesRepository = repliesRepository ?? throw new ArgumentNullException(nameof(repliesRepository));
-        _propertyCheckerService = propertyCheckerService ?? throw new ArgumentNullException(nameof(propertyCheckerService));
-        _problemDetailsFactory = problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
+        _propertyCheckerService =
+            propertyCheckerService ?? throw new ArgumentNullException(nameof(propertyCheckerService));
+        _problemDetailsFactory =
+            problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
     }
 
     private string? GetLinkToImage(string topicName, Guid postId)
@@ -50,7 +54,7 @@ public class PostController : ControllerBase
 
         return Url.Link(imageFuncName, navigationParametersObject);
     }
-    
+
     private string? CreatePostResourceUri(PostResourceParameters postResourceParameters, ResourceUriType type)
     {
         var pageNumber = type switch
@@ -73,7 +77,7 @@ public class PostController : ControllerBase
     }
 
     /// <summary>
-    /// Create New Post
+    ///     Create New Post
     /// </summary>
     /// <param name="topicName">Topic where new post will be creted</param>
     /// <param name="postCreateDto">Post data</param>
@@ -83,7 +87,8 @@ public class PostController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpPost]
-    public async Task<ActionResult<PostInfoDto>> CreatePost([FromRoute] string topicName, [FromForm] PostCreateDto postCreateDto)
+    public async Task<ActionResult<PostInfoDto>> CreatePost([FromRoute] string topicName,
+        [FromForm] PostCreateDto postCreateDto)
     {
         var topicExist = await _topicRepository.GetTopicWithNameAsync(topicName);
         if (topicExist is null)
@@ -93,7 +98,7 @@ public class PostController : ControllerBase
         var imageNameGuid = Guid.NewGuid();
         await _azureStorageService.SaveFile(imageNameGuid, postCreateDto.Image);
 
-        var post = new Post()
+        var post = new Post
         {
             Title = postCreateDto.Title,
             Description = postCreateDto.Description,
@@ -112,12 +117,12 @@ public class PostController : ControllerBase
         topicExist.PostCount++;
         _topicRepository.UpdateTopicAsync(topicExist);
         await _topicRepository.SaveChangesAsync();
-        
+
         return CreatedAtRoute("GetPostInfo", new { topicName, post.PostId }, postDto);
     }
-    
+
     /// <summary>
-    /// Get Posts by Topic Name
+    ///     Get Posts by Topic Name
     /// </summary>
     /// <param name="topicName">Topic where post is created</param>
     /// <param name="postResourceParameters">Query Data</param>
@@ -128,15 +133,17 @@ public class PostController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet(Name = "GetPosts")]
     [AllowAnonymous]
-    public async Task<ActionResult<IEnumerable<PostInfoDto>>> GetPostsAsync([FromRoute] string topicName,[FromQuery] PostResourceParameters postResourceParameters)
+    public async Task<ActionResult<IEnumerable<PostInfoDto>>> GetPostsAsync([FromRoute] string topicName,
+        [FromQuery] PostResourceParameters postResourceParameters)
     {
         postResourceParameters.TopicName = topicName;
-        
+
         // check if requested fields for data shape are valid
         if (_propertyCheckerService.TypeHasProperties<PostInfoDto>(postResourceParameters.Fields) is false)
         {
             var problemWithFields = _problemDetailsFactory.CreateProblemDetails(HttpContext, 400,
-                detail: $"Not all requested data shaping fields exist on the resource: {postResourceParameters.Fields}");
+                detail:
+                $"Not all requested data shaping fields exist on the resource: {postResourceParameters.Fields}");
 
             return BadRequest(problemWithFields);
         }
@@ -155,7 +162,7 @@ public class PostController : ControllerBase
 
         if (((IEnumerable<Post>)postPagedList).IsNullOrEmpty())
             return NotFound();
-        
+
         //calculate prev site if exist
         var previousPageLink = postPagedList.HasPrevious
             ? CreatePostResourceUri(postResourceParameters, ResourceUriType.PreviousPage)
@@ -175,14 +182,17 @@ public class PostController : ControllerBase
         foreach (var postDto in postInfoDtos)
         {
             postDto.ImageContentLink = GetLinkToImage(topicName, postDto.PostId);
+            postDto.NumberOfLikes = await _postRepository.CountPostLikes(postDto.PostId);
         }
+
         //shape data
         var shapedPostInfoDtos = postInfoDtos.ShapeData(postResourceParameters.Fields);
 
         return Ok(shapedPostInfoDtos);
     }
+
     /// <summary>
-    /// Get Post Details
+    ///     Get Post Details
     /// </summary>
     /// <param name="topicName">Topic where new post will be creted</param>
     /// <param name="postId">Post Id</param>
@@ -205,12 +215,13 @@ public class PostController : ControllerBase
         var postDto = _mapper.Map<PostInfoDto>(post);
 
         postDto.ImageContentLink = GetLinkToImage(topicName, postId);
+        postDto.NumberOfLikes = await _postRepository.CountPostLikes(postDto.PostId);
 
         return Ok(postDto);
     }
 
     /// <summary>
-    /// Get Post Image
+    ///     Get Post Image
     /// </summary>
     /// <param name="postId">Post Id</param>
     /// <response code="404">When Image is not found</response>
@@ -231,7 +242,7 @@ public class PostController : ControllerBase
 
         var contentProvider = new FileExtensionContentTypeProvider();
 
-        contentProvider.TryGetContentType(post.ImageGuid.ToString(), out string? contentType);
+        contentProvider.TryGetContentType(post.ImageGuid.ToString(), out var contentType);
 
         if (contentType is null)
             contentType = "image/jpeg";
@@ -240,7 +251,7 @@ public class PostController : ControllerBase
     }
 
     /// <summary>
-    /// Update Post
+    ///     Update Post
     /// </summary>
     /// <param name="postId">Post Id</param>
     /// <param name="topicName">Topic Name</param>
@@ -253,7 +264,8 @@ public class PostController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [HttpPut("{postId}")]
-    public async Task<ActionResult<PostInfoDto>> UpdatePost([FromRoute] string topicName, [FromRoute] Guid postId, [FromForm] PostUpdateDto postUpdateDto)
+    public async Task<ActionResult<PostInfoDto>> UpdatePost([FromRoute] string topicName, [FromRoute] Guid postId,
+        [FromForm] PostUpdateDto postUpdateDto)
     {
         var postForUpdateFromRepo = await _postRepository.GetPostByIdAsync(postId);
 
@@ -290,7 +302,7 @@ public class PostController : ControllerBase
     }
 
     /// <summary>
-    /// Partialy Update Given Topic
+    ///     Partialy Update Given Topic
     /// </summary>
     /// <param name="postId">Post Id</param>
     /// <param name="patchDocument">Json PATCH Document</param>
@@ -304,7 +316,8 @@ public class PostController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [HttpPatch("{postId}")]
-    public async Task<IActionResult> PartialyUpdatePost([FromRoute] Guid postId, [FromBody] JsonPatchDocument<PartialyUpdatePostDto> patchDocument)
+    public async Task<IActionResult> PartialyUpdatePost([FromRoute] Guid postId,
+        [FromBody] JsonPatchDocument<PartialyUpdatePostDto> patchDocument)
     {
         var postFromRepo = await _postRepository.GetPostByIdAsync(postId);
 
@@ -332,7 +345,7 @@ public class PostController : ControllerBase
 
 
     /// <summary>
-    /// Delete Post
+    ///     Delete Post
     /// </summary>
     /// <param name="postId">Post Id</param>
     /// <response code="404">When Post is not found</response>
@@ -355,10 +368,7 @@ public class PostController : ControllerBase
         if (_userContextService.GetUserId != post.UserId)
             return Forbid("You are not an owner of this resource");
 
-        foreach (var postReply in postReplies)
-        {
-            await _repliesRepository.DeleteReplyTree(postReply);
-        }
+        foreach (var postReply in postReplies) await _repliesRepository.DeleteReplyTree(postReply);
 
         _postRepository.DeletePost(post);
 

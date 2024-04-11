@@ -1,14 +1,14 @@
 ﻿using Bluedit.Application.Contracts;
-using Bluedit.Domain.Entities;
 using MediatR;
 
 namespace Bluedit.Application.DataModels.TopicDtos;
 
-public class TopicResourceParameters : ResourceParametersBase, IRequest<IPagedList<Topic>>
+public class TopicResourceParameters : ResourceParametersBase, IRequest<IPagedList>
 {
-    public string? TopicName { get; set; }
     public TopicResourceParameters()
     {
-        OrderBy  = "postCount";
+        OrderBy = "postCount";
     }
+
+    public string? TopicName { get; set; }
 }

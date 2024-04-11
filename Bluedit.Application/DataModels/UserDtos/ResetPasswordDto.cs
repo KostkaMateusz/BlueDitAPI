@@ -11,7 +11,5 @@ public class ResetPasswordDto
     [MaxLength(60)]
     public required string UserMail { get; set; }
 
-    [MinLength(6)]
-    [MaxLength(60)]
-    public required string NewPassword { get; set; }
+    [MinLength(6)] [MaxLength(60)] public required string NewPassword { get; set; }
 }

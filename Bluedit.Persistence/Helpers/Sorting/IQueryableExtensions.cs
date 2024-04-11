@@ -5,7 +5,8 @@ namespace Bluedit.Persistence.Helpers.Sorting;
 
 public static class QueryableExtensions
 {
-    public static IQueryable<T> ApplySort<T>(this IQueryable<T> source, string orderBy, Dictionary<string, PropertyMappingValue> mappingDictionary)
+    public static IQueryable<T> ApplySort<T>(this IQueryable<T> source, string orderBy,
+        Dictionary<string, PropertyMappingValue> mappingDictionary)
     {
         ArgumentNullException.ThrowIfNull(source);
 
@@ -34,11 +35,13 @@ public static class QueryableExtensions
             // remove " asc" or " desc" from the orderBy clause, so we 
             // get the property name to look for in the mapping dictionary
             var indexOfFirstSpace = trimmedOrderByClause.IndexOf(" ", StringComparison.Ordinal);
-            
-            var propertyName = indexOfFirstSpace == -1 ? trimmedOrderByClause : trimmedOrderByClause.Remove(indexOfFirstSpace);
+
+            var propertyName = indexOfFirstSpace == -1
+                ? trimmedOrderByClause
+                : trimmedOrderByClause.Remove(indexOfFirstSpace);
 
             // find the matching property
-            if (!mappingDictionary.TryGetValue(propertyName, out PropertyMappingValue? value))
+            if (!mappingDictionary.TryGetValue(propertyName, out var value))
                 throw new ArgumentException($"Key mapping for {propertyName} is missing");
 
             // get the PropertyMappingValue
@@ -50,7 +53,7 @@ public static class QueryableExtensions
             // revert sort order if necessary
             if (propertyMappingValue.Revert)
                 orderDescending = !orderDescending;
-            
+
             // Run through the property names 
             foreach (var destinationProperty in propertyMappingValue.DestinationProperties)
             {
@@ -59,6 +62,7 @@ public static class QueryableExtensions
                 orderByStringNuBuilder.Append(orderDescending ? " descending" : " ascending");
             }
         }
+
         return source.OrderBy(orderByStringNuBuilder.ToString());
     }
 }

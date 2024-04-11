@@ -1,5 +1,4 @@
-﻿
-namespace Bluedit.Application.DataModels.UserDtos;
+﻿namespace Bluedit.Application.DataModels.UserDtos;
 
 public class RegisterUserDto
 {

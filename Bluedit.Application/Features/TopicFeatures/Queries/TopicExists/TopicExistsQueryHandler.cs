@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Bluedit.Application.Features.TopicFeatures.Queries.TopicExists;
 
-public class TopicExistsQueryHandler : IRequestHandler<TopicExistsQuery, bool>
+internal class TopicExistsQueryHandler : IRequestHandler<TopicExistsQuery, bool>
 {
     private readonly ITopicRepository _topicRepository;
 

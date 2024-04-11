@@ -1,7 +1,8 @@
-using Bluedit.StartUpExtensions;
 using System.Reflection;
-using Bluedit.Persistence;
 using Bluedit.Application;
+using Bluedit.MIddlewares;
+using Bluedit.Persistence;
+using Bluedit.StartUpExtensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,12 +27,13 @@ builder.ConfigureCors();
 
 var app = builder.Build();
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
 // Configure the HTTP request pipeline.
 
 app.MapGet("/checkEnviroment", () => app.Environment.EnvironmentName);
 
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(options => { options.EnableTryItOutByDefault(); });
 
 app.UseStaticFiles();
 

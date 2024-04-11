@@ -8,7 +8,9 @@ namespace Bluedit.Persistence;
 
 public class BlueditDbContext : DbContext
 {
-    public BlueditDbContext(DbContextOptions<BlueditDbContext> options) : base(options) { }
+    public BlueditDbContext(DbContextOptions<BlueditDbContext> options) : base(options)
+    {
+    }
 
     public DbSet<User> Users { get; init; }
     public DbSet<Post> Posts { get; init; }

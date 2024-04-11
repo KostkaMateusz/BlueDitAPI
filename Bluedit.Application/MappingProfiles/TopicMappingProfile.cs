@@ -9,10 +9,10 @@ public class TopicMappingProfile : Profile
 {
     public TopicMappingProfile()
     {
-        CreateMap<Domain.Entities.Topic, TopicCreatedDto>();
-        CreateMap<Domain.Entities.Topic, TopicInfoDto>();
-        CreateMap<Domain.Entities.Topic, TopicForUpdateDto>().ReverseMap();
-        
+        CreateMap<Topic, TopicCreatedDto>();
+        CreateMap<Topic, TopicInfoDto>();
+        CreateMap<Topic, TopicForUpdateDto>().ReverseMap();
+
         CreateMap<Topic, GetTopicQueryResponse>();
     }
 }

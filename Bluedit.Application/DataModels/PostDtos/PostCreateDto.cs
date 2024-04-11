@@ -5,8 +5,8 @@ namespace Bluedit.Application.DataModels.PostDtos;
 
 public class PostCreateDto
 {
-    [MinLength(3)]
-    public required string Title { get; set; }
+    [MinLength(3)] public required string Title { get; set; }
+
     public string? Description { get; set; }
 
     [Required]

@@ -1,5 +1,4 @@
-﻿
-namespace Bluedit.Application.DataModels.ReplayDtos;
+﻿namespace Bluedit.Application.DataModels.ReplayDtos;
 
 public class ReplyDto
 {
@@ -7,4 +6,5 @@ public class ReplyDto
     public Guid UserId { get; set; }
     public Guid ReplyId { get; set; }
     public DateTime CreationDate { get; set; }
+    public int LikesCount { get; set; }
 }

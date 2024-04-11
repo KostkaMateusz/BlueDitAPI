@@ -1,6 +1,6 @@
 ﻿namespace Bluedit.Application.Contracts;
 
-public interface IPagedList<T>
+public interface IPagedList
 {
     int CurrentPage { get; }
     bool HasNext { get; }

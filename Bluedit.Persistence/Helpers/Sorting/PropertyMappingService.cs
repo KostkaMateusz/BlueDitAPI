@@ -1,9 +1,9 @@
-﻿
-namespace Bluedit.Persistence.Helpers.Sorting;
+﻿namespace Bluedit.Persistence.Helpers.Sorting;
 
 public class PropertyMappingService : IPropertyMappingService
 {
     private readonly List<IPropertyMapping> _propertyMappings = [];
+
     public PropertyMappingService(ApplicationPropertyMappings applicationPropertyMappings)
     {
         _propertyMappings.AddRange(applicationPropertyMappings.PropertyMappings);
@@ -17,7 +17,8 @@ public class PropertyMappingService : IPropertyMappingService
         if (matchingMapping.Count() == 1)
             return matchingMapping.First().MappingDictionary;
 
-        throw new Exception($"Cannot find exact property mapping instance for <{typeof(TSource)},{typeof(TDestination)}");
+        throw new Exception(
+            $"Cannot find exact property mapping instance for <{typeof(TSource)},{typeof(TDestination)}");
     }
 
     public bool ValidMappingExistsFor<TSource, TDestination>(string fields)
@@ -50,4 +51,3 @@ public class PropertyMappingService : IPropertyMappingService
         return true;
     }
 }
-

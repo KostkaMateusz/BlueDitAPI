@@ -15,5 +15,6 @@ public interface IPostRepository
     void DeletePost(Post post);
     Task<Post> LoadPostRepliesAsync(Post post);
     Task LoadPostLikesAsync(Post post);
-    Task<IPagedList<Post>> GetPostsAsync(PostResourceParameters postResourceParameters);
+    Task<IPagedList> GetPostsAsync(PostResourceParameters postResourceParameters);
+    Task<int> CountPostLikes(Guid parentId);
 }

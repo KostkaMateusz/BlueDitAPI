@@ -1,8 +1,7 @@
-﻿using AutoMapper;
-using Bluedit.Application.Contracts;
-using Bluedit.Application.DataModels.LikesDto;
+﻿using Bluedit.Application.DataModels.LikesDto;
 using Bluedit.Domain.Entities.LikeEntities;
 using Bluedit.Services.Authentication;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +11,8 @@ namespace Bluedit.Controllers.PostRelated;
 [Route("api/topics/{topicName}/posts/{postId:guid}/likes")]
 public class PostLikesController : LikesController<PostLike>
 {
-    public PostLikesController(IMapper mapper, ILikesRepository<PostLike> likeRepository, IUserContextService userContextService) : base(mapper, likeRepository, userContextService)
+    public PostLikesController(IUserContextService userContextService, IMediator mediator) : base(userContextService,
+        mediator)
     {
     }
 
@@ -21,20 +21,18 @@ public class PostLikesController : LikesController<PostLike>
     {
         return await base.GetLikesWithUser(postId);
     }
-    
+
     [Authorize]
     [HttpPost]
     public new async Task<ActionResult> CreateLike([FromRoute] Guid postId)
     {
         return await base.CreateLike(postId);
     }
-    
+
     [Authorize]
     [HttpDelete]
     public new async Task<ActionResult> DeleteLike([FromRoute] Guid postId)
     {
         return await base.DeleteLike(postId);
     }
-    
-    
 }

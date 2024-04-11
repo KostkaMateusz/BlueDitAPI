@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Bluedit.Application.Features.TopicFeatures.Commands.PutTopic;
 
-public class PutTopicCommandHandler : IRequestHandler<PutTopicCommand, bool>
+internal class PutTopicCommandHandler : IRequestHandler<PutTopicCommand, bool>
 {
     private readonly ITopicRepository _topicRepository;
 
@@ -11,6 +11,7 @@ public class PutTopicCommandHandler : IRequestHandler<PutTopicCommand, bool>
     {
         _topicRepository = topicRepository ?? throw new ArgumentNullException(nameof(topicRepository));
     }
+
     public async Task<bool> Handle(PutTopicCommand request, CancellationToken cancellationToken)
     {
         var topicForUpdate = await _topicRepository.GetTopicWithNameAsync(request.TopicName);
