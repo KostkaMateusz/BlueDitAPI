@@ -42,7 +42,7 @@ public class PostRepository : IPostRepository
         if (string.IsNullOrWhiteSpace(postResourceParameters.UserName) is false)
         {
             var userName = postResourceParameters.UserName.Trim().ToUpper();
-            postCollectionQuery = postCollectionQuery.Where(post => post.User.Name == userName);
+            postCollectionQuery = postCollectionQuery.Where(post => post.User!.Name == userName);
         }
 
         //search by in title and description
@@ -50,7 +50,7 @@ public class PostRepository : IPostRepository
         {
             var searchQuery = postResourceParameters.SearchQuery.Trim();
             postCollectionQuery = postCollectionQuery.Where(post => post.Title.Contains(searchQuery)
-                                                                    || post.Description.Contains(searchQuery));
+                                                                    || post.Description!.Contains(searchQuery));
         }
 
         //apply sorting
