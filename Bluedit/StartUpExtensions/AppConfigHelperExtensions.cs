@@ -1,17 +1,17 @@
-﻿using Bluedit.Domain.Entities;
+﻿using System.Reflection;
+using System.Text;
+using Bluedit.Application.DataModels.UserDtos;
+using Bluedit.Domain.Entities;
 using Bluedit.Helpers.DataShaping;
 using Bluedit.Infrastructure;
+using Bluedit.MIddlewares;
+using Bluedit.ModelsValidators;
 using Bluedit.Services.Authentication;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
-using System.Reflection;
-using System.Text;
-using Bluedit.Application.DataModels.UserDtos;
-using Bluedit.Middlewares;
-using Bluedit.ModelsValidators;
 
 namespace Bluedit.StartUpExtensions;
 
@@ -36,7 +36,7 @@ internal static class AppConfigHelperExtensions
             {
                 ValidIssuer = authenticationSettings.JwtIssuer,
                 ValidAudience = authenticationSettings.JwtIssuer,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey))
             };
         });
 
@@ -50,13 +50,19 @@ internal static class AppConfigHelperExtensions
 
         builder.Services.AddSwaggerGen(options =>
         {
-            options.SwaggerDoc("v1", new OpenApiInfo { Title = "BlueditApi", Version = "v1", Description = "This project is to create small backend service for social media service like Redit in ASP.NET" });
+            options.SwaggerDoc("v1",
+                new OpenApiInfo
+                {
+                    Title = "BlueditApi", Version = "v1",
+                    Description =
+                        "This project is to create small backend service for social media service like Redit in ASP.NET"
+                });
 
             // using System.Reflection;
             var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 
-            options.AddSecurityDefinition("PostGramApiBearerAuth", new OpenApiSecurityScheme()
+            options.AddSecurityDefinition("PostGramApiBearerAuth", new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.Http,
                 Scheme = "Bearer",
@@ -68,8 +74,10 @@ internal static class AppConfigHelperExtensions
                 {
                     new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = "PostGramApiBearerAuth" }
-                    }, new List<string>()
+                        Reference = new OpenApiReference
+                            { Type = ReferenceType.SecurityScheme, Id = "PostGramApiBearerAuth" }
+                    },
+                    new List<string>()
                 }
             });
         });
@@ -82,9 +90,9 @@ internal static class AppConfigHelperExtensions
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("FrontEndClient", policyBuilder => policyBuilder
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .WithOrigins(builder.Configuration["AllowedHosts"] ?? string.Empty));
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .WithOrigins(builder.Configuration["AllowedHosts"] ?? string.Empty));
         });
 
         return builder;
@@ -92,15 +100,12 @@ internal static class AppConfigHelperExtensions
 
     public static WebApplicationBuilder AddControllersConfiguration(this WebApplicationBuilder builder)
     {
-        builder.Services.AddControllers(configure =>
-        {
-            configure.ReturnHttpNotAcceptable = true;
-        })
+        builder.Services.AddControllers(configure => { configure.ReturnHttpNotAcceptable = true; })
             .AddNewtonsoftJson(setupAction =>
-        {
-            setupAction.SerializerSettings.ContractResolver =
-                new CamelCasePropertyNamesContractResolver();
-        });
+            {
+                setupAction.SerializerSettings.ContractResolver =
+                    new CamelCasePropertyNamesContractResolver();
+            });
 
         return builder;
     }
@@ -110,11 +115,11 @@ internal static class AppConfigHelperExtensions
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddScoped<IUserContextService, UserContextService>();
         builder.Services.AddScoped<ErrorHandlingMiddleware>();
-        
+
         builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
         builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 
-        
+
         //Add Azure Blob Service
         builder.Services.AddInfrastructureServices();
 

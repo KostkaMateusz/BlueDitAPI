@@ -8,7 +8,7 @@ public class LikeMappingProfile : Profile
 {
     public LikeMappingProfile()
     {
-        CreateMap<LikesUserInfoDto,LikeBase>().ReverseMap();
+        CreateMap<LikesUserInfoDto, LikeBase>().ReverseMap();
 
         CreateMap<PostLike, LikesDto>().ForMember(dto => dto.UserName, opt => opt.MapFrom(src => src.User!.Name));
 

@@ -57,6 +57,6 @@ public class LikesRepository<T> : ILikesRepository<T> where T : LikeBase, new()
 
     public async Task<T?> GetLike(Guid parentId, Guid userId)
     {
-        return await _likeContex.FirstOrDefaultAsync(l=>l.ParentId== parentId && l.UserId==userId);
+        return await _likeContex.FirstOrDefaultAsync(l => l.ParentId == parentId && l.UserId == userId);
     }
 }

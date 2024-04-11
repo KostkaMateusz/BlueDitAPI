@@ -7,15 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Bluedit.Controllers.UserRelated;
 
-
 public class UserLikesController : ControllerBase
 {
+    private readonly IMapper _mapper;
     private readonly ILikesRepository<PostLike> _postLikeRepository;
     private readonly ILikesRepository<ReplyLike> _replyLikeRepository;
-    private readonly IMapper _mapper;
     private readonly IUserContextService _userContextService;
 
-    public UserLikesController(IMapper mapper, ILikesRepository<PostLike> postLikeRepository, ILikesRepository<ReplyLike> replyLikeRepository, IUserContextService userContextService)
+    public UserLikesController(IMapper mapper, ILikesRepository<PostLike> postLikeRepository,
+        ILikesRepository<ReplyLike> replyLikeRepository, IUserContextService userContextService)
     {
         _postLikeRepository = postLikeRepository;
         _replyLikeRepository = replyLikeRepository;
@@ -23,22 +23,22 @@ public class UserLikesController : ControllerBase
         _userContextService = userContextService;
     }
 
-    public async Task<List<LikesUserInfoDto>> GetLikesByUserId(Guid UserId)
+    public async Task<List<LikesUserInfoDto>> GetLikesByUserId(Guid userId)
     {
-        var userPostLikesList = await _postLikeRepository.GetLikesByUserIdAsync(UserId);
-        var userReplyLikesList = await _replyLikeRepository.GetLikesByUserIdAsync(UserId);
+        var userPostLikesList = await _postLikeRepository.GetLikesByUserIdAsync(userId);
+        var userReplyLikesList = await _replyLikeRepository.GetLikesByUserIdAsync(userId);
 
         List<LikeBase> userCombinedLikes = [.. userPostLikesList, .. userReplyLikesList];
 
         return _mapper.Map<List<LikesUserInfoDto>>(userCombinedLikes);
     }
 
-    public async Task<IActionResult> CheckIfUserLikeResource(Guid UserId, Guid resourceiD)
+    public async Task<IActionResult> CheckIfUserLikeResource(Guid userId, Guid resourceId)
     {
-        if (await _postLikeRepository.CheckIfLikeExistAsync(UserId, resourceiD))
+        if (await _postLikeRepository.CheckIfLikeExistAsync(userId, resourceId))
             return Ok();
 
-        if (await _replyLikeRepository.CheckIfLikeExistAsync(UserId, resourceiD))
+        if (await _replyLikeRepository.CheckIfLikeExistAsync(userId, resourceId))
             return Ok();
 
         return NotFound();

@@ -1,27 +1,29 @@
-﻿using Azure.Storage.Blobs;
-using Azure.Identity;
+﻿using Azure.Identity;
+using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace Bluedit.Infrastructure.StorageService;
 
 public class AzureStorageService : IAzureStorageService
 {
-    private readonly string _containerName;
-    private readonly BlobContainerClient _containerClient;
     private readonly BlobServiceClient _blobServiceClient;
+    private readonly BlobContainerClient _containerClient;
+    private readonly string _containerName;
 
     public AzureStorageService(IConfiguration configuration, IWebHostEnvironment env)
     {
         // create a container client object
 
-        _containerName = configuration["BlobStorage:ContainerName"] ?? throw new ArgumentNullException(nameof(configuration));
+        _containerName = configuration["BlobStorage:ContainerName"] ??
+                         throw new ArgumentNullException(nameof(configuration));
 
         if (string.Equals(env.EnvironmentName, "Development"))
         {
-            var connectionString = configuration.GetSection("BlobStorage").GetValue<string>("AzureStorageConnectionString");
+            var connectionString =
+                configuration.GetSection("BlobStorage").GetValue<string>("AzureStorageConnectionString");
 
             if (string.IsNullOrEmpty(connectionString))
                 throw new ArgumentNullException(nameof(connectionString));
@@ -32,7 +34,8 @@ public class AzureStorageService : IAzureStorageService
         }
         else
         {
-            var blobAddres = configuration["BlobStorage:AzureBlobContainerLink"] ?? throw new ArgumentNullException(nameof(configuration));
+            var blobAddres = configuration["BlobStorage:AzureBlobContainerLink"] ??
+                             throw new ArgumentNullException(nameof(configuration));
             if (string.IsNullOrEmpty(blobAddres))
                 throw new ArgumentNullException(nameof(blobAddres));
 
@@ -51,7 +54,7 @@ public class AzureStorageService : IAzureStorageService
     public async Task SaveFile(Guid fileName, IFormFile file)
     {
         // Get a reference to a blob
-        BlobClient blobClient = _containerClient.GetBlobClient(fileName.ToString());
+        var blobClient = _containerClient.GetBlobClient(fileName.ToString());
 
         //Save file Stream to blob
         using var stream = file.OpenReadStream();
@@ -63,10 +66,7 @@ public class AzureStorageService : IAzureStorageService
         var imageBlobs = _containerClient.GetBlobsAsync(prefix: imageGuid.ToString());
 
         var listofBlobs = new List<BlobItem>();
-        await foreach (var blob in imageBlobs)
-        {
-            listofBlobs.Add(blob);
-        }
+        await foreach (var blob in imageBlobs) listofBlobs.Add(blob);
         var imageBlob = listofBlobs.FirstOrDefault();
 
         if (imageBlob is null)

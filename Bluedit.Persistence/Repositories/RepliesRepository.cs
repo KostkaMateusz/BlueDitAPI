@@ -16,15 +16,15 @@ public class RepliesRepository : IRepliesRepository
 
     public async Task<ReplyBase?> GetReplyById(Guid replyId)
     {
-        return await _dbContext.Replies.FirstOrDefaultAsync(r => r.ReplyId == replyId); 
+        return await _dbContext.Replies.FirstOrDefaultAsync(r => r.ReplyId == replyId);
     }
 
     public async Task<bool> ReplyWithGivenIdExistAsync(Guid replyId)
     {
         return await _dbContext.Replies.AnyAsync(reply => reply.ReplyId == replyId);
     }
-    
-    
+
+
     public async Task AddReply(ReplyBase replay)
     {
         await _dbContext.Replies.AddAsync(replay);
@@ -39,14 +39,16 @@ public class RepliesRepository : IRepliesRepository
 
     public async Task<IEnumerable<SubReplay>> GetSubRepliesByParentReplyId(Guid parentId)
     {
-        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().Where(r => r.ParentReplyId == parentId).ToListAsync();
+        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().Where(r => r.ParentReplyId == parentId)
+            .ToListAsync();
 
         return replayReplay;
     }
 
     public async Task<SubReplay?> GetSubReplyById(Guid subReplyId)
     {
-        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().FirstOrDefaultAsync(r => r.ReplyId == subReplyId);
+        var replayReplay =
+            await _dbContext.Replies.OfType<SubReplay>().FirstOrDefaultAsync(r => r.ReplyId == subReplyId);
 
         return replayReplay;
     }
@@ -57,8 +59,9 @@ public class RepliesRepository : IRepliesRepository
         if (postReplay is not null)
             return postReplay;
 
-        var replayReplay = await _dbContext.Replies.OfType<SubReplay>().FirstOrDefaultAsync(r => r.ParentReplyId == parentId);
-        
+        var replayReplay = await _dbContext.Replies.OfType<SubReplay>()
+            .FirstOrDefaultAsync(r => r.ParentReplyId == parentId);
+
         return replayReplay;
     }
 
@@ -81,10 +84,11 @@ public class RepliesRepository : IRepliesRepository
     {
         return await _dbContext.SaveChangesAsync() >= 0;
     }
-    
+
     private async Task<IEnumerable<ReplyBase>> GetAllChildReply(Guid parentReplyId)
     {
-        var firstChildren = await _dbContext.Replies.OfType<SubReplay>().Where(reply => reply.ParentReplyId == parentReplyId).ToListAsync();
+        var firstChildren = await _dbContext.Replies.OfType<SubReplay>()
+            .Where(reply => reply.ParentReplyId == parentReplyId).ToListAsync();
 
         // init output list
         List<ReplyBase> childrenResponses = [..firstChildren];
@@ -97,7 +101,8 @@ public class RepliesRepository : IRepliesRepository
             // Return one element from Stack
             var currentResponse = responses.Pop();
             // Query DB for immediate Children of this Node
-            var nodeResponses = await _dbContext.Replies.OfType<SubReplay>().Where(reply => reply.ParentReplyId == currentResponse.ReplyId).ToListAsync();
+            var nodeResponses = await _dbContext.Replies.OfType<SubReplay>()
+                .Where(reply => reply.ParentReplyId == currentResponse.ReplyId).ToListAsync();
             // save children to list, push new children to be queried to stack
             foreach (var nodeResponse in nodeResponses)
             {
@@ -108,5 +113,4 @@ public class RepliesRepository : IRepliesRepository
 
         return childrenResponses;
     }
-
 }

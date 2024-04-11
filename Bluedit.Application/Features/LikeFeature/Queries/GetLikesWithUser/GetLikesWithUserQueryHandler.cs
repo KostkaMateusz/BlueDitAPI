@@ -6,18 +6,19 @@ using MediatR;
 
 namespace Bluedit.Application.Features.LikeFeature.Queries.GetLikesWithUser;
 
-internal sealed class GetLikesWithUserQueryHandler<T> : IRequestHandler<GetLikesWithUserQuery<T>,List<LikesDto>> where T : LikeBase, new()
+internal sealed class GetLikesWithUserQueryHandler<T> : IRequestHandler<GetLikesWithUserQuery<T>, List<LikesDto>>
+    where T : LikeBase, new()
 {
     private readonly ILikesRepository<T> _likeRepository;
     private readonly IMapper _mapper;
-    
-    
+
+
     public GetLikesWithUserQueryHandler(IMapper mapper, ILikesRepository<T> likeRepository)
     {
         _likeRepository = likeRepository;
         _mapper = mapper;
     }
-    
+
     public async Task<List<LikesDto>> Handle(GetLikesWithUserQuery<T> request, CancellationToken cancellationToken)
     {
         var likes = await _likeRepository.GetLikesByParentIdAsync(request.ParentId);

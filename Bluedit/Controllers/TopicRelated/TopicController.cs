@@ -20,17 +20,20 @@ namespace Bluedit.Controllers.TopicRelated;
 [Route("api/topics")]
 public class TopicController : ControllerBase
 {
-    private readonly IMediator _mediator;
     private readonly IMapper _mapper;
-    private readonly IPropertyCheckerService _propertyCheckerService;
+    private readonly IMediator _mediator;
     private readonly ProblemDetailsFactory _problemDetailsFactory;
+    private readonly IPropertyCheckerService _propertyCheckerService;
 
-    public TopicController(IMediator mediator, IMapper mapper, IPropertyCheckerService propertyCheckerService, ProblemDetailsFactory problemDetailsFactory)
+    public TopicController(IMediator mediator, IMapper mapper, IPropertyCheckerService propertyCheckerService,
+        ProblemDetailsFactory problemDetailsFactory)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _propertyCheckerService = propertyCheckerService ?? throw new ArgumentNullException(nameof(propertyCheckerService));
-        _problemDetailsFactory = problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
+        _propertyCheckerService =
+            propertyCheckerService ?? throw new ArgumentNullException(nameof(propertyCheckerService));
+        _problemDetailsFactory =
+            problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
     }
 
     private string? CreateTopicResourceUri(TopicResourceParameters topicResourceParameters, ResourceUriType type)
@@ -56,10 +59,10 @@ public class TopicController : ControllerBase
 
 
     /// <summary>
-    /// Create Topics for posts
+    ///     Create Topics for posts
     /// </summary>
     /// <param name="topicCreate">Object Model required to create a topic</param>
-    /// <returns>Action Result of type TopicCreateDto</returns>        
+    /// <returns>Action Result of type TopicCreateDto</returns>
     /// <response code="409">When Topic with given name Already Exist</response>
     /// <response code="201">When Topic was created</response>
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -79,7 +82,7 @@ public class TopicController : ControllerBase
     }
 
     /// <summary>
-    /// Get topic details by its name
+    ///     Get topic details by its name
     /// </summary>
     /// <param name="topicName">String with topic unique name</param>
     /// <returns>Action Result of type TopicInfoDto</returns>
@@ -100,7 +103,7 @@ public class TopicController : ControllerBase
 
 
     /// <summary>
-    /// Delete given topic with all its posts
+    ///     Delete given topic with all its posts
     /// </summary>
     /// <param name="topicName">String with topic unique name</param>
     /// <returns>No content</returns>
@@ -122,7 +125,7 @@ public class TopicController : ControllerBase
     }
 
     /// <summary>
-    /// Get list of all topics
+    ///     Get list of all topics
     /// </summary>
     /// <param name="topicResourceParameters">Object with query parameters</param>
     /// <response code="400">When Sorting or DataShaping fields are not valid</response>
@@ -132,13 +135,15 @@ public class TopicController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpHead]
     [HttpGet(Name = "GetTopics")]
-    public async Task<ActionResult<IEnumerable<TopicInfoDto>>> GetTopicsAsync([FromQuery] TopicResourceParameters topicResourceParameters)
+    public async Task<ActionResult<IEnumerable<TopicInfoDto>>> GetTopicsAsync(
+        [FromQuery] TopicResourceParameters topicResourceParameters)
     {
         // check if requested fields for data shape are valid
         if (_propertyCheckerService.TypeHasProperties<TopicInfoDto>(topicResourceParameters.Fields) is false)
         {
             var problemWithFields = _problemDetailsFactory.CreateProblemDetails(HttpContext, 400,
-                detail: $"Not all requested data shaping fields exist on the resource: {topicResourceParameters.Fields}");
+                detail:
+                $"Not all requested data shaping fields exist on the resource: {topicResourceParameters.Fields}");
 
             return BadRequest(problemWithFields);
         }
@@ -185,7 +190,7 @@ public class TopicController : ControllerBase
     }
 
     /// <summary>
-    /// Update Description of Given Topic
+    ///     Update Description of Given Topic
     /// </summary>
     /// <param name="topicName">String with topic unique name</param>
     /// <param name="topicForUpdateDto">New Description</param>

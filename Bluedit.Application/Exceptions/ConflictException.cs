@@ -1,3 +1,3 @@
 namespace Bluedit.Application.Exceptions;
 
-public class ConflictException : Exception ;
+public class ConflictException : Exception;

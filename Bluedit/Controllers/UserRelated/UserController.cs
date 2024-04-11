@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using AutoMapper;
+using Bluedit.Application.Contracts;
+using Bluedit.Application.DataModels.UserDtos;
 using Bluedit.Domain.Entities;
 using Bluedit.Services.Authentication;
 using FluentValidation;
@@ -8,31 +13,26 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Bluedit.Application.Contracts;
-using Bluedit.Application.DataModels.UserDtos;
 
 namespace Bluedit.Controllers.UserRelated;
-
 
 [ApiController]
 [Route("api/account")]
 [Produces("application/json")]
 public class UserController : ControllerBase
 {
-    private readonly IValidator<RegisterUserDto> _registerUserDtoValidator;
+    private readonly AuthenticationSettings _authenticationSettings;
+    private readonly IMapper _mapper;
 
     private readonly IPasswordHasher<User> _passwordHasher;
-    private readonly AuthenticationSettings _authenticationSettings;
+    private readonly IValidator<RegisterUserDto> _registerUserDtoValidator;
     private readonly IUserContextService _userContextService;
-    private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
 
     public UserController(
         IValidator<RegisterUserDto> registerUserDtoValidator, IUserRepository userRepository, IMapper mapper,
-        IPasswordHasher<User> passwordHasher, AuthenticationSettings authenticationSettings, IUserContextService userContextService)
+        IPasswordHasher<User> passwordHasher, AuthenticationSettings authenticationSettings,
+        IUserContextService userContextService)
     {
         _registerUserDtoValidator = registerUserDtoValidator;
         _passwordHasher = passwordHasher;
@@ -43,22 +43,20 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    ///  Return bearer token for auth
+    ///     Return bearer token for auth
     /// </summary>
     /// <returns>bearer token</returns>
     /// <remarks>
-    /// Sample request:
-    ///
+    ///     Sample request:
     ///     POST account/login
     ///     {
-    ///        "Email":"testmail1@gmail.com",
-    ///        "Password":"password1"
+    ///     "Email":"testmail1@gmail.com",
+    ///     "Password":"password1"
     ///     }
-    ///
     /// </remarks>
     /// <response code="200">Returns auth token</response>
     /// <response code="400">If the email or password is wrong</response>
-    /// <param name="loginUserDto">Login Info</param>   
+    /// <param name="loginUserDto">Login Info</param>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(BadRequest))]
     [Produces("text/plain")]
@@ -79,12 +77,12 @@ public class UserController : ControllerBase
         if (result == PasswordVerificationResult.Failed)
             return BadRequest("Invalid User Name or Password");
 
-        var claims = new List<Claim>()
+        var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-            new Claim(ClaimTypes.Name, user.Name),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role),
+            new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+            new(ClaimTypes.Name, user.Name),
+            new(ClaimTypes.Email, user.Email),
+            new(ClaimTypes.Role, user.Role)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey));
@@ -103,23 +101,21 @@ public class UserController : ControllerBase
 
 
     /// <summary>
-    /// Create new user
+    ///     Create new user
     /// </summary>
     /// <returns>status code</returns>
     /// <remarks>
-    /// Sample request:
-    ///
+    ///     Sample request:
     ///     POST account
     ///     {
-    ///         "Name":"User1",
-    ///         "Email":"testmail@gmail.com",
-    ///         "Password":"password1"
+    ///     "Name":"User1",
+    ///     "Email":"testmail@gmail.com",
+    ///     "Password":"password1"
     ///     }
-    ///
     /// </remarks>
     /// <response code="201">If user is created</response>
     /// <response code="400">If the email or password is wrong or email is already taken</response>
-    /// <param name="registerUserDto"></param>   
+    /// <param name="registerUserDto"></param>
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblem))]
     [AllowAnonymous]
@@ -134,7 +130,7 @@ public class UserController : ControllerBase
             return ValidationProblem();
         }
 
-        var newUser = new User()
+        var newUser = new User
         {
             Name = registerUserDto.Name,
             Email = registerUserDto.Email
@@ -151,11 +147,11 @@ public class UserController : ControllerBase
 
 
     /// <summary>
-    ///  Get information about user
+    ///     Get information about user
     /// </summary>
     /// <returns>Action result of type UserInfoDto</returns>
     /// <response code="401">If user is unauthenticated</response>
-    /// <response code="200">If user is authenticated</response>   
+    /// <response code="200">If user is authenticated</response>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [Authorize]
@@ -170,24 +166,22 @@ public class UserController : ControllerBase
 
 
     /// <summary>
-    ///  Allow user to update name, mail and password in the service
+    ///     Allow user to update name, mail and password in the service
     /// </summary>
     /// <returns>status code</returns>
     /// <remarks>
-    /// Sample request:
-    ///
+    ///     Sample request:
     ///     PUT /account
     ///     {
-    ///         "Name":"User1",
-    ///         "Email":"testmail@gmail.com",
-    ///         "Password":"password1"
+    ///     "Name":"User1",
+    ///     "Email":"testmail@gmail.com",
+    ///     "Password":"password1"
     ///     }
-    ///
     /// </remarks>
     /// <response code="200">If update user is possible</response>
     /// <response code="400">If update user casued validation error</response>
     /// <response code="401">If user is unauthenticated</response>
-    /// <param name="updateUserDto"></param>  
+    /// <param name="updateUserDto"></param>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblem))]
@@ -220,7 +214,7 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    ///  Delete current user
+    ///     Delete current user
     /// </summary>
     /// <returns>Action result</returns>
     /// <response code="401">If user is unauthenticated</response>
@@ -228,7 +222,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [Authorize]
-    [HttpDelete()]
+    [HttpDelete]
     public async Task<ActionResult> DeleteUser()
     {
         var user = await _userRepository.GetUserAndAllRelatedEntities(_userContextService.GetUserId);

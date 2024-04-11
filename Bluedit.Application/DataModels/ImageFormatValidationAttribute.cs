@@ -12,10 +12,9 @@ public class ImageFormatValidationAttribute : ValidationAttribute
 
         if (value is not IFormFile image)
             return false;
-        else
-            return image.ContentType.Equals("image/jpeg")
-                || image.ContentType.Equals("image/jpg")
-                || image.ContentType.Equals("image/png");
+        return image.ContentType.Equals("image/jpeg")
+               || image.ContentType.Equals("image/jpg")
+               || image.ContentType.Equals("image/png");
     }
 
     public override string FormatErrorMessage(string name)

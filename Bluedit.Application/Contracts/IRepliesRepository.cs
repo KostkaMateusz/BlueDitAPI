@@ -1,6 +1,6 @@
 ﻿using Bluedit.Domain.Entities.ReplyEntities;
 
-namespace Bluedit.Application.Contracts ;
+namespace Bluedit.Application.Contracts;
 
 public interface IRepliesRepository
 {

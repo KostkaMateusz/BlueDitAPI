@@ -28,7 +28,8 @@ public static class EnumerableExtensions
             propertyInfoList.AddRange(propertyInfos);
         }
         else
-        {       // the field are separated by ",", so we split it.
+        {
+            // the field are separated by ",", so we split it.
             var fieldsAfterSplit = fields.Split(',');
 
             foreach (var field in fieldsAfterSplit)
@@ -53,7 +54,7 @@ public static class EnumerableExtensions
         }
 
         // run through the source objects
-        foreach (TSource sourceObject in source)
+        foreach (var sourceObject in source)
         {
             // create an ExpandoObject that will hold the 
             // selected properties & values
@@ -69,6 +70,7 @@ public static class EnumerableExtensions
                 // add the field to the ExpandoObject
                 ((IDictionary<string, object?>)dataShapedObject).Add(propertyInfo.Name, propertyValue);
             }
+
             // add the ExpandoObject to the list
             expandoObjectList.Add(dataShapedObject);
         }

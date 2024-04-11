@@ -1,11 +1,11 @@
 ﻿using Bluedit.Application.Contracts;
 using Bluedit.Domain.Entities.LikeEntities;
+using Bluedit.Persistence.Helpers.Sorting;
+using Bluedit.Persistence.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Bluedit.Persistence.Helpers.Sorting;
-using Bluedit.Persistence.Repositories;
 
 namespace Bluedit.Persistence;
 

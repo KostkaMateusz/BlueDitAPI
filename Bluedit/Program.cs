@@ -1,8 +1,8 @@
-using Bluedit.StartUpExtensions;
 using System.Reflection;
-using Bluedit.Persistence;
 using Bluedit.Application;
-using Bluedit.Middlewares;
+using Bluedit.MIddlewares;
+using Bluedit.Persistence;
+using Bluedit.StartUpExtensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,10 +33,7 @@ app.UseMiddleware<ErrorHandlingMiddleware>();
 app.MapGet("/checkEnviroment", () => app.Environment.EnvironmentName);
 
 app.UseSwagger();
-app.UseSwaggerUI(options =>
-{
-    options.EnableTryItOutByDefault();
-});
+app.UseSwaggerUI(options => { options.EnableTryItOutByDefault(); });
 
 app.UseStaticFiles();
 

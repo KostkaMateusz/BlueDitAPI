@@ -2,7 +2,6 @@
 
 public class SubReplay : ReplyBase
 {
+    public List<SubReplay> ParentReplay = new();
     public Guid ParentReplyId { get; set; }
-
-    public List<SubReplay> ParentReplay = new List<SubReplay>();
 }

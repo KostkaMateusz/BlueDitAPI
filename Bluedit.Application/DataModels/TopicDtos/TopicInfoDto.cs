@@ -1,5 +1,4 @@
-﻿
-namespace Bluedit.Application.DataModels.TopicDtos;
+﻿namespace Bluedit.Application.DataModels.TopicDtos;
 
 public class TopicInfoDto
 {

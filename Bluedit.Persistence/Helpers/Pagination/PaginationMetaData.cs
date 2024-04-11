@@ -2,12 +2,12 @@
 
 public class PaginationMetaData<T>
 {
-    public int TotalCount;
-    public int PageSize;
     public int CurrentPage;
-    public int TotalPages;
-    public string? PreviousPageLink;
     public string? NextPageLink;
+    public int PageSize;
+    public string? PreviousPageLink;
+    public int TotalCount;
+    public int TotalPages;
 
     public PaginationMetaData(PagedList<T> pagedList, string? previousPageLink, string? nextPageLink)
     {
@@ -18,5 +18,4 @@ public class PaginationMetaData<T>
         PreviousPageLink = previousPageLink;
         NextPageLink = nextPageLink;
     }
-
 }

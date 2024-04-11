@@ -1,8 +1,8 @@
 using Bluedit.Application.Exceptions;
 
-namespace Bluedit.Middlewares;
+namespace Bluedit.MIddlewares;
 
-public class ErrorHandlingMiddleware() : IMiddleware
+public class ErrorHandlingMiddleware : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
@@ -19,7 +19,7 @@ public class ErrorHandlingMiddleware() : IMiddleware
         {
             context.Response.StatusCode = 403;
             await context.Response.WriteAsync("Access forbidden");
-        }        
+        }
         catch (ConflictException)
         {
             context.Response.StatusCode = 409;

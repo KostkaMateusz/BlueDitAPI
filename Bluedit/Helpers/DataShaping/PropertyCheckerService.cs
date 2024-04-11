@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 
 namespace Bluedit.Helpers.DataShaping;
+
 public class PropertyCheckerService : IPropertyCheckerService
 {
     public bool TypeHasProperties<T>(string? fields)

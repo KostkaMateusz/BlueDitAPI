@@ -14,5 +14,5 @@ public interface ITopicRepository
     void UpdateTopicAsync(Topic topic);
     void IncrementPostCount(Topic topic);
     void DecrementPostCount(Topic topic);
-    Task<IPagedList<Topic>> GetAllTopicAsync(TopicResourceParameters topicResourceParameters);
+    Task<IPagedList> GetAllTopicAsync(TopicResourceParameters topicResourceParameters);
 }

@@ -13,24 +13,24 @@ public static class ApplicationServiceRegistration
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-        services.AddMediatR(cfg =>
-        {
-            cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
-        });
+        services.AddMediatR(cfg => { cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()); });
 
         services
-            .AddTransient<IRequestHandler<GetLikesWithUserQuery<PostLike>,List<LikesDto>>,GetLikesWithUserQueryHandler<PostLike>>()
-            .AddTransient<IRequestHandler<GetLikesWithUserQuery<ReplyLike>,List<LikesDto>>,GetLikesWithUserQueryHandler<ReplyLike>>();
+            .AddTransient<IRequestHandler<GetLikesWithUserQuery<PostLike>, List<LikesDto>>,
+                GetLikesWithUserQueryHandler<PostLike>>()
+            .AddTransient<IRequestHandler<GetLikesWithUserQuery<ReplyLike>, List<LikesDto>>,
+                GetLikesWithUserQueryHandler<ReplyLike>>();
 
         services
             .AddTransient<IRequestHandler<CreateLikeRequest<PostLike>, LikesDto>, CreateLikeRequestHandler<PostLike>>()
-            .AddTransient<IRequestHandler<CreateLikeRequest<ReplyLike>, LikesDto>, CreateLikeRequestHandler<ReplyLike>>();
-         
+            .AddTransient<IRequestHandler<CreateLikeRequest<ReplyLike>, LikesDto>,
+                CreateLikeRequestHandler<ReplyLike>>();
+
         services
             .AddTransient<IRequestHandler<DeleteLikeRequest<PostLike>>, DeleteLikeRequestHandler<PostLike>>()
             .AddTransient<IRequestHandler<DeleteLikeRequest<ReplyLike>>, DeleteLikeRequestHandler<ReplyLike>>();
 
-        
+
         return services;
     }
 }
