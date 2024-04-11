@@ -20,15 +20,13 @@ public static class PersistenceServiceConfiguration
         return builder;
     }
 
-    private static WebApplicationBuilder AddDataBaseContext(this WebApplicationBuilder builder)
+    private static void AddDataBaseContext(this WebApplicationBuilder builder)
     {
         builder.Services.AddDbContext<BlueditDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnectionString")));
-
-        return builder;
     }
 
-    private static WebApplicationBuilder AddRepositories(this WebApplicationBuilder builder)
+    private static void AddRepositories(this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<IUserRepository, UserRepository>();
 
@@ -43,7 +41,5 @@ public static class PersistenceServiceConfiguration
         //sorting
         builder.Services.AddSingleton<ApplicationPropertyMappings>();
         builder.Services.AddTransient<IPropertyMappingService, PropertyMappingService>();
-
-        return builder;
     }
 }
