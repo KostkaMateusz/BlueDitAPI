@@ -160,7 +160,7 @@ public class PostController : ControllerBase
         // get topic from repo
         var postPagedList = await _postRepository.GetPostsAsync(postResourceParameters);
 
-        if (((IEnumerable<Post>)postPagedList).IsNullOrEmpty())
+        if (((IEnumerable<Post>)postPagedList) is null || !((IEnumerable<Post>)postPagedList).Any())
             return NotFound();
 
         //calculate prev site if exist
